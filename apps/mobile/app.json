@@ -1,13 +1,30 @@
 {
   "expo": {
-    "name": "Çağrı",
+    "name": "Cagri",
     "slug": "cagri",
     "main": "index.js",
     "version": "1.0.0",
+    "scheme": "cagri",
+    "icon": "./assets/icon.png",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
+    "android": {
+      "package": "com.themessage.cagri",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon-android-fg.png",
+        "backgroundColor": "#2A4B3D"
+      },
+      "minSdkVersion": 24
+    },
     "ios": {
-      "supportsTablet": true
-    }
+      "supportsTablet": true,
+      "bundleIdentifier": "com.themessage.cagri",
+      "infoPlist": {
+        "CFBundleDisplayName": "Çağrı"
+      }
+    },
+    "plugins": [
+      "expo-secure-store"
+    ]
   }
 }

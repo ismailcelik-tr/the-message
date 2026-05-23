@@ -4,19 +4,24 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
+import { Ionicons } from '@expo/vector-icons';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { usePreferencesStore } from '../store/preferences.store';
 import { COLORS } from '../theme/colors';
 import { DailyScreen } from '../screens/DailyScreen';
 import { FocusScreen } from '../screens/FocusScreen';
+import { SavedScreen } from '../screens/SavedScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
 
 const Tab = createBottomTabNavigator();
 
-const TAB_ICONS: Record<string, string> = {
-  Daily: '📖',
-  Focus: '✨',
-  Settings: '⚙️',
+type IoniconsName = React.ComponentProps<typeof Ionicons>['name'];
+
+const TAB_ICONS: Record<string, IoniconsName> = {
+  Daily:    'book',
+  Focus:    'heart',
+  Saved:    'bookmark',
+  Settings: 'settings-sharp',
 };
 
 function PillTabBar({ state, navigation }: BottomTabBarProps) {
@@ -26,8 +31,9 @@ function PillTabBar({ state, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
 
   const TAB_LABELS: Record<string, string> = {
-    Daily: t('tabs.daily'),
-    Focus: t('tabs.focus'),
+    Daily:    t('tabs.daily'),
+    Focus:    t('tabs.focus'),
+    Saved:    t('tabs.saved'),
     Settings: t('tabs.settings'),
   };
 
@@ -47,6 +53,7 @@ function PillTabBar({ state, navigation }: BottomTabBarProps) {
     ]}>
       {state.routes.map((route, index) => {
         const isFocused = state.index === index;
+        const iconName = TAB_ICONS[route.name];
 
         const onPress = () => {
           const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
@@ -64,12 +71,14 @@ function PillTabBar({ state, navigation }: BottomTabBarProps) {
           >
             {isFocused ? (
               <View style={[styles.pill, { backgroundColor: colors.primary }]}>
-                <Text style={styles.pillIcon}>{TAB_ICONS[route.name]}</Text>
-                <Text style={styles.pillLabel} numberOfLines={1} adjustsFontSizeToFit>{TAB_LABELS[route.name]}</Text>
+                <Ionicons name={iconName} size={17} color="#FFF" />
+                <Text style={styles.pillLabel} numberOfLines={1} adjustsFontSizeToFit>
+                  {TAB_LABELS[route.name]}
+                </Text>
               </View>
             ) : (
               <View style={styles.inactiveItem}>
-                <Text style={styles.inactiveIcon}>{TAB_ICONS[route.name]}</Text>
+                <Ionicons name={iconName} size={20} color={colors.mutedText} style={{ opacity: 0.55 }} />
                 <Text style={[styles.inactiveLabel, { color: colors.mutedText }]}>
                   {TAB_LABELS[route.name]}
                 </Text>
@@ -89,8 +98,9 @@ export function AppNavigator() {
         tabBar={(props) => <PillTabBar {...props} />}
         screenOptions={{ headerShown: false }}
       >
-        <Tab.Screen name="Daily" component={DailyScreen} />
-        <Tab.Screen name="Focus" component={FocusScreen} />
+        <Tab.Screen name="Daily"    component={DailyScreen} />
+        <Tab.Screen name="Focus"    component={FocusScreen} />
+        <Tab.Screen name="Saved"    component={SavedScreen} />
         <Tab.Screen name="Settings" component={SettingsScreen} />
       </Tab.Navigator>
     </NavigationContainer>
@@ -120,15 +130,12 @@ const styles = StyleSheet.create({
   pill: {
     alignItems: 'center',
     paddingVertical: 8,
-    paddingHorizontal: 14,
+    paddingHorizontal: 12,
     borderRadius: 24,
     gap: 3,
   },
-  pillIcon: {
-    fontSize: 18,
-  },
   pillLabel: {
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: '700',
     color: '#FFFFFF',
   },
@@ -137,10 +144,6 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 8,
     gap: 2,
-  },
-  inactiveIcon: {
-    fontSize: 20,
-    opacity: 0.45,
   },
   inactiveLabel: {
     fontSize: 10,

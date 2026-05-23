@@ -1,6 +1,6 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ContentService } from './content.service';
-import { ApiResponse, ContentItem, MessageCategory, PaginatedResponse, SupportedLocale } from '@the-message/shared';
+import { ApiResponse, ContentItem, DailyBundle, MessageCategory, PaginatedResponse, SupportedLocale } from '@the-message/shared';
 
 @Controller('content')
 export class ContentController {
@@ -11,6 +11,14 @@ export class ContentController {
     @Query('locale') locale: SupportedLocale = 'tr',
   ): Promise<ApiResponse<ContentItem | null>> {
     const data = await this.contentService.findDaily(locale);
+    return { success: true, data };
+  }
+
+  @Get('daily-bundle')
+  async getDailyBundle(
+    @Query('locale') locale: SupportedLocale = 'tr',
+  ): Promise<ApiResponse<DailyBundle>> {
+    const data = await this.contentService.findDailyBundle(locale);
     return { success: true, data };
   }
 

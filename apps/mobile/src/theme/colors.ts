@@ -21,4 +21,4 @@ export const COLORS = {
   },
 } as const;
 
-export type ColorScheme = typeof COLORS.light;
+export type ColorScheme = typeof COLORS.light | typeof COLORS.dark;

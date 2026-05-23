@@ -11,7 +11,7 @@ export interface SilentHours {
 export type ThemeType = 'light' | 'dark' | 'system';
 export type NotificationFrequency = 'low' | 'medium' | 'high'; // 1, 3, or 5 reminder times per day
 export type MessageCategory = 'hope' | 'purpose' | 'worship' | 'prayer' | 'dhikr';
-export type ContentType = 'verse' | 'hadith' | 'prayer' | 'dhikr' | 'audio' | 'article';
+export type ContentType = 'verse' | 'hadith' | 'prayer' | 'dhikr' | 'esma' | 'worship' | 'notification' | 'audio' | 'article';
 export type DayTime = 'morning' | 'noon' | 'evening' | 'any';
 export type SupportedLocale = 'tr' | 'en';
 
@@ -54,8 +54,18 @@ export interface ContentItem {
 
 export interface ContentTranslation {
   content: string;
-  source?: string; // e.g. "Bakara Suresi, 286. Ayet" or "Quran 2:286"
-  title?: string;  // for article type
+  source?: string;
+  title?: string;
+  arabicText?: string;      // for esma: the Arabic script (e.g. "الرَّحْمَنُ")
+  transliteration?: string; // for esma/dhikr: Latin-script pronunciation (e.g. "er-Rahmân")
+}
+
+export interface DailyBundle {
+  esma: ContentItem;
+  verse: ContentItem;
+  hadith: ContentItem;
+  prayer: ContentItem;
+  worship: ContentItem;
 }
 
 /** @deprecated Use ContentItem instead. Kept for backward compatibility during migration. */

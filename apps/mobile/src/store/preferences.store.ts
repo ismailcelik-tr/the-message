@@ -62,7 +62,13 @@ export const usePreferencesStore = create<PreferencesState>()(
       isOnboarded: false,
 
       setPreferences: (update) =>
-        set((state) => ({ preferences: { ...state.preferences, ...update } })),
+        set((state) => {
+          const merged = { preferences: { ...state.preferences, ...update } };
+          if (update.theme === 'light' || update.theme === 'dark') {
+            return { ...merged, currentTheme: update.theme };
+          }
+          return merged;
+        }),
 
       toggleTheme: () =>
         set((state) => {

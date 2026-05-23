@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ContentItem, MessageCategory, SupportedLocale, PaginatedResponse } from '@the-message/shared';
+import { ContentItem, DailyBundle, MessageCategory, SupportedLocale, PaginatedResponse } from '@the-message/shared';
 import { ContentEntity } from './content.entity';
 
 @Injectable()
@@ -22,6 +22,29 @@ export class ContentService {
     }
 
     return this.toContentItem(item);
+  }
+
+  async findDailyBundle(locale: SupportedLocale = 'tr'): Promise<DailyBundle> {
+    // Deterministic daily selection: use day-of-year as seed offset
+    const dayOfYear = Math.floor(
+      (Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000,
+    );
+
+    const pick = async (type: string): Promise<ContentItem> => {
+      const items = await this.contentRepository.find({ where: { type: type as any, isActive: true } });
+      if (!items.length) throw new NotFoundException(`No active ${type} content found`);
+      return this.toContentItem(items[dayOfYear % items.length]);
+    };
+
+    const [esma, verse, hadith, prayer, worship] = await Promise.all([
+      pick('esma'),
+      pick('verse'),
+      pick('hadith'),
+      pick('prayer'),
+      pick('worship'),
+    ]);
+
+    return { esma, verse, hadith, prayer, worship };
   }
 
   async findAll(

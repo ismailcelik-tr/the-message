@@ -1,29 +1,113 @@
-import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import {
+  View, Text, ScrollView, TouchableOpacity,
+  StyleSheet, ActivityIndicator, Share, Alert, RefreshControl,
+} from 'react-native';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { ContentItem } from '@the-message/shared';
 import { usePreferencesStore } from '../store/preferences.store';
-import { fetchDailyContent } from '../api/content.api';
-import { COLORS } from '../theme/colors';
+import { useAuthStore } from '../store/auth.store';
+import { fetchDailyBundle } from '../api/content.api';
+import { addBookmark, removeBookmark, fetchBookmarks } from '../lib/bookmarks';
+import { buildTodayNotifications, saveNotificationBookmark, NotificationLogItem } from '../lib/notificationLog';
+import { COLORS, ColorScheme } from '../theme/colors';
+
+type CardType = 'esma' | 'verse' | 'hadith' | 'prayer' | 'worship';
+type IoniconsName = React.ComponentProps<typeof Ionicons>['name'];
 
 export function DailyScreen() {
   const { t } = useTranslation();
   const currentTheme = usePreferencesStore((s) => s.currentTheme);
   const locale = usePreferencesStore((s) => s.preferences.locale);
+  const { user, isAnonymous } = useAuthStore();
   const colors = COLORS[currentTheme];
-
   const insets = useSafeAreaInsets();
 
-  const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ['daily-content', locale],
-    queryFn: () => fetchDailyContent(locale),
+  const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(new Set());
+  const [savingId, setSavingId] = useState<string | null>(null);
+  const [savedNotifIds, setSavedNotifIds] = useState<Set<string>>(new Set());
+  const [savingNotifId, setSavingNotifId] = useState<string | null>(null);
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  const preferences = usePreferencesStore((s) => s.preferences);
+  const todayStr = new Date().toISOString().split('T')[0];
+
+  const { data: bundle, isLoading, isError, refetch } = useQuery({
+    queryKey: ['daily-bundle', locale],
+    queryFn: () => fetchDailyBundle(locale),
   });
 
-  const translation = data?.translations[locale];
-  const timeLabel = data
-    ? t(`daily.time${data.recommendedTime.charAt(0).toUpperCase() + data.recommendedTime.slice(1)}` as never)
-    : '';
+  // Load existing bookmarks for logged-in users
+  const loadBookmarks = useCallback(async () => {
+    if (!user || isAnonymous) return;
+    const ids = await fetchBookmarks(user.id);
+    setBookmarkedIds(new Set(ids.filter((id) => !id.startsWith('notif-'))));
+    setSavedNotifIds(new Set(ids.filter((id) => id.startsWith('notif-'))));
+  }, [user, isAnonymous]);
+
+  useEffect(() => { loadBookmarks().catch(() => {}); }, [loadBookmarks]);
+
+  const handleRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await Promise.all([refetch(), loadBookmarks()]);
+    setRefreshing(false);
+  }, [refetch, loadBookmarks]);
+
+  const handleSaveNotification = useCallback(async (logItem: NotificationLogItem) => {
+    if (!user || isAnonymous) {
+      Alert.alert('', t('settings.createAccountDesc'));
+      return;
+    }
+    setSavingNotifId(logItem.id);
+    try {
+      if (savedNotifIds.has(logItem.id)) {
+        const { removeBookmark: rm } = await import('../lib/bookmarks');
+        await rm(user.id, logItem.id);
+        setSavedNotifIds((prev) => { const s = new Set(prev); s.delete(logItem.id); return s; });
+      } else {
+        await saveNotificationBookmark(user.id, logItem, todayStr);
+        setSavedNotifIds((prev) => new Set(prev).add(logItem.id));
+      }
+    } catch {
+      Alert.alert(t('daily.saveError'));
+    } finally {
+      setSavingNotifId(null);
+    }
+  }, [user, isAnonymous, savedNotifIds, todayStr, t]);
+
+  const handleShare = useCallback(async (item: ContentItem) => {
+    const translation = item.translations[locale];
+    const text = t('daily.shareText', {
+      content: translation?.content ?? '',
+      source: translation?.source ?? '',
+    });
+    await Share.share({ message: text });
+  }, [locale, t]);
+
+  const handleBookmark = useCallback(async (item: ContentItem) => {
+    if (!user || isAnonymous) {
+      Alert.alert('', t('settings.createAccountDesc'));
+      return;
+    }
+    setSavingId(item.id);
+    try {
+      if (bookmarkedIds.has(item.id)) {
+        await removeBookmark(user.id, item.id);
+        setBookmarkedIds((prev) => { const s = new Set(prev); s.delete(item.id); return s; });
+      } else {
+        await addBookmark(user.id, item);
+        setBookmarkedIds((prev) => new Set(prev).add(item.id));
+      }
+    } catch {
+      Alert.alert(t('daily.saveError'));
+    } finally {
+      setSavingId(null);
+    }
+  }, [user, isAnonymous, bookmarkedIds, t]);
 
   if (isLoading) {
     return (
@@ -34,41 +118,210 @@ export function DailyScreen() {
     );
   }
 
-  if (isError || !data) {
+  if (isError || !bundle) {
     return (
       <View style={[styles.centered, { backgroundColor: colors.background, paddingTop: insets.top }]}>
         <Text style={[styles.errorText, { color: colors.mutedText }]}>{t('daily.error')}</Text>
-        <TouchableOpacity style={[styles.retryButton, { backgroundColor: colors.primary }]} onPress={() => refetch()}>
+        <TouchableOpacity style={[styles.retryBtn, { backgroundColor: colors.primary }]} onPress={() => refetch()}>
           <Text style={styles.retryText}>{t('daily.retry')}</Text>
         </TouchableOpacity>
       </View>
     );
   }
 
+  const cards: { key: CardType; item: ContentItem; titleKey: string }[] = [
+    { key: 'esma',    item: bundle.esma,    titleKey: 'daily.esmaTitle'    },
+    { key: 'verse',   item: bundle.verse,   titleKey: 'daily.verseTitle'   },
+    { key: 'hadith',  item: bundle.hadith,  titleKey: 'daily.hadithTitle'  },
+    { key: 'prayer',  item: bundle.prayer,  titleKey: 'daily.prayerTitle'  },
+    { key: 'worship', item: bundle.worship, titleKey: 'daily.worshipTitle' },
+  ];
+
+  const todayNotifications = buildTodayNotifications(bundle, preferences, todayStr);
+
   return (
     <ScrollView
       style={{ backgroundColor: colors.background }}
       contentContainerStyle={[styles.scroll, { paddingTop: insets.top + 16 }]}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
+          tintColor={colors.primary}
+          colors={[colors.primary]}
+        />
+      }
     >
-      <Text style={[styles.sectionTitle, { color: colors.text }]}>{t('daily.title')}</Text>
+      <Text style={[styles.screenTitle, { color: colors.text }]}>{t('daily.title')}</Text>
 
-      <View style={[styles.messageCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
-        <Text style={[styles.quoteMark, { color: colors.accent }]}>"</Text>
-        <Text style={[styles.content, { color: colors.text }]}>{translation?.content}</Text>
-        {translation?.source && (
-          <Text style={[styles.source, { color: colors.secondary }]}>{translation.source}</Text>
-        )}
-        <View style={[styles.divider, { backgroundColor: colors.border }]} />
-        <View style={styles.footer}>
-          <Text style={[styles.categoryTag, { color: colors.mutedText, backgroundColor: colors.background }]}>
-            {data.category.toUpperCase()}
-          </Text>
-          <Text style={[styles.timeTag, { color: colors.mutedText }]}>
-            {timeLabel}
-          </Text>
+      {cards.map(({ key, item, titleKey }) => (
+        <View key={key}>
+          {/* Başlık kartın dışında */}
+          <View style={styles.cardGroupHeader}>
+            <View style={[styles.groupIconBadge, { backgroundColor: colors.primary }]}>
+              {key === 'esma'    && <Text style={styles.arabicBadge}>ﷲ</Text>}
+              {key === 'verse'   && <Ionicons name={'book' as IoniconsName} size={15} color="#FFF" />}
+              {key === 'hadith'  && <MaterialCommunityIcons name="format-quote-open" size={18} color="#FFF" />}
+              {key === 'prayer'  && <MaterialCommunityIcons name="mosque" size={15} color="#FFF" />}
+              {key === 'worship' && <MaterialCommunityIcons name="star-crescent" size={15} color="#FFF" />}
+            </View>
+            <Text style={[styles.groupHeaderTitle, { color: colors.secondary }]}>
+              {t(titleKey as never)}
+            </Text>
+          </View>
+          <ContentCard
+            cardType={key}
+            item={item}
+            locale={locale}
+            colors={colors}
+            isBookmarked={bookmarkedIds.has(item.id)}
+            isSaving={savingId === item.id}
+            onShare={() => handleShare(item)}
+            onBookmark={() => handleBookmark(item)}
+          />
         </View>
-      </View>
+      ))}
+
+      {todayNotifications.length > 0 && (
+        <View>
+          <View style={styles.cardGroupHeader}>
+            <View style={[styles.groupIconBadge, { backgroundColor: colors.primary }]}>
+              <Ionicons name={'notifications' as IoniconsName} size={15} color="#FFF" />
+            </View>
+            <Text style={[styles.groupHeaderTitle, { color: colors.secondary }]}>
+              {t('daily.todayNotifications')}
+            </Text>
+          </View>
+          <NotificationsCard
+            notifications={todayNotifications}
+            locale={locale}
+            colors={colors}
+            todayStr={todayStr}
+            savedIds={savedNotifIds}
+            savingId={savingNotifId}
+            onSave={handleSaveNotification}
+          />
+        </View>
+      )}
     </ScrollView>
+  );
+}
+
+interface CardProps {
+  cardType: CardType;
+  item: ContentItem;
+  locale: 'tr' | 'en';
+  colors: ColorScheme;
+  isBookmarked: boolean;
+  isSaving: boolean;
+  onShare: () => void;
+  onBookmark: () => void;
+}
+
+function ContentCard({ cardType, item, locale, colors, isBookmarked, isSaving, onShare, onBookmark }: CardProps) {
+  const tr = item.translations[locale];
+
+  return (
+    <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
+      {/* Esma: Arapça büyük + transliterasyon */}
+      {cardType === 'esma' && tr?.arabicText && (
+        <View style={styles.esmaArabicWrap}>
+          <Text style={[styles.esmaArabic, { color: colors.text }]}>{tr.arabicText}</Text>
+          {tr.transliteration && (
+            <Text style={[styles.esmaLatin, { color: colors.primary }]}>{tr.transliteration}</Text>
+          )}
+        </View>
+      )}
+
+      {/* İçerik kutusu */}
+      <View style={[styles.contentBox, { backgroundColor: colors.border + '66' }]}>
+        <Text style={[styles.contentText, { color: colors.text }]}>{tr?.content}</Text>
+      </View>
+
+      {/* Kaynak + aksiyon butonları */}
+      <View style={styles.sourceRow}>
+        <View style={[styles.sourceIconBox, { backgroundColor: colors.primary + '22' }]}>
+          <Ionicons name="bookmark" size={11} color={colors.primary} />
+        </View>
+        <Text style={[styles.sourceText, { color: colors.mutedText, flex: 1 }]}>
+          {tr?.source ? `(${tr.source})` : ''}
+        </Text>
+        <TouchableOpacity onPress={onBookmark} style={[styles.actionBtn, { backgroundColor: colors.background }]} disabled={isSaving}>
+          {isSaving
+            ? <ActivityIndicator size="small" color={colors.mutedText} />
+            : <Ionicons
+                name={isBookmarked ? 'bookmark' : 'bookmark-outline'}
+                size={17}
+                color={isBookmarked ? colors.primary : colors.mutedText}
+              />
+          }
+        </TouchableOpacity>
+        <TouchableOpacity onPress={onShare} style={[styles.actionBtn, { backgroundColor: colors.background }]}>
+          <Ionicons name="share-outline" size={17} color={colors.mutedText} />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
+interface NotificationsCardProps {
+  notifications: NotificationLogItem[];
+  locale: 'tr' | 'en';
+  colors: ColorScheme;
+  todayStr: string;
+  savedIds: Set<string>;
+  savingId: string | null;
+  onSave: (item: NotificationLogItem) => void;
+}
+
+function NotificationsCard({ notifications, locale, colors, todayStr, savedIds, savingId, onSave }: NotificationsCardProps) {
+  const { t } = useTranslation();
+
+  // Format: 24 Mayıs 2026 / May 24, 2026
+  const dateLabel = new Date(todayStr).toLocaleDateString(locale === 'tr' ? 'tr-TR' : 'en-US', {
+    day: 'numeric', month: 'long', year: 'numeric',
+  });
+
+  return (
+    <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
+      <Text style={[styles.notifDate, { color: colors.mutedText, marginBottom: 8 }]}>{dateLabel}</Text>
+
+      {notifications.map((logItem, index) => {
+        const tr = logItem.content.translations[locale];
+        const isSaved = savedIds.has(logItem.id);
+        const isSaving = savingId === logItem.id;
+        return (
+          <View
+            key={logItem.id}
+            style={[
+              styles.notifRow,
+              index < notifications.length - 1 && { borderBottomWidth: 1, borderBottomColor: colors.border },
+            ]}
+          >
+            <View style={styles.notifTimeWrap}>
+              <Text style={[styles.notifTime, { color: colors.primary }]}>{logItem.scheduledTime}</Text>
+            </View>
+            <Text style={[styles.notifText, { color: colors.text }]} numberOfLines={2}>
+              {tr?.content}
+            </Text>
+            <TouchableOpacity
+              onPress={() => onSave(logItem)}
+              style={[styles.actionBtn, { backgroundColor: colors.background }]}
+              disabled={isSaving}
+            >
+              {isSaving
+                ? <ActivityIndicator size="small" color={colors.mutedText} />
+                : <Ionicons
+                    name={isSaved ? 'bookmark' : 'bookmark-outline'}
+                    size={17}
+                    color={isSaved ? colors.primary : colors.mutedText}
+                  />
+              }
+            </TouchableOpacity>
+          </View>
+        );
+      })}
+    </View>
   );
 }
 
@@ -76,20 +329,60 @@ const styles = StyleSheet.create({
   centered: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 },
   loadingText: { marginTop: 12, fontSize: 14 },
   errorText: { fontSize: 15, textAlign: 'center', marginBottom: 16 },
-  retryButton: { paddingHorizontal: 24, paddingVertical: 12, borderRadius: 20 },
+  retryBtn: { paddingHorizontal: 24, paddingVertical: 12, borderRadius: 20 },
   retryText: { color: '#FFF', fontWeight: '600' },
-  scroll: { padding: 20, paddingBottom: 120, paddingTop: 20 },
-  sectionTitle: { fontSize: 26, fontWeight: '300', marginBottom: 16, letterSpacing: -0.5 },
-  messageCard: {
-    borderRadius: 24, padding: 28, borderWidth: 1,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.03, shadowRadius: 15, elevation: 2,
+
+  scroll: { padding: 16, paddingBottom: 120 },
+  screenTitle: { fontSize: 26, fontWeight: '300', marginBottom: 8, letterSpacing: -0.5 },
+
+  cardGroupHeader: {
+    flexDirection: 'row', alignItems: 'center',
+    gap: 10, marginTop: 12, marginBottom: 8,
   },
-  quoteMark: { fontSize: 80, fontFamily: 'serif', opacity: 0.15, position: 'absolute', top: 10, left: 20 },
-  content: { fontSize: 20, fontWeight: '400', lineHeight: 30, marginBottom: 16, marginTop: 10, textAlign: 'center' },
-  source: { fontSize: 14, fontStyle: 'italic', textAlign: 'center', marginBottom: 16 },
-  divider: { height: 1, width: '100%', marginVertical: 12 },
-  footer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  categoryTag: { fontSize: 11, fontWeight: '700', paddingVertical: 4, paddingHorizontal: 10, borderRadius: 8, overflow: 'hidden' },
-  timeTag: { fontSize: 12 },
+  groupIconBadge: {
+    width: 28, height: 28, borderRadius: 14,
+    justifyContent: 'center', alignItems: 'center',
+  },
+  groupHeaderTitle: {
+    fontSize: 14, fontWeight: '700', letterSpacing: 0.3,
+  },
+
+  card: {
+    borderRadius: 20, borderWidth: 1,
+    padding: 16, marginBottom: 4,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.04, shadowRadius: 10, elevation: 2,
+  },
+  arabicBadge: { fontSize: 15, color: '#FFF', lineHeight: 20 },
+  actionBtn: {
+    width: 32, height: 32, borderRadius: 16,
+    justifyContent: 'center', alignItems: 'center',
+  },
+
+  notifDate: { fontSize: 12, marginTop: 1 },
+  notifRow: {
+    flexDirection: 'row', alignItems: 'center',
+    paddingVertical: 10, gap: 10,
+  },
+  notifTimeWrap: {
+    minWidth: 46, alignItems: 'center',
+  },
+  notifTime: { fontSize: 13, fontWeight: '700' },
+  notifText: { flex: 1, fontSize: 13, lineHeight: 18 },
+
+  esmaArabicWrap: { alignItems: 'center', marginBottom: 12 },
+  esmaArabic: { fontSize: 48, fontWeight: '300', textAlign: 'center', lineHeight: 68 },
+  esmaLatin: { fontSize: 18, fontWeight: '600', marginTop: 4, letterSpacing: 0.5 },
+
+  contentBox: {
+    borderRadius: 14, padding: 16, marginBottom: 12,
+  },
+  contentText: { fontSize: 16, lineHeight: 26, fontWeight: '400' },
+
+  sourceRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  sourceIconBox: {
+    width: 26, height: 26, borderRadius: 6,
+    justifyContent: 'center', alignItems: 'center',
+  },
+  sourceText: { fontSize: 13 },
 });
