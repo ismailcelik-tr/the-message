@@ -9,7 +9,7 @@ export default {
   },
   tabs: {
     daily: 'Günün Sözü',
-    focus: 'Manevi Odak',
+    focus: 'Odak',
     settings: 'Ayarlar',
   },
   daily: {

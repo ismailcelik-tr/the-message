@@ -9,7 +9,7 @@ export default {
   },
   tabs: {
     daily: "Today's Word",
-    focus: 'Spiritual Focus',
+    focus: 'Focus',
     settings: 'Settings',
   },
   daily: {

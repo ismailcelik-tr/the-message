@@ -65,7 +65,7 @@ function PillTabBar({ state, navigation }: BottomTabBarProps) {
             {isFocused ? (
               <View style={[styles.pill, { backgroundColor: colors.primary }]}>
                 <Text style={styles.pillIcon}>{TAB_ICONS[route.name]}</Text>
-                <Text style={styles.pillLabel}>{TAB_LABELS[route.name]}</Text>
+                <Text style={styles.pillLabel} numberOfLines={1} adjustsFontSizeToFit>{TAB_LABELS[route.name]}</Text>
               </View>
             ) : (
               <View style={styles.inactiveItem}>
