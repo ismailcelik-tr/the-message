@@ -8,8 +8,8 @@ export default {
     cta: 'Begin with Peace',
   },
   tabs: {
-    daily: 'Today',
-    focus: 'Focus',
+    daily: "Daily Content",
+    focus: 'Spiritual Focus',
     settings: 'Settings',
   },
   daily: {

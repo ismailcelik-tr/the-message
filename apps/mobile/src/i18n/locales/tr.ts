@@ -8,8 +8,8 @@ export default {
     cta: 'Huzurla Başla',
   },
   tabs: {
-    daily: 'Bugün',
-    focus: 'Odak',
+    daily: 'Günün İçeriği',
+    focus: 'Manevi Odak',
     settings: 'Ayarlar',
   },
   daily: {

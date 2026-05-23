@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
   pill: {
     alignItems: 'center',
     paddingVertical: 8,
-    paddingHorizontal: 20,
+    paddingHorizontal: 14,
     borderRadius: 24,
     gap: 3,
   },
