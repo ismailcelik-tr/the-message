@@ -111,11 +111,21 @@ export function SettingsScreen() {
               />
             </View>
             {preferences.silentHours.enabled && (
-              <View style={[styles.silentDetail, { borderTopColor: colors.border }]}>
-                <Text style={[styles.silentText, { color: colors.mutedText }]}>
-                  {t('settings.silentRange')}: {preferences.silentHours.start} - {preferences.silentHours.end}
-                </Text>
-              </View>
+              <>
+                <TimePickerRow
+                  label={t('settings.silentStart')}
+                  time={preferences.silentHours.start}
+                  theme={currentTheme}
+                  onConfirm={(time) => setPreferences({ silentHours: { ...preferences.silentHours, start: time } })}
+                />
+                <TimePickerRow
+                  label={t('settings.silentEnd')}
+                  time={preferences.silentHours.end}
+                  theme={currentTheme}
+                  onConfirm={(time) => setPreferences({ silentHours: { ...preferences.silentHours, end: time } })}
+                />
+                <View style={styles.cardBottomFix} />
+              </>
             )}
           </View>
         </>

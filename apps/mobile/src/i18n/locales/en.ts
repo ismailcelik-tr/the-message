@@ -53,6 +53,8 @@ export default {
     silentHours: 'Do Not Disturb',
     silentHoursDesc: 'Silence notifications during the night',
     silentRange: 'Silent Period',
+    silentStart: 'Start',
+    silentEnd: 'End',
     theme: 'Appearance',
     themeLight: 'Light',
     themeDark: 'Dark',

@@ -53,6 +53,8 @@ export default {
     silentHours: 'Rahatsız Etme Saatleri',
     silentHoursDesc: 'Gece boyunca bildirimleri sessize al',
     silentRange: 'Sessiz Aralık',
+    silentStart: 'Başlangıç',
+    silentEnd: 'Bitiş',
     theme: 'Görünüm',
     themeLight: 'Açık',
     themeDark: 'Koyu',
