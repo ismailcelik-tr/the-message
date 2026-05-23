@@ -8,7 +8,7 @@ export default {
     cta: 'Huzurla Başla',
   },
   tabs: {
-    daily: 'Günün Sözü',
+    daily: 'Bugün',
     focus: 'Odak',
     settings: 'Ayarlar',
   },

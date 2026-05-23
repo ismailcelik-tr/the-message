@@ -8,7 +8,7 @@ export default {
     cta: 'Begin with Peace',
   },
   tabs: {
-    daily: "Today's Word",
+    daily: 'Today',
     focus: 'Focus',
     settings: 'Settings',
   },
