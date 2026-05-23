@@ -1,0 +1,33 @@
+# Dependency directories
+node_modules/
+
+# Build directories
+dist/
+build/
+out/
+
+# Expo / React Native files
+.expo/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.apk
+*.aab
+*.ipa
+
+# Environment files
+.env
+.env.local
+.env.production
+.env.development
+.env.*.local
+
+# Docker volume data
+docker_data/
+.db_data/
+
+# OS metadata
+.DS_Store
+Thumbs.db

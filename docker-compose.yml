@@ -1,0 +1,51 @@
+services:
+  # PostgreSQL database instance
+  db:
+    image: postgres:16-alpine
+    container_name: cagri_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: cagri_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # NestJS API backend service
+  api:
+    build:
+      context: .
+      dockerfile: infra/docker/Dockerfile.api
+      target: development
+    container_name: cagri_api
+    restart: always
+    environment:
+      PORT: 3000
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+      DATABASE_USER: postgres
+      DATABASE_PASSWORD: postgres
+      DATABASE_DB: cagri_db
+    ports:
+      - "3000:3000"
+    volumes:
+      # Bind project directory for local live-reload
+      - .:/app
+      # Guard node_modules inside containers from being overwritten by host bindings
+      - /app/node_modules
+      - /app/apps/api/node_modules
+      - /app/packages/shared/node_modules
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+    driver: local
