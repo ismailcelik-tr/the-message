@@ -1,6 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
-import { BlurView } from 'expo-blur';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -20,7 +19,7 @@ const TAB_ICONS: Record<string, string> = {
   Settings: '⚙️',
 };
 
-function GlassTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
+function GlassTabBar({ state, navigation }: BottomTabBarProps) {
   const { t } = useTranslation();
   const currentTheme = usePreferencesStore((s) => s.currentTheme);
   const colors = COLORS[currentTheme];
@@ -34,64 +33,57 @@ function GlassTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
 
   return (
     <View style={[styles.tabBarWrapper, { bottom: insets.bottom + 12 }]}>
-      <BlurView
-        intensity={currentTheme === 'dark' ? 60 : 80}
-        tint={currentTheme === 'dark' ? 'dark' : 'light'}
-        style={styles.blurContainer}
-      >
-        <View style={[
-          styles.tabBarInner,
-          {
-            borderColor: currentTheme === 'dark'
-              ? 'rgba(255,255,255,0.12)'
-              : 'rgba(42,75,61,0.15)',
-            backgroundColor: currentTheme === 'dark'
-              ? 'rgba(37,41,40,0.55)'
-              : 'rgba(255,255,255,0.55)',
-          },
-        ]}>
-          {state.routes.map((route, index) => {
-            const isFocused = state.index === index;
+      <View style={[
+        styles.tabBarInner,
+        {
+          borderColor: currentTheme === 'dark'
+            ? 'rgba(255,255,255,0.12)'
+            : 'rgba(42,75,61,0.15)',
+          backgroundColor: currentTheme === 'dark'
+            ? 'rgba(37,41,40,0.92)'
+            : 'rgba(255,255,255,0.92)',
+          shadowColor: currentTheme === 'dark' ? '#000' : '#2A4B3D',
+        },
+      ]}>
+        {state.routes.map((route, index) => {
+          const isFocused = state.index === index;
 
-            const onPress = () => {
-              const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
-              if (!isFocused && !event.defaultPrevented) {
-                navigation.navigate(route.name);
-              }
-            };
+          const onPress = () => {
+            const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
+            if (!isFocused && !event.defaultPrevented) {
+              navigation.navigate(route.name);
+            }
+          };
 
-            return (
-              <TouchableOpacity
-                key={route.key}
-                onPress={onPress}
-                activeOpacity={0.7}
-                style={styles.tabItem}
-              >
-                {isFocused && (
-                  <View style={[styles.activeIndicator, { backgroundColor: colors.primary }]} />
-                )}
-                <Text style={[styles.tabIcon, { opacity: isFocused ? 1 : 0.5 }]}>
-                  {TAB_ICONS[route.name]}
-                </Text>
-                <Text style={[
-                  styles.tabLabel,
-                  { color: isFocused ? colors.primary : colors.mutedText },
-                  isFocused && styles.tabLabelActive,
-                ]}>
-                  {TAB_LABELS[route.name]}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-      </BlurView>
+          return (
+            <TouchableOpacity
+              key={route.key}
+              onPress={onPress}
+              activeOpacity={0.7}
+              style={styles.tabItem}
+            >
+              {isFocused && (
+                <View style={[styles.activeIndicator, { backgroundColor: colors.primary }]} />
+              )}
+              <Text style={[styles.tabIcon, { opacity: isFocused ? 1 : 0.5 }]}>
+                {TAB_ICONS[route.name]}
+              </Text>
+              <Text style={[
+                styles.tabLabel,
+                { color: isFocused ? colors.primary : colors.mutedText },
+                isFocused && styles.tabLabelActive,
+              ]}>
+                {TAB_LABELS[route.name]}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
     </View>
   );
 }
 
 export function AppNavigator() {
-  const currentTheme = usePreferencesStore((s) => s.currentTheme);
-
   return (
     <NavigationContainer>
       <Tab.Navigator
@@ -111,12 +103,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 20,
     right: 20,
-    alignItems: 'center',
-  },
-  blurContainer: {
-    width: '100%',
-    borderRadius: 28,
-    overflow: 'hidden',
   },
   tabBarInner: {
     flexDirection: 'row',
@@ -124,6 +110,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     paddingVertical: 10,
     paddingHorizontal: 8,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.12,
+    shadowRadius: 24,
+    elevation: 12,
   },
   tabItem: {
     flex: 1,
