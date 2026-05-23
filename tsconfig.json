@@ -2,7 +2,9 @@
   "compilerOptions": {
     "target": "ES2022",
     "module": "commonjs",
-    "lib": ["ES2022"],
+    "lib": [
+      "ES2022"
+    ],
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -11,5 +13,6 @@
     "emitDecoratorMetadata": true,
     "declaration": true,
     "sourceMap": true
-  }
+  },
+  "extends": "expo/tsconfig.base"
 }

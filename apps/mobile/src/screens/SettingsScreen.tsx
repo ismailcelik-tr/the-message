@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, ScrollView, Switch, TouchableOpacity, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import i18n from '../i18n';
 import { usePreferencesStore } from '../store/preferences.store';
@@ -16,6 +17,7 @@ export function SettingsScreen() {
   const { t } = useTranslation();
   const { currentTheme, toggleTheme, preferences, setPreferences, setLocale } = usePreferencesStore();
   const colors = COLORS[currentTheme];
+  const insets = useSafeAreaInsets();
 
   const changeLocale = (locale: SupportedLocale) => {
     i18n.changeLanguage(locale);
@@ -23,7 +25,10 @@ export function SettingsScreen() {
   };
 
   return (
-    <ScrollView style={{ backgroundColor: colors.background }} contentContainerStyle={styles.scroll}>
+    <ScrollView
+      style={{ backgroundColor: colors.background }}
+      contentContainerStyle={[styles.scroll, { paddingTop: insets.top + 16 }]}
+    >
       <Text style={[styles.title, { color: colors.text }]}>{t('settings.title')}</Text>
 
       {/* Notifications */}
@@ -124,7 +129,7 @@ export function SettingsScreen() {
 }
 
 const styles = StyleSheet.create({
-  scroll: { padding: 20, paddingBottom: 40 },
+  scroll: { padding: 20, paddingBottom: 120, paddingTop: 20 },
   title: { fontSize: 26, fontWeight: '300', marginBottom: 16, letterSpacing: -0.5 },
   card: { borderRadius: 20, borderWidth: 1, overflow: 'hidden', marginBottom: 8 },
   row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16, borderBottomWidth: 1 },

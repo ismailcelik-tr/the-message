@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, ScrollView, Switch, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { usePreferencesStore } from '../store/preferences.store';
 import { COLORS } from '../theme/colors';
@@ -17,9 +18,13 @@ export function FocusScreen() {
   const { t } = useTranslation();
   const { currentTheme, preferences, toggleCategory } = usePreferencesStore();
   const colors = COLORS[currentTheme];
+  const insets = useSafeAreaInsets();
 
   return (
-    <ScrollView style={{ backgroundColor: colors.background }} contentContainerStyle={styles.scroll}>
+    <ScrollView
+      style={{ backgroundColor: colors.background }}
+      contentContainerStyle={[styles.scroll, { paddingTop: insets.top + 16 }]}
+    >
       <Text style={[styles.title, { color: colors.text }]}>{t('focus.title')}</Text>
       <Text style={[styles.subtitle, { color: colors.mutedText }]}>{t('focus.subtitle')}</Text>
 
@@ -51,7 +56,7 @@ export function FocusScreen() {
 }
 
 const styles = StyleSheet.create({
-  scroll: { padding: 20, paddingBottom: 40 },
+  scroll: { padding: 20, paddingBottom: 120, paddingTop: 20 },
   title: { fontSize: 26, fontWeight: '300', marginBottom: 6, letterSpacing: -0.5 },
   subtitle: { fontSize: 14, marginBottom: 20 },
   card: { borderRadius: 20, borderWidth: 1, overflow: 'hidden' },

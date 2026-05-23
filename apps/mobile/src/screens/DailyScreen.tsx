@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { usePreferencesStore } from '../store/preferences.store';
@@ -11,6 +12,8 @@ export function DailyScreen() {
   const currentTheme = usePreferencesStore((s) => s.currentTheme);
   const locale = usePreferencesStore((s) => s.preferences.locale);
   const colors = COLORS[currentTheme];
+
+  const insets = useSafeAreaInsets();
 
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ['daily-content', locale],
@@ -24,7 +27,7 @@ export function DailyScreen() {
 
   if (isLoading) {
     return (
-      <View style={[styles.centered, { backgroundColor: colors.background }]}>
+      <View style={[styles.centered, { backgroundColor: colors.background, paddingTop: insets.top }]}>
         <ActivityIndicator size="large" color={colors.primary} />
         <Text style={[styles.loadingText, { color: colors.mutedText }]}>{t('daily.loading')}</Text>
       </View>
@@ -33,7 +36,7 @@ export function DailyScreen() {
 
   if (isError || !data) {
     return (
-      <View style={[styles.centered, { backgroundColor: colors.background }]}>
+      <View style={[styles.centered, { backgroundColor: colors.background, paddingTop: insets.top }]}>
         <Text style={[styles.errorText, { color: colors.mutedText }]}>{t('daily.error')}</Text>
         <TouchableOpacity style={[styles.retryButton, { backgroundColor: colors.primary }]} onPress={() => refetch()}>
           <Text style={styles.retryText}>{t('daily.retry')}</Text>
@@ -45,7 +48,7 @@ export function DailyScreen() {
   return (
     <ScrollView
       style={{ backgroundColor: colors.background }}
-      contentContainerStyle={styles.scroll}
+      contentContainerStyle={[styles.scroll, { paddingTop: insets.top + 16 }]}
     >
       <Text style={[styles.sectionTitle, { color: colors.text }]}>{t('daily.title')}</Text>
 
@@ -75,7 +78,7 @@ const styles = StyleSheet.create({
   errorText: { fontSize: 15, textAlign: 'center', marginBottom: 16 },
   retryButton: { paddingHorizontal: 24, paddingVertical: 12, borderRadius: 20 },
   retryText: { color: '#FFF', fontWeight: '600' },
-  scroll: { padding: 20, paddingBottom: 40 },
+  scroll: { padding: 20, paddingBottom: 120, paddingTop: 20 },
   sectionTitle: { fontSize: 26, fontWeight: '300', marginBottom: 16, letterSpacing: -0.5 },
   messageCard: {
     borderRadius: 24, padding: 28, borderWidth: 1,
