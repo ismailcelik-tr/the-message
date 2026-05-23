@@ -19,7 +19,7 @@ const TAB_ICONS: Record<string, string> = {
   Settings: '⚙️',
 };
 
-function GlassTabBar({ state, navigation }: BottomTabBarProps) {
+function PillTabBar({ state, navigation }: BottomTabBarProps) {
   const { t } = useTranslation();
   const currentTheme = usePreferencesStore((s) => s.currentTheme);
   const colors = COLORS[currentTheme];
@@ -32,53 +32,52 @@ function GlassTabBar({ state, navigation }: BottomTabBarProps) {
   };
 
   return (
-    <View style={[styles.tabBarWrapper, { bottom: insets.bottom + 12 }]}>
-      <View style={[
-        styles.tabBarInner,
-        {
-          borderColor: currentTheme === 'dark'
-            ? 'rgba(255,255,255,0.12)'
-            : 'rgba(42,75,61,0.15)',
-          backgroundColor: currentTheme === 'dark'
-            ? 'rgba(37,41,40,0.92)'
-            : 'rgba(255,255,255,0.92)',
-          shadowColor: currentTheme === 'dark' ? '#000' : '#2A4B3D',
-        },
-      ]}>
-        {state.routes.map((route, index) => {
-          const isFocused = state.index === index;
+    <View style={[
+      styles.wrapper,
+      {
+        bottom: insets.bottom + 12,
+        backgroundColor: currentTheme === 'dark'
+          ? 'rgba(37,41,40,0.96)'
+          : 'rgba(255,255,255,0.96)',
+        borderColor: currentTheme === 'dark'
+          ? 'rgba(255,255,255,0.08)'
+          : 'rgba(42,75,61,0.12)',
+        shadowColor: currentTheme === 'dark' ? '#000' : '#2A4B3D',
+      },
+    ]}>
+      {state.routes.map((route, index) => {
+        const isFocused = state.index === index;
 
-          const onPress = () => {
-            const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
-            if (!isFocused && !event.defaultPrevented) {
-              navigation.navigate(route.name);
-            }
-          };
+        const onPress = () => {
+          const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
+          if (!isFocused && !event.defaultPrevented) {
+            navigation.navigate(route.name);
+          }
+        };
 
-          return (
-            <TouchableOpacity
-              key={route.key}
-              onPress={onPress}
-              activeOpacity={0.7}
-              style={styles.tabItem}
-            >
-              {isFocused && (
-                <View style={[styles.activeIndicator, { backgroundColor: colors.primary }]} />
-              )}
-              <Text style={[styles.tabIcon, { opacity: isFocused ? 1 : 0.5 }]}>
-                {TAB_ICONS[route.name]}
-              </Text>
-              <Text style={[
-                styles.tabLabel,
-                { color: isFocused ? colors.primary : colors.mutedText },
-                isFocused && styles.tabLabelActive,
-              ]}>
-                {TAB_LABELS[route.name]}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
-      </View>
+        return (
+          <TouchableOpacity
+            key={route.key}
+            onPress={onPress}
+            activeOpacity={0.8}
+            style={styles.tabItem}
+          >
+            {isFocused ? (
+              <View style={[styles.pill, { backgroundColor: colors.primary }]}>
+                <Text style={styles.pillIcon}>{TAB_ICONS[route.name]}</Text>
+                <Text style={styles.pillLabel}>{TAB_LABELS[route.name]}</Text>
+              </View>
+            ) : (
+              <View style={styles.inactiveItem}>
+                <Text style={[styles.inactiveIcon]}>{TAB_ICONS[route.name]}</Text>
+                <Text style={[styles.inactiveLabel, { color: colors.mutedText }]}>
+                  {TAB_LABELS[route.name]}
+                </Text>
+              </View>
+            )}
+          </TouchableOpacity>
+        );
+      })}
     </View>
   );
 }
@@ -87,7 +86,7 @@ export function AppNavigator() {
   return (
     <NavigationContainer>
       <Tab.Navigator
-        tabBar={(props) => <GlassTabBar {...props} />}
+        tabBar={(props) => <PillTabBar {...props} />}
         screenOptions={{ headerShown: false }}
       >
         <Tab.Screen name="Daily" component={DailyScreen} />
@@ -99,45 +98,54 @@ export function AppNavigator() {
 }
 
 const styles = StyleSheet.create({
-  tabBarWrapper: {
+  wrapper: {
     position: 'absolute',
     left: 20,
     right: 20,
-  },
-  tabBarInner: {
     flexDirection: 'row',
-    borderRadius: 28,
+    alignItems: 'center',
+    borderRadius: 32,
     borderWidth: 1,
-    paddingVertical: 10,
+    paddingVertical: 8,
     paddingHorizontal: 8,
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.12,
-    shadowRadius: 24,
-    elevation: 12,
+    shadowOpacity: 0.1,
+    shadowRadius: 20,
+    elevation: 10,
   },
   tabItem: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 4,
-    position: 'relative',
   },
-  activeIndicator: {
-    position: 'absolute',
-    top: -10,
-    width: 28,
-    height: 3,
-    borderRadius: 2,
+  pill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 24,
+    gap: 6,
   },
-  tabIcon: {
-    fontSize: 20,
-    marginBottom: 3,
+  pillIcon: {
+    fontSize: 16,
   },
-  tabLabel: {
-    fontSize: 11,
-    fontWeight: '500',
-  },
-  tabLabelActive: {
+  pillLabel: {
+    fontSize: 13,
     fontWeight: '700',
+    color: '#FFFFFF',
+  },
+  inactiveItem: {
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 8,
+    gap: 2,
+  },
+  inactiveIcon: {
+    fontSize: 20,
+    opacity: 0.45,
+  },
+  inactiveLabel: {
+    fontSize: 10,
+    fontWeight: '500',
+    opacity: 0.6,
   },
 });
