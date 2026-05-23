@@ -4,8 +4,8 @@ export default {
     subtitle: 'THE MESSAGE',
     title: 'Huzura Davet',
     description1: 'Gün boyu kalbini dinlendirecek, sana umut, amaç, kulluk bilinci ve manevi farkındalık kazandıracak küçük hatırlatıcılar.',
-    description2: 'Yargılamayan, bunaltmayan, modern ve sakin bir yol arkadaşlığı.',
-    cta: 'Huzurla Başla',
+    description2: 'Yargılamayan, bunaltmayan, sakin bir yol arkadaşlığı.',
+    cta: 'Haydi Bismillah! 😊',
   },
   tabs: {
     daily: 'Günün İçeriği',
@@ -58,5 +58,14 @@ export default {
     themeDark: 'Koyu',
     themeSystem: 'Sistem',
     language: 'Dil',
+    notificationTimes: 'Bildirim Saatleri',
+    notificationTimesDesc: 'Her bildirimin saatini özelleştir',
+    slotLabels: {
+      morning: 'Sabah',
+      midMorning: 'Kuşluk',
+      noon: 'Öğle',
+      afternoon: 'İkindi',
+      evening: 'Akşam',
+    },
   },
 } as const;

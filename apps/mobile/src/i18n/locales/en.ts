@@ -4,8 +4,8 @@ export default {
     subtitle: 'THE MESSAGE',
     title: 'An Invitation to Peace',
     description1: 'Small, gentle reminders throughout your day — nurturing hope, purpose, worship, and spiritual awareness.',
-    description2: 'A calm, modern companion. Non-judgmental. Never overwhelming.',
-    cta: 'Begin with Peace',
+    description2: 'A calm companion. Non-judgmental. Never overwhelming.',
+    cta: "Let's go, Bismillah! 😊",
   },
   tabs: {
     daily: "Daily Content",
@@ -58,5 +58,14 @@ export default {
     themeDark: 'Dark',
     themeSystem: 'System',
     language: 'Language',
+    notificationTimes: 'Notification Times',
+    notificationTimesDesc: 'Customize the time of each notification',
+    slotLabels: {
+      morning: 'Morning',
+      midMorning: 'Mid-Morning',
+      noon: 'Noon',
+      afternoon: 'Afternoon',
+      evening: 'Evening',
+    },
   },
 } as const;

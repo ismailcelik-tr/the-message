@@ -6,6 +6,7 @@ import i18n from '../i18n';
 import { usePreferencesStore } from '../store/preferences.store';
 import { COLORS } from '../theme/colors';
 import { NotificationFrequency, SupportedLocale } from '@the-message/shared';
+import { TimePickerRow } from '../components/TimePickerRow';
 
 const FREQUENCIES: Array<{ key: NotificationFrequency; labelKey: string; detailKey: string }> = [
   { key: 'low', labelKey: 'settings.frequencyLow', detailKey: 'settings.frequencyLowDetail' },
@@ -13,9 +14,17 @@ const FREQUENCIES: Array<{ key: NotificationFrequency; labelKey: string; detailK
   { key: 'high', labelKey: 'settings.frequencyHigh', detailKey: 'settings.frequencyHighDetail' },
 ];
 
+const SLOT_LABEL_KEYS: Record<string, string> = {
+  morning: 'settings.slotLabels.morning',
+  midMorning: 'settings.slotLabels.midMorning',
+  noon: 'settings.slotLabels.noon',
+  afternoon: 'settings.slotLabels.afternoon',
+  evening: 'settings.slotLabels.evening',
+};
+
 export function SettingsScreen() {
   const { t } = useTranslation();
-  const { currentTheme, toggleTheme, preferences, setPreferences, setLocale } = usePreferencesStore();
+  const { currentTheme, toggleTheme, preferences, setPreferences, setLocale, updateSlotTime } = usePreferencesStore();
   const colors = COLORS[currentTheme];
   const insets = useSafeAreaInsets();
 
@@ -24,6 +33,8 @@ export function SettingsScreen() {
     setLocale(locale);
   };
 
+  const currentSlots = preferences.notificationSchedule[preferences.notificationFrequency];
+
   return (
     <ScrollView
       style={{ backgroundColor: colors.background }}
@@ -31,7 +42,7 @@ export function SettingsScreen() {
     >
       <Text style={[styles.title, { color: colors.text }]}>{t('settings.title')}</Text>
 
-      {/* Notifications */}
+      {/* Notifications toggle */}
       <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border, marginBottom: 16 }]}>
         <View style={[styles.row, styles.lastRow]}>
           <View style={styles.textContainer}>
@@ -47,9 +58,9 @@ export function SettingsScreen() {
         </View>
       </View>
 
-      {/* Frequency */}
       {preferences.notificationEnabled && (
         <>
+          {/* Frequency selector */}
           <Text style={[styles.groupHeader, { color: colors.secondary }]}>{t('settings.frequency')}</Text>
           <View style={[styles.frequencyRow, { backgroundColor: colors.card, borderColor: colors.border }]}>
             {FREQUENCIES.map((freq) => (
@@ -69,8 +80,24 @@ export function SettingsScreen() {
             ))}
           </View>
 
+          {/* Notification times */}
+          <Text style={[styles.groupHeader, { color: colors.secondary }]}>{t('settings.notificationTimes')}</Text>
+          <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
+            {currentSlots.map((slot, index) => (
+              <TimePickerRow
+                key={`${preferences.notificationFrequency}-${index}`}
+                label={t(SLOT_LABEL_KEYS[slot.label] as never)}
+                time={slot.time}
+                theme={currentTheme}
+                onConfirm={(time) => updateSlotTime(preferences.notificationFrequency, index, time)}
+              />
+            ))}
+            {/* Remove bottom border on last row */}
+            <View style={styles.cardBottomFix} />
+          </View>
+
           {/* Silent Hours */}
-          <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border, marginTop: 16 }]}>
+          <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border, marginTop: 8 }]}>
             <View style={[styles.row, { borderBottomColor: colors.border }, !preferences.silentHours.enabled && styles.lastRow]}>
               <View style={styles.textContainer}>
                 <Text style={[styles.label, { color: colors.text }]}>{t('settings.silentHours')}</Text>
@@ -132,6 +159,7 @@ const styles = StyleSheet.create({
   scroll: { padding: 20, paddingBottom: 120, paddingTop: 20 },
   title: { fontSize: 26, fontWeight: '300', marginBottom: 16, letterSpacing: -0.5 },
   card: { borderRadius: 20, borderWidth: 1, overflow: 'hidden', marginBottom: 8 },
+  cardBottomFix: { height: 0 },
   row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16, borderBottomWidth: 1 },
   lastRow: { borderBottomWidth: 0 },
   textContainer: { flex: 1, paddingRight: 16 },

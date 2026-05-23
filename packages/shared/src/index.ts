@@ -23,10 +23,19 @@ export interface CategoryPreferences {
   dhikr: boolean;
 }
 
+export interface NotificationSlot {
+  label: string; // e.g. 'morning', 'noon'
+  time: string;  // HH:MM format
+}
+
+// low=1 slot, medium=3 slots, high=5 slots
+export type NotificationSchedule = Record<NotificationFrequency, NotificationSlot[]>;
+
 export interface UserPreferences {
   theme: ThemeType;
   notificationEnabled: boolean;
   notificationFrequency: NotificationFrequency;
+  notificationSchedule: NotificationSchedule;
   categoryPreferences: CategoryPreferences;
   silentHours: SilentHours;
   locale: SupportedLocale;
