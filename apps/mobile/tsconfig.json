@@ -1,12 +1,16 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "expo/tsconfig.base",
   "compilerOptions": {
+    "strict": true,
     "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
     "jsx": "react-jsx",
-    "lib": ["dom", "esnext"],
-    "moduleResolution": "node",
     "noEmit": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "paths": {
+      "@the-message/shared": ["../../packages/shared/src/index.ts"]
+    }
   },
   "exclude": ["node_modules", "babel.config.js"]
 }

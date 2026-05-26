@@ -13,6 +13,5 @@
     "emitDecoratorMetadata": true,
     "declaration": true,
     "sourceMap": true
-  },
-  "extends": "expo/tsconfig.base"
+  }
 }

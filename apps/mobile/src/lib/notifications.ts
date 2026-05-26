@@ -6,6 +6,8 @@ import { UserPreferences, DailyBundle, SilentHours } from '@the-message/shared';
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
+    shouldShowBanner: true,
+    shouldShowList: true,
     shouldPlaySound: true,
     shouldSetBadge: false,
   }),
@@ -109,7 +111,7 @@ export async function rescheduleNotifications(
 
       await Notifications.scheduleNotificationAsync({
         content: { title, body, sound: 'default' },
-        trigger: { date: trigger },
+        trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: trigger },
       });
     }
   }
