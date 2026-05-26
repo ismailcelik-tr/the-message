@@ -19,6 +19,7 @@
     "expo": "~51.0.8",
     "expo-crypto": "~13.0.2",
     "expo-localization": "~15.0.3",
+    "expo-notifications": "~0.28.19",
     "expo-secure-store": "~13.0.2",
     "expo-status-bar": "~1.12.1",
     "i18next": "^26.2.0",
