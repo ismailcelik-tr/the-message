@@ -1,4 +1,4 @@
-import { ApiResponse, ContentItem, DailyBundle, SupportedLocale } from '@the-message/shared';
+import { ApiResponse, CategoryPreferences, ContentItem, DailyBundle, SupportedLocale } from '@the-message/shared';
 import { apiFetch } from './client';
 
 export async function fetchDailyContent(locale: SupportedLocale): Promise<ContentItem | null> {
@@ -6,8 +6,21 @@ export async function fetchDailyContent(locale: SupportedLocale): Promise<Conten
   return res.data ?? null;
 }
 
-export async function fetchDailyBundle(locale: SupportedLocale): Promise<DailyBundle> {
-  const res = await apiFetch<ApiResponse<DailyBundle>>(`/content/daily-bundle?locale=${locale}`);
+export async function fetchDailyBundle(
+  locale: SupportedLocale,
+  categoryPreferences?: CategoryPreferences,
+): Promise<DailyBundle> {
+  let url = `/content/daily-bundle?locale=${locale}`;
+
+  if (categoryPreferences) {
+    const active = (Object.keys(categoryPreferences) as (keyof CategoryPreferences)[])
+      .filter((k) => categoryPreferences[k]);
+    if (active.length > 0) {
+      url += `&categories=${active.join(',')}`;
+    }
+  }
+
+  const res = await apiFetch<ApiResponse<DailyBundle>>(url);
   if (!res.data) throw new Error('Empty bundle response');
   return res.data;
 }

@@ -34,11 +34,12 @@ export function DailyScreen() {
   const [refreshing, setRefreshing] = useState(false);
 
   const preferences = usePreferencesStore((s) => s.preferences);
+  const categoryPreferences = preferences.categoryPreferences;
   const todayStr = new Date().toISOString().split('T')[0];
 
   const { data: bundle, isLoading, isError, refetch } = useQuery({
-    queryKey: ['daily-bundle', locale],
-    queryFn: () => fetchDailyBundle(locale),
+    queryKey: ['daily-bundle', locale, categoryPreferences],
+    queryFn: () => fetchDailyBundle(locale, categoryPreferences),
   });
 
   // Load existing bookmarks for logged-in users

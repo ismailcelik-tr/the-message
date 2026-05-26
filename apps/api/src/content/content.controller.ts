@@ -17,8 +17,12 @@ export class ContentController {
   @Get('daily-bundle')
   async getDailyBundle(
     @Query('locale') locale: SupportedLocale = 'tr',
+    @Query('categories') categoriesParam?: string,
   ): Promise<ApiResponse<DailyBundle>> {
-    const data = await this.contentService.findDailyBundle(locale);
+    const activeCategories = categoriesParam
+      ? (categoriesParam.split(',').filter(Boolean) as MessageCategory[])
+      : undefined;
+    const data = await this.contentService.findDailyBundle(locale, activeCategories);
     return { success: true, data };
   }
 

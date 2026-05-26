@@ -24,15 +24,25 @@ export class ContentService {
     return this.toContentItem(item);
   }
 
-  async findDailyBundle(locale: SupportedLocale = 'tr'): Promise<DailyBundle> {
+  async findDailyBundle(
+    locale: SupportedLocale = 'tr',
+    activeCategories?: MessageCategory[],
+  ): Promise<DailyBundle> {
     // Deterministic daily selection: use day-of-year as seed offset
     const dayOfYear = Math.floor(
       (Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000,
     );
 
     const pick = async (type: string): Promise<ContentItem> => {
-      const items = await this.contentRepository.find({ where: { type: type as any, isActive: true } });
+      let items = await this.contentRepository.find({ where: { type: type as any, isActive: true } });
       if (!items.length) throw new NotFoundException(`No active ${type} content found`);
+
+      // Filter by active categories; fall back to all items if none match
+      if (activeCategories && activeCategories.length > 0) {
+        const filtered = items.filter((item) => activeCategories.includes(item.category));
+        if (filtered.length > 0) items = filtered;
+      }
+
       return this.toContentItem(items[dayOfYear % items.length]);
     };
 
