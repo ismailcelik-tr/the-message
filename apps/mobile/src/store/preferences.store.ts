@@ -9,6 +9,7 @@ interface PreferencesState {
   currentTheme: 'light' | 'dark';
   isOnboarded: boolean;
   setPreferences: (update: Partial<UserPreferences>) => void;
+  setCurrentTheme: (theme: 'light' | 'dark') => void;
   toggleTheme: () => void;
   toggleCategory: (key: keyof UserPreferences['categoryPreferences']) => void;
   setLocale: (locale: SupportedLocale) => void;
@@ -69,6 +70,8 @@ export const usePreferencesStore = create<PreferencesState>()(
           }
           return merged;
         }),
+
+      setCurrentTheme: (theme) => set({ currentTheme: theme }),
 
       toggleTheme: () =>
         set((state) => {

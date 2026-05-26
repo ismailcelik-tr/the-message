@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { useColorScheme } from 'react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
@@ -17,10 +18,18 @@ import { fetchDailyBundle } from './src/api/content.api';
 const queryClient = new QueryClient();
 
 function Root() {
-  const { isOnboarded, setOnboarded, currentTheme, preferences } = usePreferencesStore();
+  const { isOnboarded, setOnboarded, currentTheme, preferences, setCurrentTheme } = usePreferencesStore();
   const { session, isLoading, setSession } = useAuthStore();
   const colors = COLORS[currentTheme];
+  const deviceColorScheme = useColorScheme();
   usePreferencesSync();
+
+  // Sync currentTheme with device when preference is 'system'
+  useEffect(() => {
+    if (preferences.theme === 'system') {
+      setCurrentTheme(deviceColorScheme === 'dark' ? 'dark' : 'light');
+    }
+  }, [deviceColorScheme, preferences.theme]);
 
   // Track previous prefs to detect relevant changes for rescheduling
   const prevPrefsRef = useRef(preferences);
