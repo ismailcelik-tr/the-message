@@ -18,10 +18,12 @@ export class ContentService {
   async findDailyBundle(
     locale: SupportedLocale = 'tr',
     activeCategories?: MessageCategory[],
+    date?: string,
   ): Promise<DailyBundle> {
-    const dayOfYear = Math.floor(
-      (Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000,
-    );
+    // Absolute day number since Unix epoch — unique per calendar day, stable across years
+    const seed = date
+      ? Math.floor(new Date(date).getTime() / 86400000)
+      : Math.floor(Date.now() / 86400000);
 
     const pick = async (type: string): Promise<ContentItem> => {
       const { data, error } = await this.db
@@ -38,7 +40,7 @@ export class ContentService {
         if (filtered.length > 0) items = filtered;
       }
 
-      return this.toContentItem(items[dayOfYear % items.length]);
+      return this.toContentItem(items[seed % items.length]);
     };
 
     const [esma, verse, hadith, prayer, worship] = await Promise.all([

@@ -10,11 +10,12 @@ export class ContentController {
   async getDailyBundle(
     @Query('locale') locale: SupportedLocale = 'tr',
     @Query('categories') categoriesParam?: string,
+    @Query('date') date?: string,
   ): Promise<ApiResponse<DailyBundle>> {
     const activeCategories = categoriesParam
       ? (categoriesParam.split(',').filter(Boolean) as MessageCategory[])
       : undefined;
-    const data = await this.contentService.findDailyBundle(locale, activeCategories);
+    const data = await this.contentService.findDailyBundle(locale, activeCategories, date);
     return { success: true, data };
   }
 

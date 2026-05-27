@@ -81,7 +81,8 @@ function Root() {
     if (!notifChanged) return;
     if (!isOnboarded) return;
 
-    fetchDailyBundle(preferences.locale)
+    const today = new Date().toISOString().split('T')[0];
+    fetchDailyBundle(preferences.locale, preferences.categoryPreferences, today)
       .then((bundle) => rescheduleNotifications(preferences, bundle))
       .catch(() => {
         // Network unavailable — reschedule silently on next open

@@ -1,6 +1,7 @@
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 import { UserPreferences, DailyBundle, SilentHours } from '@the-message/shared';
+import { fetchDailyBundle } from '../api/content.api';
 
 // Show notification as banner + sound when app is in foreground
 Notifications.setNotificationHandler({
@@ -51,13 +52,13 @@ function isInSilentWindow(timeHHMM: string, silent: SilentHours): boolean {
 
 /**
  * Cancels all pending scheduled notifications and re-schedules based on current
- * preferences. Call this on app start and whenever preferences change.
+ * preferences. Fetches a separate bundle for each day so content rotates daily.
  *
  * Only schedules for the next 14 days to stay within OS limits (~64 on iOS).
  */
 export async function rescheduleNotifications(
   prefs: UserPreferences,
-  bundle: DailyBundle,
+  todayBundle: DailyBundle,
 ): Promise<void> {
   await Notifications.cancelAllScheduledNotificationsAsync();
 
@@ -68,8 +69,8 @@ export async function rescheduleNotifications(
 
   const slots = prefs.notificationSchedule[prefs.notificationFrequency];
   const now = new Date();
+  const locale = prefs.locale ?? 'tr';
 
-  // Map slot label → bundle card content
   const SLOT_CONTENT_MAP: Record<string, keyof DailyBundle> = {
     morning: 'verse',
     midMorning: 'esma',
@@ -86,25 +87,50 @@ export async function rescheduleNotifications(
     evening: 'Akşam',
   };
 
+  const SLOT_LABEL_EN: Record<string, string> = {
+    morning: 'Morning',
+    midMorning: 'Mid-Morning',
+    noon: 'Noon',
+    afternoon: 'Afternoon',
+    evening: 'Evening',
+  };
+
+  // Cache bundles per date string to avoid redundant API calls
+  const bundleCache = new Map<string, DailyBundle>();
+  bundleCache.set(now.toISOString().split('T')[0], todayBundle);
+
   for (let dayOffset = 0; dayOffset < 14; dayOffset++) {
+    const dayDate = new Date(now);
+    dayDate.setDate(now.getDate() + dayOffset);
+    const dateStr = dayDate.toISOString().split('T')[0];
+
+    let bundle = bundleCache.get(dateStr);
+    if (!bundle) {
+      try {
+        bundle = await fetchDailyBundle(locale, prefs.categoryPreferences, dateStr);
+        bundleCache.set(dateStr, bundle);
+      } catch {
+        bundle = todayBundle; // fallback to today's bundle on network error
+      }
+    }
+
     for (const slot of slots) {
       if (isInSilentWindow(slot.time, prefs.silentHours)) continue;
 
       const [hh, mm] = slot.time.split(':').map(Number);
-      const trigger = new Date(now);
-      trigger.setDate(now.getDate() + dayOffset);
+      const trigger = new Date(dayDate);
       trigger.setHours(hh, mm, 0, 0);
 
-      // Skip times already past today
       if (trigger <= now) continue;
 
       const cardKey = SLOT_CONTENT_MAP[slot.label] ?? 'verse';
       const item = bundle[cardKey];
-      const locale = prefs.locale ?? 'tr';
       const translation = item.translations[locale] ?? item.translations['tr'];
 
-      const slotLabel = SLOT_LABEL_TR[slot.label] ?? slot.label;
-      const title = `${slotLabel} — Çağrı`;
+      const slotLabel = locale === 'tr'
+        ? (SLOT_LABEL_TR[slot.label] ?? slot.label)
+        : (SLOT_LABEL_EN[slot.label] ?? slot.label);
+      const title = locale === 'tr' ? `${slotLabel} — Çağrı` : `${slotLabel} — The Message`;
       const rawContent = translation.content;
       const source = translation.source;
       const full = source ? `${rawContent} — ${source}` : rawContent;

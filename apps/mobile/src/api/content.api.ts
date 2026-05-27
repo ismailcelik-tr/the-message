@@ -9,6 +9,7 @@ export async function fetchDailyContent(locale: SupportedLocale): Promise<Conten
 export async function fetchDailyBundle(
   locale: SupportedLocale,
   categoryPreferences?: CategoryPreferences,
+  date?: string,
 ): Promise<DailyBundle> {
   let url = `/content/daily-bundle?locale=${locale}`;
 
@@ -18,6 +19,10 @@ export async function fetchDailyBundle(
     if (active.length > 0) {
       url += `&categories=${active.join(',')}`;
     }
+  }
+
+  if (date) {
+    url += `&date=${date}`;
   }
 
   const res = await apiFetch<ApiResponse<DailyBundle>>(url);
