@@ -32,7 +32,9 @@
           "color": "#2A4B3D",
           "sounds": []
         }
-      ]
+      ],
+      "expo-web-browser",
+      "expo-apple-authentication"
     ]
   }
 }

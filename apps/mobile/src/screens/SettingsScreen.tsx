@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, ScrollView, Switch, TouchableOpacity, StyleSheet, Alert, Modal } from 'react-native';
+import { View, Text, ScrollView, Switch, TouchableOpacity, StyleSheet, Alert, Modal, TextInput, Linking, ActivityIndicator } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
+import Constants from 'expo-constants';
 import i18n from '../i18n';
 import { usePreferencesStore } from '../store/preferences.store';
 import { useAuthStore } from '../store/auth.store';
@@ -34,6 +35,35 @@ export function SettingsScreen() {
   const colors = COLORS[currentTheme];
   const insets = useSafeAreaInsets();
   const [showLogin, setShowLogin] = React.useState(false);
+  const [showFeedback, setShowFeedback] = React.useState(false);
+  const [feedbackMessage, setFeedbackMessage] = React.useState('');
+  const [feedbackEmail, setFeedbackEmail] = React.useState('');
+  const [feedbackLoading, setFeedbackLoading] = React.useState(false);
+
+  const appVersion = Constants.expoConfig?.version ?? '1.0.0';
+
+  const handleSendFeedback = async () => {
+    if (!feedbackMessage.trim()) return;
+    setFeedbackLoading(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const { error } = await supabase.from('app_feedback').insert({
+        message: feedbackMessage.trim(),
+        email: feedbackEmail.trim() || null,
+        user_id: session?.user?.id ?? null,
+        locale: preferences.locale,
+      });
+      if (error) throw error;
+      setFeedbackMessage('');
+      setFeedbackEmail('');
+      setShowFeedback(false);
+      Alert.alert(t('settings.feedbackSuccess' as never));
+    } catch {
+      Alert.alert(t('settings.feedbackError' as never));
+    } finally {
+      setFeedbackLoading(false);
+    }
+  };
 
   const changeLocale = (locale: SupportedLocale) => {
     i18n.changeLanguage(locale);
@@ -247,6 +277,83 @@ export function SettingsScreen() {
       </View>
 
 
+      {/* Hakkında */}
+      <Text style={[styles.groupHeader, { color: colors.secondary }]}>{t('settings.about' as never)}</Text>
+      <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
+        <TouchableOpacity
+          style={[styles.row, { borderBottomColor: colors.border }]}
+          onPress={() => setShowFeedback(true)}
+          activeOpacity={0.8}
+        >
+          <View style={styles.textContainer}>
+            <Text style={[styles.label, { color: colors.text }]}>{t('settings.feedback' as never)}</Text>
+            <Text style={[styles.desc, { color: colors.mutedText }]}>{t('settings.feedbackDesc' as never)}</Text>
+          </View>
+          <Text style={{ color: colors.secondary, fontSize: 16 }}>→</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.row, { borderBottomColor: colors.border }]}
+          onPress={() => Linking.openURL('https://cagriapp.com/privacy')}
+          activeOpacity={0.8}
+        >
+          <Text style={[styles.label, { color: colors.text }]}>{t('settings.privacyPolicy' as never)}</Text>
+          <Text style={{ color: colors.secondary, fontSize: 16 }}>↗</Text>
+        </TouchableOpacity>
+        <View style={[styles.row, styles.lastRow]}>
+          <Text style={[styles.label, { color: colors.text }]}>{t('settings.version' as never)}</Text>
+          <Text style={[styles.desc, { color: colors.mutedText }]}>{appVersion}</Text>
+        </View>
+      </View>
+
+      {/* Geri Bildirim Modal */}
+      <Modal visible={showFeedback} animationType="slide" presentationStyle="pageSheet">
+        <ScrollView
+          style={{ flex: 1, backgroundColor: colors.background }}
+          contentContainerStyle={{ padding: 24, paddingTop: 32 }}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+            <Text style={[styles.title, { color: colors.text, marginBottom: 0 }]}>{t('settings.feedback' as never)}</Text>
+            <TouchableOpacity onPress={() => setShowFeedback(false)} activeOpacity={0.7}>
+              <Text style={{ color: colors.mutedText, fontSize: 16 }}>{t('settings.cancel')}</Text>
+            </TouchableOpacity>
+          </View>
+          <TextInput
+            style={[styles.feedbackInput, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}
+            placeholder={t('settings.feedbackPlaceholder' as never)}
+            placeholderTextColor={colors.mutedText}
+            value={feedbackMessage}
+            onChangeText={setFeedbackMessage}
+            multiline
+            numberOfLines={6}
+            textAlignVertical="top"
+          />
+          <TextInput
+            style={[styles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text, marginTop: 12 }]}
+            placeholder={t('settings.feedbackEmailPlaceholder' as never)}
+            placeholderTextColor={colors.mutedText}
+            value={feedbackEmail}
+            onChangeText={setFeedbackEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
+          <Text style={[styles.desc, { color: colors.mutedText, marginTop: 6, marginBottom: 24 }]}>
+            {t('settings.feedbackEmail' as never)}
+          </Text>
+          <TouchableOpacity
+            style={[styles.submitBtn, { backgroundColor: feedbackMessage.trim() ? colors.primary : colors.border }]}
+            onPress={handleSendFeedback}
+            disabled={feedbackLoading || !feedbackMessage.trim()}
+            activeOpacity={0.8}
+          >
+            {feedbackLoading
+              ? <ActivityIndicator color="#FFF" />
+              : <Text style={styles.submitBtnText}>{t('settings.feedbackSubmit' as never)}</Text>
+            }
+          </TouchableOpacity>
+        </ScrollView>
+      </Modal>
+
       {/* Login modal (anonim kullanıcı için) */}
       <Modal visible={showLogin} animationType="slide" presentationStyle="pageSheet">
         <LoginScreen onComplete={() => setShowLogin(false)} />
@@ -272,4 +379,19 @@ const styles = StyleSheet.create({
   freqDetail: { fontSize: 10, marginTop: 2 },
   silentDetail: { padding: 14, borderTopWidth: 1, alignItems: 'center' },
   silentText: { fontSize: 13, fontWeight: '500' },
+  feedbackInput: {
+    borderWidth: 1, borderRadius: 14,
+    paddingVertical: 14, paddingHorizontal: 16,
+    fontSize: 15, minHeight: 140,
+  },
+  input: {
+    borderWidth: 1, borderRadius: 14,
+    paddingVertical: 14, paddingHorizontal: 16,
+    fontSize: 15,
+  },
+  submitBtn: {
+    height: 54, borderRadius: 27,
+    justifyContent: 'center', alignItems: 'center',
+  },
+  submitBtnText: { color: '#FFF', fontSize: 16, fontWeight: '600' },
 });

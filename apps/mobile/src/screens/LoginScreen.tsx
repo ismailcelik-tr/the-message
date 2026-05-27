@@ -6,10 +6,14 @@ import {
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
+import * as WebBrowser from 'expo-web-browser';
+import * as AppleAuthentication from 'expo-apple-authentication';
 import { usePreferencesStore } from '../store/preferences.store';
 import { useAuthStore } from '../store/auth.store';
 import { supabase } from '../lib/supabase';
 import { COLORS } from '../theme/colors';
+
+WebBrowser.maybeCompleteAuthSession();
 
 const googleIcon = require('../../assets/icons/google.png');
 const appleIcon = require('../../assets/icons/apple.png');
@@ -33,6 +37,62 @@ export function LoginScreen({ onComplete }: Props) {
   const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showResetSentModal, setShowResetSentModal] = useState(false);
+  const handleGoogle = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: 'cagri://login-callback',
+          skipBrowserRedirect: true,
+        },
+      });
+      if (error) throw error;
+      if (!data.url) throw new Error('No OAuth URL');
+
+      const result = await WebBrowser.openAuthSessionAsync(data.url, 'cagri://login-callback');
+      if (result.type === 'success' && result.url) {
+        const url = new URL(result.url);
+        const accessToken = url.searchParams.get('access_token');
+        const refreshToken = url.searchParams.get('refresh_token');
+        if (accessToken && refreshToken) {
+          const { error: sessionError } = await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
+          if (sessionError) throw sessionError;
+          onComplete();
+        }
+      }
+    } catch (e: any) {
+      Alert.alert(t('login.error'), e.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleApple = async () => {
+    setLoading(true);
+    try {
+      const credential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+      });
+      if (!credential.identityToken) throw new Error('No identity token from Apple');
+
+      const { error } = await supabase.auth.signInWithIdToken({
+        provider: 'apple',
+        token: credential.identityToken,
+      });
+      if (error) throw error;
+      onComplete();
+    } catch (e: any) {
+      if ((e as any).code === 'ERR_REQUEST_CANCELED') return;
+      Alert.alert(t('login.error'), e.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleAnonymous = async () => {
     setLoading(true);
     try {
@@ -130,21 +190,22 @@ export function LoginScreen({ onComplete }: Props) {
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={[styles.socialBtn, { backgroundColor: colors.card, borderColor: colors.border, opacity: 0.5 }]}
+                style={[styles.socialBtn, { backgroundColor: colors.card, borderColor: colors.border }]}
                 activeOpacity={0.8}
-                disabled
+                onPress={handleGoogle}
+                disabled={loading}
               >
                 <View style={styles.socialIconWrap}>
                   <Image source={googleIcon} style={styles.socialIconImg} resizeMode="contain" />
                 </View>
                 <Text style={[styles.socialLabel, { color: colors.text }]}>{t('login.continueGoogle')}</Text>
-                <Text style={[styles.comingSoon, { color: colors.mutedText }]}>{t('login.comingSoon')}</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={[styles.socialBtn, { backgroundColor: colors.card, borderColor: colors.border, opacity: 0.5 }]}
+                style={[styles.socialBtn, { backgroundColor: colors.card, borderColor: colors.border }]}
                 activeOpacity={0.8}
-                disabled
+                onPress={handleApple}
+                disabled={loading}
               >
                 <View style={styles.socialIconWrap}>
                   <Image
@@ -154,7 +215,6 @@ export function LoginScreen({ onComplete }: Props) {
                   />
                 </View>
                 <Text style={[styles.socialLabel, { color: colors.text }]}>{t('login.continueApple')}</Text>
-                <Text style={[styles.comingSoon, { color: colors.mutedText }]}>{t('login.comingSoon')}</Text>
               </TouchableOpacity>
 
               <TouchableOpacity onPress={handleAnonymous} disabled={loading} activeOpacity={0.7} style={styles.skipBtn}>
