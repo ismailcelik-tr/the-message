@@ -14,20 +14,7 @@ if (!pluginDir) {
   process.exit(0);
 }
 
-// Fix 1: downgrade kotlin("jvm") version from 2.1.20 to 1.9.24
-const buildFile = path.join(pluginDir, 'build.gradle.kts');
-if (fs.existsSync(buildFile)) {
-  let content = fs.readFileSync(buildFile, 'utf8');
-  if (content.includes('kotlin("jvm") version "2.1.20"')) {
-    content = content.replace('kotlin("jvm") version "2.1.20"', 'kotlin("jvm") version "1.9.24"');
-    fs.writeFileSync(buildFile, content);
-    console.log('[fix-expo-gradle-plugin] Patched build.gradle.kts: kotlin 2.1.20 -> 1.9.24');
-  } else {
-    console.log('[fix-expo-gradle-plugin] build.gradle.kts already patched, skipping');
-  }
-}
-
-// Fix 2: create missing settings.gradle.kts
+// Fix: create missing settings.gradle.kts
 const settingsFile = path.join(pluginDir, 'settings.gradle.kts');
 if (!fs.existsSync(settingsFile)) {
   fs.writeFileSync(settingsFile, 'rootProject.name = "expo-module-gradle-plugin"\n');
