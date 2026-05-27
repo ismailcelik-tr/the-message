@@ -83,6 +83,7 @@ react {
         /* Autolinking */
         autolinkLibrariesWithApp()
     }
+
 }
 
 /**
@@ -114,7 +115,7 @@ android {
         applicationId 'com.themessage.cagri'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
+        versionCode 16
         versionName "1.0.0"
     }
     signingConfigs {
@@ -169,6 +170,7 @@ android {
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
+    implementation project(':react-native-async-storage_async-storage')
 
     def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
     def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";

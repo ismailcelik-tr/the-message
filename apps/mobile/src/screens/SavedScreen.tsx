@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity,
-  StyleSheet, ActivityIndicator, Alert, RefreshControl,
+  StyleSheet, ActivityIndicator, RefreshControl,
 } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -13,6 +13,7 @@ import { supabase } from '../lib/supabase';
 import { removeBookmark } from '../lib/bookmarks';
 import { COLORS, ColorScheme } from '../theme/colors';
 import { FeedbackModal } from '../components/FeedbackModal';
+import { AppModal, AppModalButton } from '../components/AppModal';
 
 type IoniconsName = React.ComponentProps<typeof Ionicons>['name'];
 
@@ -111,6 +112,7 @@ export function SavedScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [feedbackItem, setFeedbackItem] = useState<ContentItem | null>(null);
+  const [modal, setModal] = useState<{ title?: string; message: string; buttons: AppModalButton[] } | null>(null);
 
   const load = useCallback(async () => {
     if (!user || isAnonymous) { setLoading(false); return; }
@@ -135,21 +137,22 @@ export function SavedScreen() {
 
   const handleRemove = useCallback((item: ContentItem) => {
     if (!user) return;
-    Alert.alert(
-      t('saved.removeTitle'),
-      t('saved.removeMessage'),
-      [
-        { text: t('settings.cancel'), style: 'cancel' },
+    setModal({
+      title: t('saved.removeTitle'),
+      message: t('saved.removeMessage'),
+      buttons: [
+        { text: t('settings.cancel'), onPress: () => setModal(null), variant: 'ghost' },
         {
           text: t('saved.remove'),
-          style: 'destructive',
+          variant: 'destructive',
           onPress: async () => {
+            setModal(null);
             await removeBookmark(user.id, item.id);
             setItems((prev) => prev.filter((i) => i.id !== item.id));
           },
         },
       ],
-    );
+    });
   }, [user, t]);
 
   if (loading) {
@@ -207,6 +210,16 @@ export function SavedScreen() {
           colors={colors}
           userId={user?.id}
           onClose={() => setFeedbackItem(null)}
+        />
+      )}
+
+      {modal && (
+        <AppModal
+          visible
+          title={modal.title}
+          message={modal.message}
+          buttons={modal.buttons}
+          colors={colors}
         />
       )}
 

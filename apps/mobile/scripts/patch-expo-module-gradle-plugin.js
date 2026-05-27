@@ -18,10 +18,55 @@ if (!pluginDir) {
 }
 
 const settingsFile = path.join(pluginDir, 'settings.gradle.kts');
+const buildFile = path.join(pluginDir, 'build.gradle.kts');
+const sourceFiles = [
+  path.join(pluginDir, 'src/main/kotlin/expo/modules/plugin/ExpoModulesGradlePlugin.kt'),
+  path.join(pluginDir, 'src/main/kotlin/expo/modules/plugin/ProjectConfiguration.kt'),
+  path.join(pluginDir, 'src/main/kotlin/expo/modules/plugin/gradle/ExpoModuleExtension.kt'),
+];
 
 if (!fs.existsSync(settingsFile)) {
   fs.writeFileSync(settingsFile, 'rootProject.name = "expo-module-gradle-plugin"\n');
   console.log('[patch] Created settings.gradle.kts for expo-module-gradle-plugin');
 } else {
   console.log('[patch] settings.gradle.kts already exists, skipping');
+}
+
+if (fs.existsSync(buildFile)) {
+  const contents = fs.readFileSync(buildFile, 'utf8');
+  let patched = contents.replace(
+    'kotlin("jvm") version "1.9.24"',
+    'kotlin("jvm") version "2.1.20"',
+  );
+
+  if (!patched.includes('implementation(gradleKotlinDsl())')) {
+    patched = patched.replace(
+      'dependencies {\n  implementation(gradleApi())',
+      'dependencies {\n  implementation(gradleApi())\n  implementation(gradleKotlinDsl())',
+    );
+  }
+
+  if (patched !== contents) {
+    fs.writeFileSync(buildFile, patched);
+    console.log('[patch] Updated expo-module-gradle-plugin build configuration');
+  } else {
+    console.log('[patch] expo-module-gradle-plugin build configuration already compatible');
+  }
+}
+
+for (const sourceFile of sourceFiles) {
+  if (!fs.existsSync(sourceFile)) {
+    continue;
+  }
+
+  const contents = fs.readFileSync(sourceFile, 'utf8');
+  const patched = contents.replaceAll(
+    'org.gradle.internal.extensions.core.extra',
+    'org.gradle.kotlin.dsl.extra',
+  );
+
+  if (patched !== contents) {
+    fs.writeFileSync(sourceFile, patched);
+    console.log(`[patch] Updated Gradle Kotlin DSL import in ${path.basename(sourceFile)}`);
+  }
 }

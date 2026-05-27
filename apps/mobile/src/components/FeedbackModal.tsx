@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   Modal, View, Text, TouchableOpacity, TextInput,
-  StyleSheet, ActivityIndicator, Alert, ScrollView,
+  StyleSheet, ActivityIndicator, ScrollView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
@@ -25,11 +25,13 @@ export function FeedbackModal({ visible, item, locale, colors, userId, onClose }
   const [selectedIssue, setSelectedIssue] = useState<FeedbackIssueType | null>(null);
   const [note, setNote] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [resultState, setResultState] = useState<'success' | 'error' | null>(null);
 
   const reset = () => {
     setSelectedIssue(null);
     setNote('');
     setSubmitting(false);
+    setResultState(null);
   };
 
   const handleClose = () => {
@@ -51,15 +53,11 @@ export function FeedbackModal({ visible, item, locale, colors, userId, onClose }
         },
         userId,
       );
-      reset();
-      onClose();
-      Alert.alert(
-        t('feedback.successTitle'),
-        t('feedback.successMessage'),
-      );
+      setSubmitting(false);
+      setResultState('success');
     } catch {
       setSubmitting(false);
-      Alert.alert(t('feedback.errorMessage'));
+      setResultState('error');
     }
   };
 
@@ -83,7 +81,33 @@ export function FeedbackModal({ visible, item, locale, colors, userId, onClose }
           </TouchableOpacity>
         </View>
 
-        <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
+        {/* Success / Error state */}
+        {resultState && (
+          <View style={styles.resultWrap}>
+            <Ionicons
+              name={resultState === 'success' ? 'checkmark-circle' : 'alert-circle'}
+              size={52}
+              color={resultState === 'success' ? colors.primary : '#E05252'}
+            />
+            <Text style={[styles.resultTitle, { color: colors.text }]}>
+              {resultState === 'success' ? t('feedback.successTitle') : t('login.error')}
+            </Text>
+            <Text style={[styles.resultBody, { color: colors.mutedText }]}>
+              {resultState === 'success' ? t('feedback.successMessage') : t('feedback.errorMessage')}
+            </Text>
+            <TouchableOpacity
+              style={[styles.resultBtn, { backgroundColor: colors.primary }]}
+              onPress={resultState === 'success' ? handleClose : () => setResultState(null)}
+              activeOpacity={0.85}
+            >
+              <Text style={styles.resultBtnText}>
+                {resultState === 'success' ? t('feedback.cancel') : t('feedback.submit')}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {!resultState && <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
           <Text style={[styles.subtitle, { color: colors.mutedText }]}>
             {t('feedback.modalSubtitle')}
           </Text>
@@ -146,10 +170,10 @@ export function FeedbackModal({ visible, item, locale, colors, userId, onClose }
             maxLength={500}
             textAlignVertical="top"
           />
-        </ScrollView>
+        </ScrollView>}
 
         {/* Footer */}
-        <View style={[styles.footer, { borderTopColor: colors.border, backgroundColor: colors.background }]}>
+        {!resultState && <View style={[styles.footer, { borderTopColor: colors.border, backgroundColor: colors.background }]}>
           <TouchableOpacity
             style={[styles.cancelBtn, { borderColor: colors.border }]}
             onPress={handleClose}
@@ -172,7 +196,7 @@ export function FeedbackModal({ visible, item, locale, colors, userId, onClose }
               : <Text style={styles.submitText}>{t('feedback.submit')}</Text>
             }
           </TouchableOpacity>
-        </View>
+        </View>}
       </View>
     </Modal>
   );
@@ -228,4 +252,16 @@ const styles = StyleSheet.create({
   },
   submitBtnDisabled: { opacity: 0.4 },
   submitText: { color: '#FFF', fontSize: 15, fontWeight: '700' },
+
+  resultWrap: {
+    flex: 1, justifyContent: 'center', alignItems: 'center',
+    padding: 32, gap: 16,
+  },
+  resultTitle: { fontSize: 20, fontWeight: '700', textAlign: 'center' },
+  resultBody: { fontSize: 15, lineHeight: 24, textAlign: 'center' },
+  resultBtn: {
+    marginTop: 8, height: 50, borderRadius: 25, paddingHorizontal: 40,
+    justifyContent: 'center', alignItems: 'center',
+  },
+  resultBtnText: { color: '#FFF', fontSize: 15, fontWeight: '600' },
 });

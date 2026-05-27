@@ -3,8 +3,5 @@ module.exports = {
     android: {
       packageName: 'com.themessage.cagri',
     },
-    ios: {
-      project: './ios/Cagri.xcworkspace',
-    },
   },
 };

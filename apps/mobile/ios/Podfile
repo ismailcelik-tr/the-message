@@ -67,6 +67,31 @@ target 'Cagri' do
         end
       end
     end
+
+    installer.pods_project.targets.each do |target|
+      next unless target.name == 'fmt'
+
+      target.build_configurations.each do |config|
+        definitions = config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] || ['$(inherited)']
+        definitions = [definitions] if definitions.is_a?(String)
+        definitions << 'FMT_USE_CONSTEVAL=0' unless definitions.include?('FMT_USE_CONSTEVAL=0')
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = definitions
+      end
+    end
+
+    fmt_base_header = File.join(installer.sandbox.root, 'fmt', 'include', 'fmt', 'base.h')
+    if File.exist?(fmt_base_header)
+      contents = File.read(fmt_base_header)
+      apple_clang_guard = "#elif defined(__apple_build_version__)\n#  define FMT_USE_CONSTEVAL 0  // consteval is broken with Apple clang in Xcode 26.\n"
+      unless contents.include?('consteval is broken with Apple clang in Xcode 26')
+        contents = contents.sub(
+          "#elif defined(__apple_build_version__) && __apple_build_version__ < 14000029L\n#  define FMT_USE_CONSTEVAL 0  // consteval is broken in Apple clang < 14.\n",
+          apple_clang_guard
+        )
+        File.chmod(0o644, fmt_base_header)
+        File.write(fmt_base_header, contents)
+      end
+    end
   end
 
   post_integrate do |installer|

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity,
-  StyleSheet, ActivityIndicator, Share, Alert, RefreshControl,
+  StyleSheet, ActivityIndicator, Share, RefreshControl,
 } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -12,9 +12,10 @@ import { usePreferencesStore } from '../store/preferences.store';
 import { useAuthStore } from '../store/auth.store';
 import { fetchDailyBundle } from '../api/content.api';
 import { addBookmark, removeBookmark, fetchBookmarks } from '../lib/bookmarks';
-import { buildTodayNotifications, saveNotificationBookmark, NotificationLogItem } from '../lib/notificationLog';
+import { buildTodayNotifications, getNextNotificationTime, saveNotificationBookmark, NotificationLogItem } from '../lib/notificationLog';
 import { COLORS, ColorScheme } from '../theme/colors';
 import { FeedbackModal } from '../components/FeedbackModal';
+import { AppModal } from '../components/AppModal';
 
 type CardType = 'esma' | 'verse' | 'hadith' | 'prayer' | 'worship';
 type IoniconsName = React.ComponentProps<typeof Ionicons>['name'];
@@ -32,6 +33,7 @@ export function DailyScreen() {
   const [savedNotifIds, setSavedNotifIds] = useState<Set<string>>(new Set());
   const [savingNotifId, setSavingNotifId] = useState<string | null>(null);
   const [feedbackItem, setFeedbackItem] = useState<ContentItem | null>(null);
+  const [modal, setModal] = useState<{ title?: string; message: string } | null>(null);
 
   const [refreshing, setRefreshing] = useState(false);
 
@@ -62,7 +64,7 @@ export function DailyScreen() {
 
   const handleSaveNotification = useCallback(async (logItem: NotificationLogItem) => {
     if (!user || isAnonymous) {
-      Alert.alert('', t('settings.createAccountDesc'));
+      setModal({ title: t('settings.saveRequiresAccountTitle'), message: t('settings.saveRequiresAccountDesc') });
       return;
     }
     setSavingNotifId(logItem.id);
@@ -76,7 +78,7 @@ export function DailyScreen() {
         setSavedNotifIds((prev) => new Set(prev).add(logItem.id));
       }
     } catch {
-      Alert.alert(t('daily.saveError'));
+      setModal({ message: t('daily.saveError') });
     } finally {
       setSavingNotifId(null);
     }
@@ -93,7 +95,7 @@ export function DailyScreen() {
 
   const handleBookmark = useCallback(async (item: ContentItem) => {
     if (!user || isAnonymous) {
-      Alert.alert('', t('settings.createAccountDesc'));
+      setModal({ title: t('settings.saveRequiresAccountTitle'), message: t('settings.saveRequiresAccountDesc') });
       return;
     }
     setSavingId(item.id);
@@ -106,7 +108,7 @@ export function DailyScreen() {
         setBookmarkedIds((prev) => new Set(prev).add(item.id));
       }
     } catch {
-      Alert.alert(t('daily.saveError'));
+      setModal({ message: t('daily.saveError') });
     } finally {
       setSavingId(null);
     }
@@ -141,6 +143,7 @@ export function DailyScreen() {
   ];
 
   const todayNotifications = buildTodayNotifications(bundle, preferences, todayStr);
+  const nextNotificationTime = getNextNotificationTime(preferences, todayStr);
 
   return (
     <ScrollView
@@ -197,7 +200,15 @@ export function DailyScreen() {
         />
       )}
 
-      {todayNotifications.length > 0 && (
+      <AppModal
+        visible={!!modal}
+        title={modal?.title}
+        message={modal?.message ?? ''}
+        colors={colors}
+        buttons={[{ text: t('settings.cancel'), onPress: () => setModal(null), variant: 'primary' }]}
+      />
+
+      {(todayNotifications.length > 0 || nextNotificationTime) && (
         <View>
           <View style={styles.cardGroupHeader}>
             <View style={[styles.groupIconBadge, { backgroundColor: colors.primary }]}>
@@ -207,15 +218,27 @@ export function DailyScreen() {
               {t('daily.todayNotifications')}
             </Text>
           </View>
-          <NotificationsCard
-            notifications={todayNotifications}
-            locale={locale}
-            colors={colors}
-            todayStr={todayStr}
-            savedIds={savedNotifIds}
-            savingId={savingNotifId}
-            onSave={handleSaveNotification}
-          />
+          {todayNotifications.length > 0 ? (
+            <NotificationsCard
+              notifications={todayNotifications}
+              locale={locale}
+              colors={colors}
+              todayStr={todayStr}
+              savedIds={savedNotifIds}
+              savingId={savingNotifId}
+              onSave={handleSaveNotification}
+            />
+          ) : null}
+          {nextNotificationTime && (
+            <View style={[styles.card, styles.upcomingCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
+              <Ionicons name={'time-outline' as IoniconsName} size={20} color={colors.primary} />
+              <Text style={[styles.upcomingText, { color: colors.mutedText }]}>
+                {locale === 'tr'
+                  ? `Bir sonraki mesajın saat ${nextNotificationTime}'de geliyor. Merak etme, sürpriz olsun 🤍`
+                  : `Your next message arrives at ${nextNotificationTime}. Stay curious 🤍`}
+              </Text>
+            </View>
+          )}
         </View>
       )}
     </ScrollView>
@@ -321,12 +344,19 @@ function NotificationsCard({ notifications, locale, colors, todayStr, savedIds, 
             <View style={styles.notifTimeWrap}>
               <Text style={[styles.notifTime, { color: colors.primary }]}>{logItem.scheduledTime}</Text>
             </View>
-            <Text style={[styles.notifText, { color: colors.text }]} numberOfLines={2}>
-              {tr?.content}
-            </Text>
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.notifText, { color: colors.text }]}>
+                {tr?.content}
+              </Text>
+              {!!tr?.source && (
+                <Text style={[styles.notifSource, { color: colors.mutedText }]}>
+                  {`(${tr.source})`}
+                </Text>
+              )}
+            </View>
             <TouchableOpacity
               onPress={() => onSave(logItem)}
-              style={[styles.actionBtn, { backgroundColor: colors.background }]}
+              style={[styles.actionBtn, { backgroundColor: colors.background, marginTop: 0, alignSelf: 'flex-start' }]}
               disabled={isSaving}
             >
               {isSaving
@@ -381,14 +411,15 @@ const styles = StyleSheet.create({
 
   notifDate: { fontSize: 12, marginTop: 1 },
   notifRow: {
-    flexDirection: 'row', alignItems: 'center',
+    flexDirection: 'row', alignItems: 'flex-start',
     paddingVertical: 10, gap: 10,
   },
   notifTimeWrap: {
-    minWidth: 46, alignItems: 'center',
+    minWidth: 46, alignItems: 'center', paddingTop: 2,
   },
   notifTime: { fontSize: 13, fontWeight: '700' },
-  notifText: { flex: 1, fontSize: 13, lineHeight: 18 },
+  notifText: { fontSize: 13, lineHeight: 18 },
+  notifSource: { fontSize: 11, marginTop: 3 },
 
   esmaArabicWrap: { alignItems: 'center', marginBottom: 12 },
   esmaArabic: { fontSize: 48, fontWeight: '300', textAlign: 'center', lineHeight: 68 },
@@ -405,4 +436,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center', alignItems: 'center',
   },
   sourceText: { fontSize: 13 },
+
+  upcomingCard: {
+    flexDirection: 'row', alignItems: 'center', gap: 12,
+    padding: 16, marginTop: 6,
+  },
+  upcomingText: { flex: 1, fontSize: 13, lineHeight: 20 },
 });

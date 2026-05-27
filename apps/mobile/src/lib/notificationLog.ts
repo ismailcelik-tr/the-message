@@ -27,21 +27,39 @@ export function buildTodayNotifications(
   const slots = prefs.notificationSchedule[prefs.notificationFrequency];
   const now = new Date();
 
-  return slots.map((slot, index) => {
+  return slots
+    .map((slot, index) => {
+      const [hh, mm] = slot.time.split(':').map(Number);
+      const scheduledDate = new Date(todayStr);
+      scheduledDate.setHours(hh, mm, 0, 0);
+
+      const cardKey = SLOT_CARD_MAP[slot.label] ?? 'verse';
+      const content = bundle[cardKey];
+
+      return {
+        id: `notif-${todayStr}-${index}`,
+        scheduledTime: slot.time,
+        sentAt: scheduledDate,
+        content,
+      };
+    })
+    .filter((item) => item.sentAt <= now);
+}
+
+export function getNextNotificationTime(
+  prefs: UserPreferences,
+  todayStr: string,
+): string | null {
+  if (!prefs.notificationEnabled) return null;
+  const slots = prefs.notificationSchedule[prefs.notificationFrequency];
+  const now = new Date();
+  for (const slot of slots) {
     const [hh, mm] = slot.time.split(':').map(Number);
     const scheduledDate = new Date(todayStr);
     scheduledDate.setHours(hh, mm, 0, 0);
-
-    const cardKey = SLOT_CARD_MAP[slot.label] ?? 'verse';
-    const content = bundle[cardKey];
-
-    return {
-      id: `notif-${todayStr}-${index}`,
-      scheduledTime: slot.time,
-      sentAt: scheduledDate,
-      content,
-    };
-  });
+    if (scheduledDate > now) return slot.time;
+  }
+  return null;
 }
 
 // Saves a notification log item as a bookmark (type: 'notification')

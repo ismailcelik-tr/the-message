@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity,
   SafeAreaView, StyleSheet, ActivityIndicator, Alert,
-  KeyboardAvoidingView, Platform, ScrollView, Image, Modal,
+  KeyboardAvoidingView, Platform, ScrollView, Image,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +12,7 @@ import { usePreferencesStore } from '../store/preferences.store';
 import { useAuthStore } from '../store/auth.store';
 import { supabase } from '../lib/supabase';
 import { COLORS } from '../theme/colors';
+import { AppModal } from '../components/AppModal';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -158,24 +159,17 @@ export function LoginScreen({ onComplete }: Props) {
 
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
-      {/* Şifre sıfırlama talebi gönderildi modal */}
-      <Modal visible={showResetSentModal} transparent animationType="fade">
-        <View style={styles.modalOverlay}>
-          <View style={[styles.modalBox, { backgroundColor: colors.card, borderColor: colors.border }]}>
-            <Text style={[styles.modalTitle, { color: colors.text }]}>Şifre Sıfırlama Talebi</Text>
-            <Text style={[styles.modalBody, { color: colors.mutedText }]}>
-              {'Şifreni sıfırlaman için e-postana bir link gönderdik.\nGörüşmek üzere inşallah! 😊'}
-            </Text>
-            <TouchableOpacity
-              style={[styles.modalBtn, { backgroundColor: colors.primary }]}
-              onPress={() => { setShowResetSentModal(false); setMode('choose'); }}
-              activeOpacity={0.85}
-            >
-              <Text style={styles.modalBtnText}>Tamam</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+      <AppModal
+        visible={showResetSentModal}
+        title={t('login.resetPasswordSentTitle' as never)}
+        message={t('login.resetPasswordSentBody' as never)}
+        colors={colors}
+        buttons={[{
+          text: t('login.ok' as never),
+          onPress: () => { setShowResetSentModal(false); setMode('choose'); },
+          variant: 'primary',
+        }]}
+      />
       <StatusBar style={currentTheme === 'dark' ? 'light' : 'dark'} />
       <KeyboardAvoidingView
         style={{ flex: 1 }}
@@ -437,19 +431,4 @@ const styles = StyleSheet.create({
   backBtn: { marginTop: 12, alignItems: 'center' },
   backText: { fontSize: 14, fontWeight: '600' },
 
-  modalOverlay: {
-    flex: 1, backgroundColor: 'rgba(0,0,0,0.45)',
-    justifyContent: 'center', alignItems: 'center', padding: 32,
-  },
-  modalBox: {
-    width: '100%', borderRadius: 24, borderWidth: 1,
-    padding: 28, alignItems: 'center',
-  },
-  modalTitle: { fontSize: 18, fontWeight: '700', textAlign: 'center', marginBottom: 14 },
-  modalBody: { fontSize: 15, lineHeight: 24, textAlign: 'center', marginBottom: 24 },
-  modalBtn: {
-    height: 50, borderRadius: 25, paddingHorizontal: 40,
-    justifyContent: 'center', alignItems: 'center',
-  },
-  modalBtnText: { color: '#FFF', fontSize: 15, fontWeight: '600' },
 });

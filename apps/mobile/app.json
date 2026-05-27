@@ -15,7 +15,7 @@
         "backgroundColor": "#2A4B3D"
       },
       "minSdkVersion": 24,
-      "versionCode": 2
+      "versionCode": 16
     },
     "ios": {
       "supportsTablet": true,
@@ -23,7 +23,7 @@
       "infoPlist": {
         "CFBundleDisplayName": "Çağrı"
       },
-      "buildNumber": "2"
+      "buildNumber": "5"
     },
     "plugins": [
       "expo-secure-store",

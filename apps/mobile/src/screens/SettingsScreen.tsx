@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, ScrollView, Switch, TouchableOpacity, StyleSheet, Alert, Modal, TextInput, Linking, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, Switch, TouchableOpacity, StyleSheet, Modal, TextInput, Linking, ActivityIndicator } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import Constants from 'expo-constants';
@@ -10,6 +10,7 @@ import { supabase } from '../lib/supabase';
 import { COLORS } from '../theme/colors';
 import { NotificationFrequency, SupportedLocale } from '@the-message/shared';
 import { TimePickerRow } from '../components/TimePickerRow';
+import { AppModal, AppModalButton } from '../components/AppModal';
 import { LoginScreen } from './LoginScreen';
 import { deleteAccount } from '../api/auth.api';
 
@@ -39,6 +40,7 @@ export function SettingsScreen() {
   const [feedbackMessage, setFeedbackMessage] = React.useState('');
   const [feedbackEmail, setFeedbackEmail] = React.useState('');
   const [feedbackLoading, setFeedbackLoading] = React.useState(false);
+  const [modal, setModal] = React.useState<{ title?: string; message: string; buttons: AppModalButton[] } | null>(null);
 
   const appVersion = Constants.expoConfig?.version ?? '1.0.0';
 
@@ -57,9 +59,15 @@ export function SettingsScreen() {
       setFeedbackMessage('');
       setFeedbackEmail('');
       setShowFeedback(false);
-      Alert.alert(t('settings.feedbackSuccess' as never));
+      setModal({
+        message: t('settings.feedbackSuccess' as never),
+        buttons: [{ text: t('settings.cancel'), onPress: () => setModal(null), variant: 'primary' }],
+      });
     } catch {
-      Alert.alert(t('settings.feedbackError' as never));
+      setModal({
+        message: t('settings.feedbackError' as never),
+        buttons: [{ text: t('settings.cancel'), onPress: () => setModal(null), variant: 'primary' }],
+      });
     } finally {
       setFeedbackLoading(false);
     }
@@ -71,38 +79,43 @@ export function SettingsScreen() {
   };
 
   const handleSignOut = () => {
-    Alert.alert(
-      t('settings.signOutTitle'),
-      t('settings.signOutMessage'),
-      [
-        { text: t('settings.cancel'), style: 'cancel' },
-        { text: t('settings.signOut'), style: 'destructive', onPress: signOut },
+    setModal({
+      title: t('settings.signOutTitle'),
+      message: t('settings.signOutMessage'),
+      buttons: [
+        { text: t('settings.cancel'), onPress: () => setModal(null), variant: 'ghost' },
+        { text: t('settings.signOut'), onPress: () => { setModal(null); signOut(); }, variant: 'destructive' },
       ],
-    );
+    });
   };
 
   const handleDeleteAccount = () => {
-    Alert.alert(
-      t('settings.deleteAccountTitle'),
-      t('settings.deleteAccountMessage'),
-      [
-        { text: t('settings.cancel'), style: 'cancel' },
+    setModal({
+      title: t('settings.deleteAccountTitle'),
+      message: t('settings.deleteAccountMessage'),
+      buttons: [
+        { text: t('settings.cancel'), onPress: () => setModal(null), variant: 'ghost' },
         {
           text: t('settings.deleteAccountConfirm'),
-          style: 'destructive',
+          variant: 'destructive',
           onPress: async () => {
+            setModal(null);
             try {
               const { data: { session } } = await supabase.auth.getSession();
               if (!session?.access_token) throw new Error('No session');
               await deleteAccount(session.access_token);
               await signOut();
             } catch (e: any) {
-              Alert.alert(t('login.error'), e.message);
+              setModal({
+                title: t('login.error'),
+                message: e.message,
+                buttons: [{ text: t('settings.cancel'), onPress: () => setModal(null), variant: 'primary' }],
+              });
             }
           },
         },
       ],
-    );
+    });
   };
 
   const currentSlots = preferences.notificationSchedule[preferences.notificationFrequency];
@@ -358,6 +371,16 @@ export function SettingsScreen() {
       <Modal visible={showLogin} animationType="slide" presentationStyle="pageSheet">
         <LoginScreen onComplete={() => setShowLogin(false)} />
       </Modal>
+
+      {modal && (
+        <AppModal
+          visible
+          title={modal.title}
+          message={modal.message}
+          buttons={modal.buttons}
+          colors={colors}
+        />
+      )}
     </ScrollView>
   );
 }

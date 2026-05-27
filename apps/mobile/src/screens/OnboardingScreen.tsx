@@ -4,7 +4,6 @@ import {
   Dimensions,
   Easing,
   Pressable,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -12,6 +11,7 @@ import {
   View,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { usePreferencesStore } from '../store/preferences.store';
 import { COLORS } from '../theme/colors';
@@ -193,6 +193,7 @@ export function OnboardingScreen({ onComplete }: Props) {
   const { currentTheme, preferences, toggleCategory, setPreferences } = usePreferencesStore();
   const colors = COLORS[currentTheme];
   const isDark = currentTheme === 'dark';
+  const insets = useSafeAreaInsets();
 
   const [step, setStep] = useState<Step>(0);
   const slideAnim = useRef(new Animated.Value(0)).current;
@@ -313,7 +314,7 @@ export function OnboardingScreen({ onComplete }: Props) {
 
       <View style={styles.navRow}>
         <TouchableOpacity onPress={() => goTo(0)} style={styles.backBtn} activeOpacity={0.7}>
-          <Text style={[styles.backText, { color: colors.mutedText }]}>← Geri</Text>
+          <Text style={[styles.backText, { color: colors.mutedText }]}>{t('login.back')}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.nextBtn, { backgroundColor: selectedCount > 0 ? colors.primary : colors.border }]}
@@ -356,7 +357,7 @@ export function OnboardingScreen({ onComplete }: Props) {
 
       <View style={[styles.navRow, { marginTop: 'auto' as any }]}>
         <TouchableOpacity onPress={() => goTo(1)} style={styles.backBtn} activeOpacity={0.7}>
-          <Text style={[styles.backText, { color: colors.mutedText }]}>← Geri</Text>
+          <Text style={[styles.backText, { color: colors.mutedText }]}>{t('login.back')}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.nextBtn, { backgroundColor: colors.primary }]}
@@ -372,13 +373,13 @@ export function OnboardingScreen({ onComplete }: Props) {
   const STEPS = [WelcomeStep, FocusStep, NotifStep];
 
   return (
-    <SafeAreaView style={[styles.safe, { backgroundColor: colors.background }]}>
+    <View style={[styles.safe, { backgroundColor: colors.background, paddingTop: insets.top, paddingBottom: insets.bottom }]}>
       <StatusBar style={isDark ? 'light' : 'dark'} />
       <StepDots step={step} total={3} />
       <Animated.View style={[{ flex: 1 }, { transform: [{ translateX: slideAnim }] }]}>
         {STEPS[step]}
       </Animated.View>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -388,7 +389,7 @@ const PRIMARY = '#2A4B3D';
 
 const styles = StyleSheet.create({
   safe: { flex: 1 },
-  dotsRow: { flexDirection: 'row', justifyContent: 'center', paddingTop: 16, paddingBottom: 4, gap: 6 },
+  dotsRow: { flexDirection: 'row', justifyContent: 'center', paddingTop: 12, paddingBottom: 4, gap: 6 },
   dot: { height: 6, borderRadius: 3 },
   dotActive: { width: 24, backgroundColor: PRIMARY },
   dotInactive: { width: 6, backgroundColor: '#C8D0CC' },
