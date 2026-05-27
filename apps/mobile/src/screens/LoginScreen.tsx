@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity,
   SafeAreaView, StyleSheet, ActivityIndicator, Alert,
-  KeyboardAvoidingView, Platform, ScrollView, Image,
+  KeyboardAvoidingView, Platform, ScrollView, Image, Modal,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
@@ -18,7 +18,7 @@ interface Props {
   onComplete: () => void;
 }
 
-type Mode = 'choose' | 'email';
+type Mode = 'choose' | 'email' | 'forgotPassword';
 
 export function LoginScreen({ onComplete }: Props) {
   const { t } = useTranslation();
@@ -32,6 +32,7 @@ export function LoginScreen({ onComplete }: Props) {
   const [rememberMe, setRememberMe] = useState(true);
   const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showResetSentModal, setShowResetSentModal] = useState(false);
   const handleAnonymous = async () => {
     setLoading(true);
     try {
@@ -39,6 +40,22 @@ export function LoginScreen({ onComplete }: Props) {
       onComplete();
     } catch {
       Alert.alert(t('login.error'));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    if (!email) return;
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: 'cagri://reset-password',
+      });
+      if (error) throw error;
+      setShowResetSentModal(true);
+    } catch (e: any) {
+      Alert.alert(t('login.error'), e.message);
     } finally {
       setLoading(false);
     }
@@ -66,6 +83,24 @@ export function LoginScreen({ onComplete }: Props) {
 
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
+      {/* Şifre sıfırlama talebi gönderildi modal */}
+      <Modal visible={showResetSentModal} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalBox, { backgroundColor: colors.card, borderColor: colors.border }]}>
+            <Text style={[styles.modalTitle, { color: colors.text }]}>Şifre Sıfırlama Talebi</Text>
+            <Text style={[styles.modalBody, { color: colors.mutedText }]}>
+              {'Şifreni sıfırlaman için e-postana bir link gönderdik.\nGörüşmek üzere inşallah! 😊'}
+            </Text>
+            <TouchableOpacity
+              style={[styles.modalBtn, { backgroundColor: colors.primary }]}
+              onPress={() => { setShowResetSentModal(false); setMode('choose'); }}
+              activeOpacity={0.85}
+            >
+              <Text style={styles.modalBtnText}>Tamam</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
       <StatusBar style={currentTheme === 'dark' ? 'light' : 'dark'} />
       <KeyboardAvoidingView
         style={{ flex: 1 }}
@@ -78,12 +113,11 @@ export function LoginScreen({ onComplete }: Props) {
             <Text style={[styles.subLogo, { color: colors.secondary }]}>{t('onboarding.subtitle')}</Text>
           </View>
 
-          {mode === 'choose' ? (
+          {mode === 'choose' && (
             <View style={styles.optionsSection}>
               <Text style={[styles.heading, { color: colors.text }]}>{t('login.title')}</Text>
               <Text style={[styles.subtitle, { color: colors.mutedText }]}>{t('login.subtitle')}</Text>
 
-              {/* Email */}
               <TouchableOpacity
                 style={[styles.socialBtn, { backgroundColor: colors.card, borderColor: colors.border }]}
                 onPress={() => setMode('email')}
@@ -95,33 +129,34 @@ export function LoginScreen({ onComplete }: Props) {
                 <Text style={[styles.socialLabel, { color: colors.text }]}>{t('login.continueEmail')}</Text>
               </TouchableOpacity>
 
-              {/* Google */}
               <TouchableOpacity
                 style={[styles.socialBtn, { backgroundColor: colors.card, borderColor: colors.border, opacity: 0.5 }]}
                 activeOpacity={0.8}
                 disabled
               >
-                <Image source={googleIcon} style={styles.socialIconImg} resizeMode="contain" />
+                <View style={styles.socialIconWrap}>
+                  <Image source={googleIcon} style={styles.socialIconImg} resizeMode="contain" />
+                </View>
                 <Text style={[styles.socialLabel, { color: colors.text }]}>{t('login.continueGoogle')}</Text>
                 <Text style={[styles.comingSoon, { color: colors.mutedText }]}>{t('login.comingSoon')}</Text>
               </TouchableOpacity>
 
-              {/* Apple */}
               <TouchableOpacity
                 style={[styles.socialBtn, { backgroundColor: colors.card, borderColor: colors.border, opacity: 0.5 }]}
                 activeOpacity={0.8}
                 disabled
               >
-                <Image
-                  source={appleIcon}
-                  style={[styles.socialIconImg, currentTheme === 'dark' && { tintColor: '#FFFFFF' }]}
-                  resizeMode="contain"
-                />
+                <View style={styles.socialIconWrap}>
+                  <Image
+                    source={appleIcon}
+                    style={[styles.socialIconImg, { width: 34, height: 34 }, currentTheme === 'dark' && { tintColor: '#FFFFFF' }]}
+                    resizeMode="contain"
+                  />
+                </View>
                 <Text style={[styles.socialLabel, { color: colors.text }]}>{t('login.continueApple')}</Text>
                 <Text style={[styles.comingSoon, { color: colors.mutedText }]}>{t('login.comingSoon')}</Text>
               </TouchableOpacity>
 
-              {/* Anonim */}
               <TouchableOpacity onPress={handleAnonymous} disabled={loading} activeOpacity={0.7} style={styles.skipBtn}>
                 {loading ? (
                   <ActivityIndicator color={colors.mutedText} />
@@ -130,7 +165,9 @@ export function LoginScreen({ onComplete }: Props) {
                 )}
               </TouchableOpacity>
             </View>
-          ) : (
+          )}
+
+          {mode === 'email' && (
             <View style={styles.optionsSection}>
               <Text style={[styles.heading, { color: colors.text }]}>
                 {isSignUp ? t('login.signUp') : t('login.signIn')}
@@ -155,7 +192,6 @@ export function LoginScreen({ onComplete }: Props) {
                 secureTextEntry
               />
 
-              {/* Beni hatırla */}
               <TouchableOpacity
                 style={styles.rememberRow}
                 onPress={() => setRememberMe(!rememberMe)}
@@ -192,7 +228,49 @@ export function LoginScreen({ onComplete }: Props) {
                 </Text>
               </TouchableOpacity>
 
+              {!isSignUp && (
+                <TouchableOpacity onPress={() => setMode('forgotPassword')} style={styles.toggleBtn}>
+                  <Text style={[styles.toggleText, { color: colors.secondary }]}>{t('login.forgotPassword')}</Text>
+                </TouchableOpacity>
+              )}
+
               <TouchableOpacity onPress={() => setMode('choose')} style={styles.backBtn}>
+                <Text style={[styles.backText, { color: colors.secondary }]}>{t('login.back')}</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {mode === 'forgotPassword' && (
+            <View style={styles.optionsSection}>
+              <Text style={[styles.heading, { color: colors.text }]}>{t('login.resetPassword')}</Text>
+              <Text style={[styles.subtitle, { color: colors.mutedText }]}>{t('login.resetPasswordSubtitle')}</Text>
+
+              <TextInput
+                style={[styles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}
+                placeholder={t('login.emailPlaceholder')}
+                placeholderTextColor={colors.mutedText}
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
+                autoFocus
+              />
+
+              <TouchableOpacity
+                style={[styles.primaryBtn, { backgroundColor: colors.primary }]}
+                onPress={handleForgotPassword}
+                disabled={loading}
+                activeOpacity={0.8}
+              >
+                {loading ? (
+                  <ActivityIndicator color="#FFF" />
+                ) : (
+                  <Text style={styles.primaryBtnText}>{t('login.resetPassword')}</Text>
+                )}
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={() => setMode('email')} style={[styles.backBtn, { marginTop: 32 }]}>
                 <Text style={[styles.backText, { color: colors.secondary }]}>{t('login.back')}</Text>
               </TouchableOpacity>
             </View>
@@ -218,8 +296,8 @@ const styles = StyleSheet.create({
     paddingVertical: 15, paddingHorizontal: 20,
     marginBottom: 12,
   },
-  socialIconWrap: { width: 28, alignItems: 'center', marginRight: 8 },
-  socialIconImg: { width: 22, height: 22, marginRight: 8 },
+  socialIconWrap: { width: 28, height: 28, alignItems: 'center', justifyContent: 'center', marginRight: 8 },
+  socialIconImg: { width: 28, height: 28, marginRight: 8 },
   socialLabel: { fontSize: 15, fontWeight: '600', flex: 1 },
   comingSoon: { fontSize: 11, fontWeight: '500' },
   skipBtn: { marginTop: 20, alignItems: 'center', paddingVertical: 12 },
@@ -249,4 +327,20 @@ const styles = StyleSheet.create({
   toggleText: { fontSize: 14 },
   backBtn: { marginTop: 12, alignItems: 'center' },
   backText: { fontSize: 14, fontWeight: '600' },
+
+  modalOverlay: {
+    flex: 1, backgroundColor: 'rgba(0,0,0,0.45)',
+    justifyContent: 'center', alignItems: 'center', padding: 32,
+  },
+  modalBox: {
+    width: '100%', borderRadius: 24, borderWidth: 1,
+    padding: 28, alignItems: 'center',
+  },
+  modalTitle: { fontSize: 18, fontWeight: '700', textAlign: 'center', marginBottom: 14 },
+  modalBody: { fontSize: 15, lineHeight: 24, textAlign: 'center', marginBottom: 24 },
+  modalBtn: {
+    height: 50, borderRadius: 25, paddingHorizontal: 40,
+    justifyContent: 'center', alignItems: 'center',
+  },
+  modalBtnText: { color: '#FFF', fontSize: 15, fontWeight: '600' },
 });

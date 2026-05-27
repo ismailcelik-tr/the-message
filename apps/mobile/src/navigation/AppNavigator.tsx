@@ -79,7 +79,7 @@ function PillTabBar({ state, navigation }: BottomTabBarProps) {
             ) : (
               <View style={styles.inactiveItem}>
                 <Ionicons name={iconName} size={20} color={colors.mutedText} style={{ opacity: 0.55 }} />
-                <Text style={[styles.inactiveLabel, { color: colors.mutedText }]}>
+                <Text style={[styles.inactiveLabel, { color: colors.mutedText }]} numberOfLines={1} adjustsFontSizeToFit>
                   {TAB_LABELS[route.name]}
                 </Text>
               </View>
@@ -130,24 +130,27 @@ const styles = StyleSheet.create({
   pill: {
     alignItems: 'center',
     paddingVertical: 8,
-    paddingHorizontal: 12,
+    paddingHorizontal: 10,
     borderRadius: 24,
     gap: 3,
+    maxWidth: 120,
   },
   pillLabel: {
     fontSize: 10,
     fontWeight: '700',
     color: '#FFFFFF',
+    textAlign: 'center',
   },
   inactiveItem: {
     alignItems: 'center',
     paddingVertical: 10,
-    paddingHorizontal: 8,
+    paddingHorizontal: 4,
     gap: 2,
   },
   inactiveLabel: {
-    fontSize: 10,
+    fontSize: 9,
     fontWeight: '500',
     opacity: 0.6,
+    textAlign: 'center',
   },
 });

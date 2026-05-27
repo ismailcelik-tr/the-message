@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useColorScheme } from 'react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -6,6 +6,7 @@ import { StatusBar } from 'expo-status-bar';
 import './src/i18n';
 import { OnboardingScreen } from './src/screens/OnboardingScreen';
 import { LoginScreen } from './src/screens/LoginScreen';
+import { ResetPasswordScreen } from './src/screens/ResetPasswordScreen';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { usePreferencesStore } from './src/store/preferences.store';
 import { useAuthStore } from './src/store/auth.store';
@@ -22,6 +23,7 @@ function Root() {
   const { session, isLoading, setSession } = useAuthStore();
   const colors = COLORS[currentTheme];
   const deviceColorScheme = useColorScheme();
+  const [isPasswordRecovery, setIsPasswordRecovery] = useState(false);
   usePreferencesSync();
 
   // Sync currentTheme with device when preference is 'system'
@@ -39,7 +41,12 @@ function Root() {
       setSession(session);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        setIsPasswordRecovery(true);
+      } else {
+        setIsPasswordRecovery(false);
+      }
       setSession(session);
     });
 
@@ -92,6 +99,15 @@ function Root() {
 
   if (isLoading) {
     return null;
+  }
+
+  if (isPasswordRecovery && session) {
+    return (
+      <>
+        <StatusBar style={currentTheme === 'dark' ? 'light' : 'dark'} backgroundColor={colors.background} />
+        <ResetPasswordScreen onComplete={() => setIsPasswordRecovery(false)} />
+      </>
+    );
   }
 
   if (!session) {

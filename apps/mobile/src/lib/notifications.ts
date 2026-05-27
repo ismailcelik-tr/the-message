@@ -105,9 +105,10 @@ export async function rescheduleNotifications(
 
       const slotLabel = SLOT_LABEL_TR[slot.label] ?? slot.label;
       const title = `${slotLabel} — Çağrı`;
-      const body = translation.content.length > 120
-        ? translation.content.slice(0, 117) + '…'
-        : translation.content;
+      const rawContent = translation.content;
+      const source = translation.source;
+      const full = source ? `${rawContent} — ${source}` : rawContent;
+      const body = full.length > 180 ? full.slice(0, 177) + '…' : full;
 
       await Notifications.scheduleNotificationAsync({
         content: { title, body, sound: 'default' },

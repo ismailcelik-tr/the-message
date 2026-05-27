@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { ContentItem, DailyBundle, MessageCategory, SupportedLocale, PaginatedResponse } from '@the-message/shared';
+import ws from 'ws';
 
 @Injectable()
 export class ContentService {
@@ -10,6 +11,7 @@ export class ContentService {
     this.db = createClient(
       process.env.SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      { realtime: { transport: ws as any } },
     );
   }
 

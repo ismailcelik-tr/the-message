@@ -5,10 +5,12 @@ import { useTranslation } from 'react-i18next';
 import i18n from '../i18n';
 import { usePreferencesStore } from '../store/preferences.store';
 import { useAuthStore } from '../store/auth.store';
+import { supabase } from '../lib/supabase';
 import { COLORS } from '../theme/colors';
 import { NotificationFrequency, SupportedLocale } from '@the-message/shared';
 import { TimePickerRow } from '../components/TimePickerRow';
 import { LoginScreen } from './LoginScreen';
+import { deleteAccount } from '../api/auth.api';
 
 const FREQUENCIES: Array<{ key: NotificationFrequency; labelKey: string; detailKey: string }> = [
   { key: 'low', labelKey: 'settings.frequencyLow', detailKey: 'settings.frequencyLowDetail' },
@@ -27,6 +29,7 @@ const SLOT_LABEL_KEYS: Record<string, string> = {
 export function SettingsScreen() {
   const { t } = useTranslation();
   const { currentTheme, toggleTheme, preferences, setPreferences, setLocale, updateSlotTime } = usePreferencesStore();
+
   const { user, isAnonymous, signOut } = useAuthStore();
   const colors = COLORS[currentTheme];
   const insets = useSafeAreaInsets();
@@ -44,6 +47,30 @@ export function SettingsScreen() {
       [
         { text: t('settings.cancel'), style: 'cancel' },
         { text: t('settings.signOut'), style: 'destructive', onPress: signOut },
+      ],
+    );
+  };
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      t('settings.deleteAccountTitle'),
+      t('settings.deleteAccountMessage'),
+      [
+        { text: t('settings.cancel'), style: 'cancel' },
+        {
+          text: t('settings.deleteAccountConfirm'),
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              const { data: { session } } = await supabase.auth.getSession();
+              if (!session?.access_token) throw new Error('No session');
+              await deleteAccount(session.access_token);
+              await signOut();
+            } catch (e: any) {
+              Alert.alert(t('login.error'), e.message);
+            }
+          },
+        },
       ],
     );
   };
@@ -201,15 +228,24 @@ export function SettingsScreen() {
               </View>
             </View>
             <TouchableOpacity
-              style={[styles.row, styles.lastRow]}
+              style={[styles.row, { borderBottomColor: colors.border }]}
               onPress={handleSignOut}
               activeOpacity={0.8}
             >
               <Text style={[styles.label, { color: '#E05252' }]}>{t('settings.signOut')}</Text>
             </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.row, styles.lastRow]}
+              onPress={handleDeleteAccount}
+              activeOpacity={0.8}
+            >
+              <Text style={[styles.label, { color: '#E05252' }]}>{t('settings.deleteAccount')}</Text>
+              <Text style={{ color: '#E05252', fontSize: 16 }}>×</Text>
+            </TouchableOpacity>
           </>
         )}
       </View>
+
 
       {/* Login modal (anonim kullanıcı için) */}
       <Modal visible={showLogin} animationType="slide" presentationStyle="pageSheet">
