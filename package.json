@@ -18,7 +18,8 @@
     "docker:up": "docker compose up --build",
     "docker:down": "docker compose down",
     "lint": "eslint \"apps/**/*.{ts,tsx}\" \"packages/**/*.ts\"",
-    "format": "prettier --write \"apps/**/*.{ts,tsx}\" \"packages/**/*.ts\""
+    "format": "prettier --write \"apps/**/*.{ts,tsx}\" \"packages/**/*.ts\"",
+    "postinstall": "node apps/mobile/scripts/patch-expo-module-gradle-plugin.js"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.59.4",
