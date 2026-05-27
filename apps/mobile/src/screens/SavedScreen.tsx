@@ -12,6 +12,7 @@ import { useAuthStore } from '../store/auth.store';
 import { supabase } from '../lib/supabase';
 import { removeBookmark } from '../lib/bookmarks';
 import { COLORS, ColorScheme } from '../theme/colors';
+import { FeedbackModal } from '../components/FeedbackModal';
 
 type IoniconsName = React.ComponentProps<typeof Ionicons>['name'];
 
@@ -44,9 +45,10 @@ interface SavedCardProps {
   locale: 'tr' | 'en';
   colors: ColorScheme;
   onRemove: (item: ContentItem) => void;
+  onFeedback: (item: ContentItem) => void;
 }
 
-function SavedCard({ item, locale, colors, onRemove }: SavedCardProps) {
+function SavedCard({ item, locale, colors, onRemove, onFeedback }: SavedCardProps) {
   const tr = item.translations[locale];
   return (
     <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
@@ -81,6 +83,12 @@ function SavedCard({ item, locale, colors, onRemove }: SavedCardProps) {
           }
         </Text>
         <TouchableOpacity
+          onPress={() => onFeedback(item)}
+          style={[styles.actionBtn, { backgroundColor: colors.background }]}
+        >
+          <Ionicons name="flag-outline" size={15} color={colors.mutedText} />
+        </TouchableOpacity>
+        <TouchableOpacity
           onPress={() => onRemove(item)}
           style={[styles.bookmarkBtn, { backgroundColor: colors.background }]}
         >
@@ -102,6 +110,7 @@ export function SavedScreen() {
   const [items, setItems] = useState<ContentItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [feedbackItem, setFeedbackItem] = useState<ContentItem | null>(null);
 
   const load = useCallback(async () => {
     if (!user || isAnonymous) { setLoading(false); return; }
@@ -190,6 +199,17 @@ export function SavedScreen() {
     >
       <Text style={[styles.screenTitle, { color: colors.text }]}>{t('saved.title')}</Text>
 
+      {feedbackItem && (
+        <FeedbackModal
+          visible={!!feedbackItem}
+          item={feedbackItem}
+          locale={locale}
+          colors={colors}
+          userId={user?.id}
+          onClose={() => setFeedbackItem(null)}
+        />
+      )}
+
       {Object.entries(grouped).map(([type, groupItems]) => (
         <View key={type}>
           {/* Grup başlığı */}
@@ -235,6 +255,12 @@ export function SavedScreen() {
                                 {tr?.content}
                               </Text>
                               <TouchableOpacity
+                                onPress={() => setFeedbackItem(item)}
+                                style={[styles.actionBtn, { backgroundColor: colors.background }]}
+                              >
+                                <Ionicons name="flag-outline" size={15} color={colors.mutedText} />
+                              </TouchableOpacity>
+                              <TouchableOpacity
                                 onPress={() => handleRemove(item)}
                                 style={[styles.bookmarkBtn, { backgroundColor: colors.background }]}
                               >
@@ -254,6 +280,7 @@ export function SavedScreen() {
                   locale={locale}
                   colors={colors}
                   onRemove={handleRemove}
+                  onFeedback={setFeedbackItem}
                 />
               ))
           }
@@ -291,6 +318,7 @@ const styles = StyleSheet.create({
   },
   arabicBadge: { fontSize: 14, color: '#FFF', lineHeight: 20 },
   bookmarkBtn: { width: 30, height: 30, borderRadius: 15, justifyContent: 'center', alignItems: 'center' },
+  actionBtn: { width: 28, height: 28, borderRadius: 14, justifyContent: 'center', alignItems: 'center' },
 
   esmaWrap: { alignItems: 'center', marginBottom: 12 },
   esmaArabic: { fontSize: 40, fontWeight: '300', textAlign: 'center', lineHeight: 56 },

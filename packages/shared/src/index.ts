@@ -78,6 +78,17 @@ export interface DailyMessage {
   date: string;
 }
 
+export type FeedbackIssueType = 'wrong_text' | 'missing_text' | 'wrong_source' | 'other';
+export type FeedbackStatus = 'pending' | 'reviewed' | 'resolved';
+
+export interface ContentFeedback {
+  contentId: string;
+  contentType: ContentType;
+  issueType: FeedbackIssueType;
+  note?: string;
+  locale: SupportedLocale;
+}
+
 export interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;

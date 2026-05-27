@@ -14,6 +14,7 @@ import { fetchDailyBundle } from '../api/content.api';
 import { addBookmark, removeBookmark, fetchBookmarks } from '../lib/bookmarks';
 import { buildTodayNotifications, saveNotificationBookmark, NotificationLogItem } from '../lib/notificationLog';
 import { COLORS, ColorScheme } from '../theme/colors';
+import { FeedbackModal } from '../components/FeedbackModal';
 
 type CardType = 'esma' | 'verse' | 'hadith' | 'prayer' | 'worship';
 type IoniconsName = React.ComponentProps<typeof Ionicons>['name'];
@@ -30,6 +31,7 @@ export function DailyScreen() {
   const [savingId, setSavingId] = useState<string | null>(null);
   const [savedNotifIds, setSavedNotifIds] = useState<Set<string>>(new Set());
   const [savingNotifId, setSavingNotifId] = useState<string | null>(null);
+  const [feedbackItem, setFeedbackItem] = useState<ContentItem | null>(null);
 
   const [refreshing, setRefreshing] = useState(false);
 
@@ -179,9 +181,21 @@ export function DailyScreen() {
             isSaving={savingId === item.id}
             onShare={() => handleShare(item)}
             onBookmark={() => handleBookmark(item)}
+            onFeedback={() => setFeedbackItem(item)}
           />
         </View>
       ))}
+
+      {feedbackItem && (
+        <FeedbackModal
+          visible={!!feedbackItem}
+          item={feedbackItem}
+          locale={locale}
+          colors={colors}
+          userId={user?.id}
+          onClose={() => setFeedbackItem(null)}
+        />
+      )}
 
       {todayNotifications.length > 0 && (
         <View>
@@ -217,9 +231,11 @@ interface CardProps {
   isSaving: boolean;
   onShare: () => void;
   onBookmark: () => void;
+  onFeedback: () => void;
 }
 
-function ContentCard({ cardType, item, locale, colors, isBookmarked, isSaving, onShare, onBookmark }: CardProps) {
+function ContentCard({ cardType, item, locale, colors, isBookmarked, isSaving, onShare, onBookmark, onFeedback }: CardProps) {
+  const { t } = useTranslation();
   const tr = item.translations[locale];
 
   return (
@@ -247,6 +263,9 @@ function ContentCard({ cardType, item, locale, colors, isBookmarked, isSaving, o
         <Text style={[styles.sourceText, { color: colors.mutedText, flex: 1 }]}>
           {tr?.source ? `(${tr.source})` : ''}
         </Text>
+        <TouchableOpacity onPress={onFeedback} style={[styles.actionBtn, { backgroundColor: colors.background }]}>
+          <Ionicons name="flag-outline" size={17} color={colors.mutedText} />
+        </TouchableOpacity>
         <TouchableOpacity onPress={onBookmark} style={[styles.actionBtn, { backgroundColor: colors.background }]} disabled={isSaving}>
           {isSaving
             ? <ActivityIndicator size="small" color={colors.mutedText} />

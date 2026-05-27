@@ -1,43 +1,36 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { ContentItem, DailyBundle, MessageCategory, SupportedLocale, PaginatedResponse } from '@the-message/shared';
-import { ContentEntity } from './content.entity';
 
 @Injectable()
 export class ContentService {
-  constructor(
-    @InjectRepository(ContentEntity)
-    private readonly contentRepository: Repository<ContentEntity>,
-  ) {}
+  private readonly db: SupabaseClient;
 
-  async findDaily(locale: SupportedLocale = 'tr'): Promise<ContentItem | null> {
-    const today = new Date().toISOString().split('T')[0];
-    const item = await this.contentRepository.findOne({
-      where: { date: today, isActive: true },
-    });
-
-    if (!item) {
-      return this.findLatest(locale);
-    }
-
-    return this.toContentItem(item);
+  constructor() {
+    this.db = createClient(
+      process.env.SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    );
   }
 
   async findDailyBundle(
     locale: SupportedLocale = 'tr',
     activeCategories?: MessageCategory[],
   ): Promise<DailyBundle> {
-    // Deterministic daily selection: use day-of-year as seed offset
     const dayOfYear = Math.floor(
       (Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000,
     );
 
     const pick = async (type: string): Promise<ContentItem> => {
-      let items = await this.contentRepository.find({ where: { type: type as any, isActive: true } });
-      if (!items.length) throw new NotFoundException(`No active ${type} content found`);
+      const { data, error } = await this.db
+        .from('content_items')
+        .select('*')
+        .eq('type', type)
+        .eq('is_active', true);
 
-      // Filter by active categories; fall back to all items if none match
+      if (error || !data?.length) throw new NotFoundException(`No active ${type} content found`);
+
+      let items = data;
       if (activeCategories && activeCategories.length > 0) {
         const filtered = items.filter((item) => activeCategories.includes(item.category));
         if (filtered.length > 0) items = filtered;
@@ -63,51 +56,50 @@ export class ContentService {
     page = 1,
     limit = 20,
   ): Promise<PaginatedResponse<ContentItem>> {
-    const qb = this.contentRepository
-      .createQueryBuilder('c')
-      .where('c.isActive = true')
-      .orderBy('c.createdAt', 'DESC')
-      .skip((page - 1) * limit)
-      .take(limit);
+    let query = this.db
+      .from('content_items')
+      .select('*', { count: 'exact' })
+      .eq('is_active', true)
+      .order('created_at', { ascending: false })
+      .range((page - 1) * limit, page * limit - 1);
 
     if (category) {
-      qb.andWhere('c.category = :category', { category });
+      query = query.eq('category', category);
     }
 
-    const [entities, total] = await qb.getManyAndCount();
+    const { data, error, count } = await query;
+    if (error) throw new Error(error.message);
 
     return {
-      items: entities.map((e) => this.toContentItem(e)),
-      total,
+      items: (data ?? []).map((e) => this.toContentItem(e)),
+      total: count ?? 0,
       page,
       limit,
     };
   }
 
   async findById(id: string): Promise<ContentItem> {
-    const item = await this.contentRepository.findOne({ where: { id, isActive: true } });
-    if (!item) throw new NotFoundException(`Content ${id} not found`);
-    return this.toContentItem(item);
+    const { data, error } = await this.db
+      .from('content_items')
+      .select('*')
+      .eq('id', id)
+      .eq('is_active', true)
+      .single();
+
+    if (error || !data) throw new NotFoundException(`Content ${id} not found`);
+    return this.toContentItem(data);
   }
 
-  private async findLatest(locale: SupportedLocale): Promise<ContentItem | null> {
-    const item = await this.contentRepository.findOne({
-      where: { isActive: true },
-      order: { createdAt: 'DESC' },
-    });
-    return item ? this.toContentItem(item) : null;
-  }
-
-  private toContentItem(entity: ContentEntity): ContentItem {
+  private toContentItem(row: Record<string, unknown>): ContentItem {
     return {
-      id: entity.id,
-      type: entity.type,
-      category: entity.category,
-      recommendedTime: entity.recommendedTime,
-      date: entity.date ?? new Date().toISOString().split('T')[0],
-      translations: entity.translations,
-      audioUrl: entity.audioUrl ?? undefined,
-      imageUrl: entity.imageUrl ?? undefined,
+      id: row.id as string,
+      type: row.type as ContentItem['type'],
+      category: row.category as MessageCategory,
+      recommendedTime: (row.recommended_time ?? 'any') as ContentItem['recommendedTime'],
+      date: (row.date as string) ?? new Date().toISOString().split('T')[0],
+      translations: row.translations as ContentItem['translations'],
+      audioUrl: (row.audio_url as string) ?? undefined,
+      imageUrl: (row.image_url as string) ?? undefined,
     };
   }
 }

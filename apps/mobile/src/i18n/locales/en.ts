@@ -127,4 +127,22 @@ export default {
       evening: 'Evening',
     },
   },
+  feedback: {
+    buttonLabel: 'Report Issue',
+    modalTitle: 'Report Content',
+    modalSubtitle: 'Noticed something incorrect? Let us know and we\'ll fix it.',
+    issueTypeLabel: 'Issue type',
+    issueTypes: {
+      wrong_text: 'Text is incorrect or inaccurate',
+      missing_text: 'Part of the text is missing',
+      wrong_source: 'Source (surah/hadith ref) is wrong',
+      other: 'Other',
+    },
+    notePlaceholder: 'Add a note if you\'d like... (optional)',
+    submit: 'Submit',
+    cancel: 'Cancel',
+    successTitle: 'Thank you',
+    successMessage: 'Your report has been received. We\'ll review and correct it soon.',
+    errorMessage: 'Could not send report. Please try again.',
+  },
 } as const;

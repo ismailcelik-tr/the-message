@@ -127,4 +127,22 @@ export default {
       evening: 'Akşam',
     },
   },
+  feedback: {
+    buttonLabel: 'Hata Bildir',
+    modalTitle: 'İçerik Bildirimi',
+    modalSubtitle: 'Bu içerikle ilgili bir sorun mu fark ettin? Bize bildir, düzeltelim.',
+    issueTypeLabel: 'Sorun türü',
+    issueTypes: {
+      wrong_text: 'Metin hatalı veya eksik',
+      missing_text: 'Metnin bir kısmı eksik',
+      wrong_source: 'Kaynak (sure/hadis no) hatalı',
+      other: 'Diğer',
+    },
+    notePlaceholder: 'Açıklama eklemek istersen yaz... (isteğe bağlı)',
+    submit: 'Gönder',
+    cancel: 'Vazgeç',
+    successTitle: 'Teşekkürler',
+    successMessage: 'Bildirimin alındı. En kısa sürede inceleyip düzelteceğiz.',
+    errorMessage: 'Bildirim gönderilemedi. Lütfen tekrar dene.',
+  },
 } as const;
