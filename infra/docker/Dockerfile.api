@@ -6,6 +6,7 @@ WORKDIR /app
 COPY package.json ./
 COPY apps/api/package.json ./apps/api/
 COPY packages/shared/package.json ./packages/shared/
+COPY scripts/ ./scripts/
 
 # Install dependencies for all workspaces
 RUN npm install
