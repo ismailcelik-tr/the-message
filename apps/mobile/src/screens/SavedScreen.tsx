@@ -173,20 +173,6 @@ export function SavedScreen() {
     );
   }
 
-  if (items.length === 0) {
-    return (
-      <ScrollView
-        style={{ backgroundColor: colors.background }}
-        contentContainerStyle={[styles.centered, { paddingTop: insets.top + 32, flexGrow: 1 }]}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={colors.primary} />}
-      >
-        <Ionicons name="bookmark-outline" size={48} color={colors.mutedText} style={{ marginBottom: 16 }} />
-        <Text style={[styles.emptyTitle, { color: colors.text }]}>{t('saved.empty')}</Text>
-        <Text style={[styles.emptyDesc, { color: colors.mutedText }]}>{t('saved.emptyDesc')}</Text>
-      </ScrollView>
-    );
-  }
-
   // Tiplere göre grupla, GROUP_ORDER sırasına göre
   const grouped = GROUP_ORDER.reduce<Record<string, ContentItem[]>>((acc, type) => {
     const group = items.filter((i) => i.type === type);
@@ -195,13 +181,7 @@ export function SavedScreen() {
   }, {});
 
   return (
-    <ScrollView
-      style={{ backgroundColor: colors.background }}
-      contentContainerStyle={[styles.scroll, { paddingTop: insets.top + 16 }]}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={colors.primary} colors={[colors.primary]} />}
-    >
-      <Text style={[styles.screenTitle, { color: colors.text }]}>{t('saved.title')}</Text>
-
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
       {feedbackItem && (
         <FeedbackModal
           visible={!!feedbackItem}
@@ -222,6 +202,24 @@ export function SavedScreen() {
           colors={colors}
         />
       )}
+
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={items.length === 0
+          ? [styles.centered, { paddingTop: insets.top + 32, flexGrow: 1 }]
+          : [styles.scroll, { paddingTop: insets.top + 16 }]
+        }
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={colors.primary} colors={[colors.primary]} />}
+      >
+      {items.length === 0 ? (
+        <>
+          <Ionicons name="bookmark-outline" size={48} color={colors.mutedText} style={{ marginBottom: 16 }} />
+          <Text style={[styles.emptyTitle, { color: colors.text }]}>{t('saved.empty')}</Text>
+          <Text style={[styles.emptyDesc, { color: colors.mutedText }]}>{t('saved.emptyDesc')}</Text>
+        </>
+      ) : (
+        <>
+      <Text style={[styles.screenTitle, { color: colors.text }]}>{t('saved.title')}</Text>
 
       {Object.entries(grouped).map(([type, groupItems]) => (
         <View key={type}>
@@ -299,7 +297,10 @@ export function SavedScreen() {
           }
         </View>
       ))}
-    </ScrollView>
+        </>
+      )}
+      </ScrollView>
+    </View>
   );
 }
 

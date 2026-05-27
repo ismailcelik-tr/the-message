@@ -101,7 +101,7 @@ export function FeedbackModal({ visible, item, locale, colors, userId, onClose }
               activeOpacity={0.85}
             >
               <Text style={styles.resultBtnText}>
-                {resultState === 'success' ? t('feedback.cancel') : t('feedback.submit')}
+                {resultState === 'success' ? t('login.ok') : t('feedback.submit')}
               </Text>
             </TouchableOpacity>
           </View>

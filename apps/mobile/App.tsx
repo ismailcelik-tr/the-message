@@ -3,7 +3,7 @@ import { useColorScheme } from 'react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import './src/i18n';
+import i18n from './src/i18n';
 import { OnboardingScreen } from './src/screens/OnboardingScreen';
 import { LoginScreen } from './src/screens/LoginScreen';
 import { ResetPasswordScreen } from './src/screens/ResetPasswordScreen';
@@ -25,6 +25,13 @@ function Root() {
   const deviceColorScheme = useColorScheme();
   const [isPasswordRecovery, setIsPasswordRecovery] = useState(false);
   usePreferencesSync();
+
+  // Sync i18n language with stored locale preference (runs on hydration too)
+  useEffect(() => {
+    if (i18n.language !== preferences.locale) {
+      i18n.changeLanguage(preferences.locale);
+    }
+  }, [preferences.locale]);
 
   // Sync currentTheme with device when preference is 'system'
   useEffect(() => {

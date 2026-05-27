@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity,
-  SafeAreaView, StyleSheet, ActivityIndicator, Alert,
+  SafeAreaView, StyleSheet, ActivityIndicator,
   KeyboardAvoidingView, Platform, ScrollView, Image,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
@@ -37,8 +37,11 @@ export function LoginScreen({ onComplete }: Props) {
   const [rememberMe, setRememberMe] = useState(true);
   const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [anonLoading, setAnonLoading] = useState(false);
   const [showResetSentModal, setShowResetSentModal] = useState(false);
   const [otp, setOtp] = useState('');
+  const [modal, setModal] = useState<{ title?: string; message: string } | null>(null);
+
   const handleGoogle = async () => {
     setLoading(true);
     try {
@@ -47,6 +50,7 @@ export function LoginScreen({ onComplete }: Props) {
         options: {
           redirectTo: 'cagri://login-callback',
           skipBrowserRedirect: true,
+          queryParams: { prompt: 'select_account' },
         },
       });
       if (error) throw error;
@@ -54,9 +58,13 @@ export function LoginScreen({ onComplete }: Props) {
 
       const result = await WebBrowser.openAuthSessionAsync(data.url, 'cagri://login-callback');
       if (result.type === 'success' && result.url) {
-        const url = new URL(result.url);
-        const accessToken = url.searchParams.get('access_token');
-        const refreshToken = url.searchParams.get('refresh_token');
+        // Supabase returns tokens in the hash fragment: #access_token=...&refresh_token=...
+        const rawUrl = result.url;
+        const hashIndex = rawUrl.indexOf('#');
+        const fragment = hashIndex >= 0 ? rawUrl.slice(hashIndex + 1) : '';
+        const params = new URLSearchParams(fragment);
+        const accessToken = params.get('access_token');
+        const refreshToken = params.get('refresh_token');
         if (accessToken && refreshToken) {
           const { error: sessionError } = await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
           if (sessionError) throw sessionError;
@@ -64,13 +72,14 @@ export function LoginScreen({ onComplete }: Props) {
         }
       }
     } catch (e: any) {
-      Alert.alert(t('login.error'), e.message);
+      setModal({ title: t('login.error'), message: e.message });
     } finally {
       setLoading(false);
     }
   };
 
   const handleApple = async () => {
+    if (Platform.OS !== 'ios') return;
     setLoading(true);
     try {
       const credential = await AppleAuthentication.signInAsync({
@@ -89,7 +98,7 @@ export function LoginScreen({ onComplete }: Props) {
       onComplete();
     } catch (e: any) {
       if ((e as any).code === 'ERR_REQUEST_CANCELED') return;
-      Alert.alert(t('login.error'), e.message);
+      setModal({ title: t('login.error'), message: e.message });
     } finally {
       setLoading(false);
     }
@@ -103,21 +112,21 @@ export function LoginScreen({ onComplete }: Props) {
       if (error) throw error;
       onComplete();
     } catch (e: any) {
-      Alert.alert(t('login.error'), e.message);
+      setModal({ title: t('login.error'), message: e.message });
     } finally {
       setLoading(false);
     }
   };
 
   const handleAnonymous = async () => {
-    setLoading(true);
+    setAnonLoading(true);
     try {
       await signInAnonymously();
       onComplete();
-    } catch {
-      Alert.alert(t('login.error'));
+    } catch (e: any) {
+      setModal({ title: t('login.error'), message: e.message ?? '' });
     } finally {
-      setLoading(false);
+      setAnonLoading(false);
     }
   };
 
@@ -131,7 +140,7 @@ export function LoginScreen({ onComplete }: Props) {
       if (error) throw error;
       setShowResetSentModal(true);
     } catch (e: any) {
-      Alert.alert(t('login.error'), e.message);
+      setModal({ title: t('login.error'), message: e.message });
     } finally {
       setLoading(false);
     }
@@ -151,7 +160,7 @@ export function LoginScreen({ onComplete }: Props) {
         onComplete();
       }
     } catch (e: any) {
-      Alert.alert(t('login.error'), e.message);
+      setModal({ title: t('login.error'), message: e.message });
     } finally {
       setLoading(false);
     }
@@ -167,6 +176,17 @@ export function LoginScreen({ onComplete }: Props) {
         buttons={[{
           text: t('login.ok' as never),
           onPress: () => { setShowResetSentModal(false); setMode('choose'); },
+          variant: 'primary',
+        }]}
+      />
+      <AppModal
+        visible={!!modal}
+        title={modal?.title}
+        message={modal?.message ?? ''}
+        colors={colors}
+        buttons={[{
+          text: t('login.ok' as never),
+          onPress: () => setModal(null),
           variant: 'primary',
         }]}
       />
@@ -210,27 +230,39 @@ export function LoginScreen({ onComplete }: Props) {
                 <Text style={[styles.socialLabel, { color: colors.text }]}>{t('login.continueGoogle')}</Text>
               </TouchableOpacity>
 
+              {Platform.OS === 'ios' && (
+                <TouchableOpacity
+                  style={[styles.socialBtn, { backgroundColor: colors.card, borderColor: colors.border }]}
+                  activeOpacity={0.8}
+                  onPress={handleApple}
+                  disabled={loading}
+                >
+                  <View style={styles.socialIconWrap}>
+                    <Image
+                      source={appleIcon}
+                      style={[styles.socialIconImg, { width: 34, height: 34 }, currentTheme === 'dark' && { tintColor: '#FFFFFF' }]}
+                      resizeMode="contain"
+                    />
+                  </View>
+                  <Text style={[styles.socialLabel, { color: colors.text }]}>{t('login.continueApple')}</Text>
+                </TouchableOpacity>
+              )}
+
+              <View style={[styles.anonDivider, { borderTopColor: colors.border }]} />
+
               <TouchableOpacity
-                style={[styles.socialBtn, { backgroundColor: colors.card, borderColor: colors.border }]}
+                style={[styles.socialBtn, styles.anonBtn, { backgroundColor: colors.card, borderColor: colors.border }]}
+                onPress={handleAnonymous}
+                disabled={loading || anonLoading}
                 activeOpacity={0.8}
-                onPress={handleApple}
-                disabled={loading}
               >
                 <View style={styles.socialIconWrap}>
-                  <Image
-                    source={appleIcon}
-                    style={[styles.socialIconImg, { width: 34, height: 34 }, currentTheme === 'dark' && { tintColor: '#FFFFFF' }]}
-                    resizeMode="contain"
-                  />
+                  <Text style={{ fontSize: 18 }}>👤</Text>
                 </View>
-                <Text style={[styles.socialLabel, { color: colors.text }]}>{t('login.continueApple')}</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity onPress={handleAnonymous} disabled={loading} activeOpacity={0.7} style={styles.skipBtn}>
-                {loading ? (
-                  <ActivityIndicator color={colors.mutedText} />
+                {anonLoading ? (
+                  <ActivityIndicator color={colors.mutedText} style={{ flex: 1 }} />
                 ) : (
-                  <Text style={[styles.skipText, { color: colors.mutedText }]}>{t('login.continueAnonymous')}</Text>
+                  <Text style={[styles.socialLabel, { color: colors.mutedText }]}>{t('login.continueAnonymous')}</Text>
                 )}
               </TouchableOpacity>
             </View>
@@ -403,8 +435,8 @@ const styles = StyleSheet.create({
   socialIconImg: { width: 28, height: 28, marginRight: 8 },
   socialLabel: { fontSize: 15, fontWeight: '600', flex: 1 },
   comingSoon: { fontSize: 11, fontWeight: '500' },
-  skipBtn: { marginTop: 20, alignItems: 'center', paddingVertical: 12 },
-  skipText: { fontSize: 14 },
+  anonDivider: { borderTopWidth: StyleSheet.hairlineWidth, marginVertical: 12, marginHorizontal: 4 },
+  anonBtn: { opacity: 0.85 },
   input: {
     borderWidth: 1, borderRadius: 14,
     paddingVertical: 14, paddingHorizontal: 16,

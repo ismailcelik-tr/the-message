@@ -15,7 +15,7 @@
         "backgroundColor": "#2A4B3D"
       },
       "minSdkVersion": 24,
-      "versionCode": 16
+      "versionCode": 17
     },
     "ios": {
       "supportsTablet": true,

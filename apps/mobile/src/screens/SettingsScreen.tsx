@@ -306,7 +306,7 @@ export function SettingsScreen() {
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.row, { borderBottomColor: colors.border }]}
-          onPress={() => Linking.openURL('https://cagriapp.com/privacy')}
+          onPress={() => Linking.openURL('https://ismailcelik-tr.github.io/the-message/privacy')}
           activeOpacity={0.8}
         >
           <Text style={[styles.label, { color: colors.text }]}>{t('settings.privacyPolicy' as never)}</Text>

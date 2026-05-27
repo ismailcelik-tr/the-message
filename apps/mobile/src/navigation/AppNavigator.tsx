@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
+import i18n from '../i18n';
 import { Ionicons } from '@expo/vector-icons';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { usePreferencesStore } from '../store/preferences.store';
@@ -92,6 +93,14 @@ function PillTabBar({ state, navigation }: BottomTabBarProps) {
 }
 
 export function AppNavigator() {
+  const locale = usePreferencesStore((s) => s.preferences.locale);
+
+  useEffect(() => {
+    if (i18n.language !== locale) {
+      i18n.changeLanguage(locale);
+    }
+  }, [locale]);
+
   return (
     <NavigationContainer>
       <Tab.Navigator
