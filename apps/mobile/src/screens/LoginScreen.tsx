@@ -22,7 +22,7 @@ interface Props {
   onComplete: () => void;
 }
 
-type Mode = 'choose' | 'email' | 'forgotPassword';
+type Mode = 'choose' | 'email' | 'forgotPassword' | 'confirmEmail';
 
 export function LoginScreen({ onComplete }: Props) {
   const { t } = useTranslation();
@@ -37,6 +37,7 @@ export function LoginScreen({ onComplete }: Props) {
   const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showResetSentModal, setShowResetSentModal] = useState(false);
+  const [otp, setOtp] = useState('');
   const handleGoogle = async () => {
     setLoading(true);
     try {
@@ -93,6 +94,20 @@ export function LoginScreen({ onComplete }: Props) {
     }
   };
 
+  const handleVerifyOtp = async () => {
+    if (otp.length !== 6) return;
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.verifyOtp({ email, token: otp, type: 'signup' });
+      if (error) throw error;
+      onComplete();
+    } catch (e: any) {
+      Alert.alert(t('login.error'), e.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleAnonymous = async () => {
     setLoading(true);
     try {
@@ -128,7 +143,7 @@ export function LoginScreen({ onComplete }: Props) {
       if (isSignUp) {
         const { error } = await supabase.auth.signUp({ email, password });
         if (error) throw error;
-        Alert.alert(t('login.checkEmail'));
+        setMode('confirmEmail');
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
@@ -295,6 +310,40 @@ export function LoginScreen({ onComplete }: Props) {
               )}
 
               <TouchableOpacity onPress={() => setMode('choose')} style={styles.backBtn}>
+                <Text style={[styles.backText, { color: colors.secondary }]}>{t('login.back')}</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {mode === 'confirmEmail' && (
+            <View style={styles.optionsSection}>
+              <Text style={[styles.heading, { color: colors.text }]}>{t('login.confirmEmail')}</Text>
+              <Text style={[styles.subtitle, { color: colors.mutedText }]}>{t('login.confirmEmailSubtitle', { email })}</Text>
+
+              <TextInput
+                style={[styles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text, textAlign: 'center', fontSize: 28, fontWeight: '700', letterSpacing: 8 }]}
+                placeholder="______"
+                placeholderTextColor={colors.mutedText}
+                value={otp}
+                onChangeText={(v) => setOtp(v.replace(/[^0-9]/g, '').slice(0, 6))}
+                keyboardType="number-pad"
+                maxLength={6}
+                autoFocus
+              />
+
+              <TouchableOpacity
+                style={[styles.primaryBtn, { backgroundColor: otp.length === 6 ? colors.primary : colors.border, marginTop: 16 }]}
+                onPress={handleVerifyOtp}
+                disabled={loading || otp.length !== 6}
+                activeOpacity={0.8}
+              >
+                {loading
+                  ? <ActivityIndicator color="#FFF" />
+                  : <Text style={styles.primaryBtnText}>{t('login.confirmEmailBtn')}</Text>
+                }
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={() => setMode('email')} style={[styles.backBtn, { marginTop: 24 }]}>
                 <Text style={[styles.backText, { color: colors.secondary }]}>{t('login.back')}</Text>
               </TouchableOpacity>
             </View>
