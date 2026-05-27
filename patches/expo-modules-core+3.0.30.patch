@@ -13,7 +13,6 @@ index 9697cea..40a970e 100644
 
 diff --git a/node_modules/expo-modules-core/expo-module-gradle-plugin/settings.gradle.kts b/node_modules/expo-modules-core/expo-module-gradle-plugin/settings.gradle.kts
 new file mode 100644
-index 0000000..a400c3b
 --- /dev/null
 +++ b/node_modules/expo-modules-core/expo-module-gradle-plugin/settings.gradle.kts
 @@ -0,0 +1 @@
