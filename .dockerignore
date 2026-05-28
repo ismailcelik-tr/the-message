@@ -1,0 +1,43 @@
+# Dependencies (rebuilt in Docker)
+node_modules
+**/node_modules
+
+# Mobile app — not needed for API build
+apps/mobile
+ios
+android
+
+# Build outputs
+**/dist
+**/.expo
+**/build
+
+# Dev/local files
+**/.env
+**/.env.local
+**/.env.*.local
+
+# Logs
+**/*.log
+**/npm-debug.log*
+
+# OS
+.DS_Store
+**/.DS_Store
+
+# Git
+.git
+.gitignore
+
+# Docs & screenshots
+docs
+screenshots
+content
+
+# Editor
+.vscode
+.idea
+
+# Supabase local
+supabase/.branches
+supabase/.temp

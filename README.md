@@ -1,74 +1,117 @@
 # Çağrı (The Message) Monorepo
 
-Çağrı (Global: *The Message*) is a modern, peaceful, and inviting Islamic guide mobile application built with React Native (Expo) and supported by a robust NestJS backend. Its core mission is to accompany users through their day with quiet, beautiful notifications focusing on hope, purpose, worship, prayer, and dhikr.
+**Çağrı** (*The Message*) is a Turkish/English Islamic guidance mobile app that delivers daily Quran verses, hadiths, dhikr, and prayers via scheduled local push notifications. Warm, non-judgmental tone — a calm companion, not a preachy tool.
 
 ---
 
-## 🛠 Tech Stack & Architecture
+## Tech Stack
 
-This repository is structured as a TypeScript monorepo using native **npm workspaces**:
-
-- **`apps/mobile`**: React Native mobile app using Expo SDK, with custom styled components conforming to a soft, modern design language.
-- **`apps/api`**: NestJS backend framework utilizing TypeORM for PostgreSQL persistence.
-- **`packages/shared`**: Shared compilation module defining standard user preference settings and entity models utilized by both frontend and backend.
-- **`infra/`**: Docker & cloud infrastructure setups (`docker-compose.yml`, AWS strategy documents).
+| Layer | Technology |
+|-------|-----------|
+| Mobile | React Native (Expo SDK 54), TypeScript |
+| Backend | NestJS, deployed on GCP Cloud Run |
+| Database | Supabase (PostgreSQL + Auth + Edge Functions) |
+| Shared types | `packages/shared` — pure TypeScript, no framework deps |
+| Notifications | `expo-notifications` (local, 14-day schedule) |
+| CI/CD | GitHub Actions → Artifact Registry → Cloud Run |
 
 ---
 
-## 🚀 Quick Start - Local Development
+## Monorepo Structure
 
-Follow these steps to run the entire backend suite (API & PostgreSQL) on your local machine using Docker:
-
-### 1. Prerequisite Checks
-Ensure you have Docker Desktop installed and running on your system.
-
-### 2. Startup Database and API
-In the root directory, run:
-```bash
-# Start NestJS API and PostgreSQL
-npm run docker:up
 ```
-*This command compiles the TypeScript sources, coordinates networking, and exposes:*
-- **Backend API**: `http://localhost:3000/api`
-- **PostgreSQL**: Local port `5432` (credentials inside `docker-compose.yml`)
-
-To stop the containers and free up resources:
-```bash
-npm run docker:down
+the-message/
+├── apps/
+│   ├── api/        ← NestJS backend (Supabase JS client, no TypeORM)
+│   └── mobile/     ← Expo React Native app
+├── packages/
+│   └── shared/     ← Shared TypeScript types only
+├── supabase/
+│   ├── migrations/ ← SQL migrations (applied in Supabase dashboard)
+│   ├── seeds/      ← Content seed (254 items)
+│   └── functions/  ← Edge Functions (notify-feedback via Resend)
+├── infra/
+│   └── docker/Dockerfile.api
+└── docs/
+    └── privacy.html  ← Privacy policy (hosted on GitHub Pages)
 ```
+
+**Package boundary rule**: `shared` → nothing; `api` → shared only; `mobile` → shared only.
 
 ---
 
-## 📱 Running the Mobile App (Expo)
+## Quick Start — Local Development
 
-You do not need to run the mobile application inside Docker. You can launch it natively on your machine:
+### Prerequisites
+- Node.js 20+, npm 10+
+- Docker Desktop (for local API)
+- Expo CLI (`npm install -g expo-cli`)
+- Xcode (iOS) or Android Studio (Android) for native builds
 
-### 1. Install Workspace Dependencies
-From the repository root, install all node modules:
+### 1. Install dependencies
 ```bash
 npm install
 ```
 
-### 2. Build the Shared Package
-Compile the common type configurations:
-```bash
-npm run shared:build
+### 2. Configure environment
+
+`apps/mobile/.env.local`:
+```
+EXPO_PUBLIC_API_URL=https://cagri-api-533453726230.europe-west1.run.app/api
+EXPO_PUBLIC_SUPABASE_URL=https://***REDACTED_SUPABASE_HOST***
+EXPO_PUBLIC_SUPABASE_ANON_KEY=<anon key>
 ```
 
-### 3. Run Expo Metro Server
-Launch the application:
-```bash
-npm run mobile:start
+`apps/api/.env`:
 ```
-- Press **`i`** to open the iOS simulator.
-- Press **`a`** to open the Android emulator.
-- Press **`w`** to view the app in the web browser.
-- Scan the QR code with the Expo Go app on your physical mobile device.
+SUPABASE_URL=https://***REDACTED_SUPABASE_HOST***
+SUPABASE_SERVICE_ROLE_KEY=<service_role key>
+```
+
+### 3. Start the API
+```bash
+npm run docker:up     # runs API container (no local PostgreSQL — uses Supabase)
+```
+
+### 4. Start the mobile app
+```bash
+# Native build required (not Expo Go — uses expo-notifications)
+cd apps/mobile && npx expo run:ios    # first time
+npm run mobile:start                  # subsequent runs (Metro only)
+```
 
 ---
 
-## 📁 Repository Structure Details
+## Key Commands
 
-For folder descriptions and architectural boundaries, see:
-- [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) - Product details, design philosophies, and feature scopes.
-- [AGENTS.md](AGENTS.md) - Best practices, package rules, and instructions for AI agents modifying this codebase.
+```bash
+# Build checks (run before any commit or task completion)
+npm run shared:build
+npm run api:build
+docker compose build
+
+# Development
+npm run api:dev          # NestJS hot-reload (direct, no Docker)
+npm run mobile:start     # Metro bundler
+npm run docker:up        # API container
+
+# Type-check mobile
+cd apps/mobile && npx tsc --noEmit
+```
+
+---
+
+## Production
+
+- **API**: `https://cagri-api-533453726230.europe-west1.run.app`
+- **GCP project**: `the-message-api-prod`, region `europe-west1`
+- **Supabase**: `https://***REDACTED_SUPABASE_HOST***`
+- **iOS bundle ID**: `com.themessage.cagri`, build number `7`
+
+---
+
+## Documentation
+
+- [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) — Product vision, design system, feature scope
+- [SESSION_CONTEXT.md](SESSION_CONTEXT.md) — Current state, pending tasks, architecture decisions
+- [CLAUDE.md](CLAUDE.md) — AI agent working instructions

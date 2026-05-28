@@ -1,54 +1,153 @@
 # Project Context: Çağrı (The Message)
 
-This document describes the core values, design decisions, feature scopes, and system architecture for **Çağrı (The Message)**.
+Core product values, design decisions, feature scope, and architecture for **Çağrı (The Message)**.
 
 ---
 
-## 1. Product Vision & Approach
+## 1. Product Vision
 
-Çağrı is an Islamic guide application designed to inspire hope, cultivate purpose, and foster sustainable spiritual practices. It stands in stark contrast to heavy, traditional, or transactional apps.
+Çağrı is an Islamic guidance app designed to inspire hope, cultivate purpose, and foster sustainable spiritual practice. It stands in contrast to heavy, traditional, or transactional Islamic apps.
 
-### Core Tone Guidelines
-* **Inviting, Not Preachy**: The language is warm, soft, and gentle. It never scolds or judges the user.
-* **Quiet presence**: It acts as a calm companion, keeping notifications light, readable, and non-intrusive.
-* **Micro-Habits**: Prioritizes tiny, persistent moments of mindfulness (tefekkür, dhikr, brief prayers) rather than demanding massive lifestyle overhauls.
+### Tone Guidelines
+- **Inviting, not preachy** — warm, soft, never judgmental
+- **Quiet presence** — notifications are light and readable, not alarming
+- **Micro-habits** — brief moments of tefekkür and dhikr, not demands for lifestyle overhaul
 
 ---
 
 ## 2. Visual Design System
 
-The app utilizes a modern, aesthetic approach far removed from green-and-gold curlicues or heavy corporate branding:
+Modern aesthetic — avoid green-and-gold Islamic clichés.
 
-* **Soft Color Palette**: 
-  - *Light Mode*: Soft mint green (`#F4F7F6`), Deep Forest Sage (`#2A4B3D`), and accents of Warm Sand.
-  - *Dark Mode*: Warm charcoal (`#1A1D1C`) paired with soft Jade Green (`#A0C4B6`) accents.
-* **Typography**: Elegant, spacious layout utilizing clean modern sans-serif fonts, with traditional quotes set in classical serif faces for deep focus.
-* **UI Elements**: High-contrast, rounded glassmorphism-style cards, smooth switches, and clear tap indicators.
+| Mode | Background | Primary | Accent |
+|------|-----------|---------|--------|
+| Light | `#F4F7F6` (soft mint) | `#2A4B3D` (forest sage) | warm sand / `#7FA899` |
+| Dark | `#1A1D1C` (warm charcoal) | `#A0C4B6` (soft jade) | — |
 
----
-
-## 3. MVP Scope
-
-### Included Features
-1. **Daily Messages**:
-   - A single daily featured content block matching the user's category preferences (hope, purpose, worship, prayer, dhikr).
-2. **Flexible Notifications**:
-   - Customizable notification frequencies (Low: 1x, Medium: 3x, High: 5x a day).
-   - "Silent Hours" / "Rahatsız Etme Saatleri" settings to block alerts during sleep (e.g. 22:00 - 06:00).
-3. **Local Storage**:
-   - Remembers user choice configurations natively.
-
-### Out of Scope (For Future Phases)
-* Artificial Intelligence / AWS Bedrock guidance.
-* User Authentication, login, or social tracking.
-* Payment systems, premium tiers, or ads.
-* High-intensity UI animations.
+- **UI**: glassmorphism-style rounded cards, smooth toggles
+- **Typography**: modern sans-serif for UI labels; classical serif for quoted content
 
 ---
 
-## 4. MVP User Interface Screens
+## 3. Feature Scope
 
-- **Onboarding Screen**: Welcomes the user with the core philosophy and a single clean trigger to begin.
-- **Günün Mesajı (Daily Message)**: Displays a central text container showing a selected Verse/Hadith/Quote matching the user's configuration.
-- **Manevi Odak (Category Preferences)**: Checkbox/switch settings to refine content interests.
-- **Ayarlar (Settings)**: Notification frequency controls, Dark Mode switch, and silent interval definitions.
+### In Scope (MVP — fully implemented)
+- Daily content delivery: Quran verses, hadiths, esmaül hüsna, prayers, worship reminders, dhikr
+- Push notifications: 1x / 3x / 5x per day (low/medium/high), 14-day rolling schedule
+- Silent hours (do-not-disturb) with midnight-spanning range support
+- Daily content rotation: different content per calendar day (date-seeded)
+- Category preferences (hope, purpose, worship, prayer, dhikr) — filter both display and notifications
+- Bookmarks: save content items; grouped by type in SavedScreen
+- Content feedback: report errors (wrong text, wrong source, missing text, other)
+- Auth: anonymous, email OTP (6-digit), Google OAuth, Apple Sign In (iOS only)
+- Password reset flow
+- Light / dark / system theme (follows device setting when `system`)
+- Turkish + English i18n
+
+### Out of Scope (do not introduce)
+- AI / AWS Bedrock
+- Payments, premium tiers, ads
+- High-intensity animations
+- Audio player or article reader (types defined in schema but no UI yet)
+
+---
+
+## 4. Screens
+
+| Screen | Route | Description |
+|--------|-------|-------------|
+| OnboardingScreen | — | First launch welcome, "Haydi Bismillah!" CTA |
+| LoginScreen | — | Anonymous / Email OTP / Google / Apple |
+| ResetPasswordScreen | — | Password update after email recovery link |
+| DailyScreen | Tab 1 | 5 content cards + simulated notification log |
+| FocusScreen | Tab 2 | Category preference toggles |
+| SavedScreen | Tab 3 | Grouped bookmarks with remove + feedback |
+| SettingsScreen | Tab 4 | Notification controls, theme, language, sign out |
+
+---
+
+## 5. Content Model
+
+**`content_items` table** (Supabase):
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `id` | uuid | PK |
+| `type` | text | `verse \| hadith \| prayer \| dhikr \| esma \| worship` |
+| `category` | text | `hope \| purpose \| worship \| prayer \| dhikr` |
+| `recommended_time` | text | `morning \| midMorning \| noon \| afternoon \| evening` |
+| `translations` | jsonb | `{ tr: { content, source?, arabicText?, transliteration? }, en: {...} }` |
+| `is_active` | boolean | Soft delete flag |
+
+**Daily bundle** (`GET /api/content/daily-bundle`): returns one item per type — `{ esma, verse, hadith, prayer, worship }`. Selection is deterministic per calendar date using Unix epoch day number as seed.
+
+---
+
+## 6. Notification Architecture
+
+```
+User prefs change
+  → App.tsx useEffect
+  → fetchDailyBundle(locale, categories, today)
+  → rescheduleNotifications(prefs, todayBundle)
+      ├── cancelAllScheduledNotificationsAsync()
+      └── for dayOffset 0..13:
+            fetchDailyBundle(locale, categories, dateStr)  ← separate API call per day
+            → scheduleNotificationAsync() for each slot
+```
+
+Slot-to-content mapping:
+| Slot | Content type |
+|------|-------------|
+| morning | verse |
+| midMorning | esma |
+| noon | hadith |
+| afternoon | esma |
+| evening | prayer |
+
+---
+
+## 7. Auth Flow
+
+```
+App start
+  → supabase.auth.getSession()
+  → onAuthStateChange listener
+      ├── PASSWORD_RECOVERY → ResetPasswordScreen
+      └── else → update session in store
+
+LoginScreen options:
+  1. Anonymous: signInAnonymously()
+  2. Email: signInWithOtp() → 6-digit code → verifyOtp()
+  3. Google: startAsync(authUrl) → parse hash fragment → setSession(access_token, refresh_token)
+  4. Apple (iOS only): signInAsync() → credential → signInWithIdToken()
+```
+
+---
+
+## 8. Feedback Email Pipeline
+
+```
+User submits FeedbackModal
+  → POST /api/feedback
+  → INSERT INTO content_feedback
+  → DB trigger: on_feedback_insert (pg_net)
+  → Supabase Edge Function: notify-feedback
+  → Resend API → HTML email to admin
+```
+
+Required secret: `RESEND_API_KEY` in Edge Function environment (Supabase Dashboard → Edge Functions → notify-feedback → Secrets).
+
+---
+
+## 9. Infrastructure
+
+| Service | Provider | Notes |
+|---------|----------|-------|
+| Mobile build | EAS (Expo) | Project ID: `f732fcd2-cf13-4e9e-bf15-496da79cfb85` |
+| API hosting | GCP Cloud Run | `europe-west1`, min instances 0 |
+| Container registry | GCP Artifact Registry | `europe-west1-docker.pkg.dev/the-message-api-prod/cagri-api/` |
+| CI/CD | GitHub Actions | Build → push → deploy on push to main |
+| Database + Auth | Supabase | `gpuhhpxnxrvvjappindr`, all migrations applied |
+| Email | Resend | Via Supabase Edge Function |
+| Privacy policy | GitHub Pages | `docs/privacy.html` |

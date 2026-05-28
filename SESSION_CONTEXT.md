@@ -1,14 +1,14 @@
 # SESSION_CONTEXT.md
 
-Last updated: 2026-05-26
-Branch: `main` — latest commit `cbb38e4`
+Last updated: 2026-05-28
+Branch: `main` — latest commit `5acf620`
 GitHub: https://github.com/ismailcelik-tr/the-message
 
 ---
 
 ## Project Summary
 
-**Çağrı (The Message)** — Turkish/English Islamic guidance mobile app. Delivers daily Quran verses, hadiths, esmaül hüsna, prayers, worship reminders, and dhikr via scheduled local push notifications. Warm, non-judgmental tone.
+**Çağrı (The Message)** — Turkish/English Islamic guidance mobile app. Delivers daily Quran verses, hadiths, esmaül hüsna, prayers, worship reminders, and dhikr via scheduled local push notifications. Warm, non-judgmental tone. Currently at App Store submission stage.
 
 ---
 
@@ -22,55 +22,60 @@ the-message/                        ← npm workspaces monorepo
 │   ├── src/
 │   │   ├── app.module.ts           ← ConfigModule + ContentModule + FeedbackModule
 │   │   ├── content/
-│   │   │   ├── content.service.ts  ← Supabase JS client, queries content_items table
-│   │   │   ├── content.controller.ts
+│   │   │   ├── content.service.ts  ← Supabase JS client, date-based daily content rotation
+│   │   │   ├── content.controller.ts  ← GET /daily-bundle?locale&categories&date
 │   │   │   └── content.module.ts
 │   │   ├── feedback/
 │   │   │   ├── feedback.service.ts ← Supabase service_role insert to content_feedback
 │   │   │   ├── feedback.controller.ts
 │   │   │   └── feedback.module.ts
 │   │   └── main.ts
-│   └── seed.ts                     ← LEGACY: raw pg client, no longer used
+│   └── .env                        ← SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY (gitignored)
 ├── apps/mobile/                    ← Expo SDK 54 / React Native 0.81
-│   ├── App.tsx                     ← Entry: auth gate → Onboarding | Login | AppNavigator
+│   ├── App.tsx                     ← Entry: i18n sync + auth gate → Onboarding | Login | AppNavigator
 │   └── src/
 │       ├── api/
-│       │   ├── content.api.ts      ← fetchDailyBundle(locale, categoryPreferences)
+│       │   ├── client.ts           ← apiFetch wrapper
+│       │   ├── content.api.ts      ← fetchDailyBundle(locale, categoryPreferences, date?)
 │       │   └── feedback.api.ts     ← submitFeedback(feedback, userId?)
 │       ├── components/
+│       │   ├── AppModal.tsx        ← Unified modal (replaces all Alert.alert calls)
 │       │   ├── FeedbackModal.tsx   ← Issue type selector + note input
 │       │   └── TimePickerRow.tsx
 │       ├── hooks/usePreferencesSync.ts
 │       ├── i18n/locales/tr.ts, en.ts
 │       ├── lib/
 │       │   ├── supabase.ts         ← client with startup guard (throws if env vars missing)
-│       │   ├── notifications.ts    ← rescheduleNotifications, requestNotificationPermission
+│       │   ├── notifications.ts    ← rescheduleNotifications (14-day, per-day bundles)
 │       │   ├── bookmarks.ts
 │       │   ├── notificationLog.ts
 │       │   └── prefsSync.ts
 │       ├── navigation/AppNavigator.tsx
 │       ├── screens/
-│       │   ├── DailyScreen.tsx     ← 5 content cards + FeedbackModal
+│       │   ├── DailyScreen.tsx     ← 5 content cards + Bugünün Bildirimleri + FeedbackModal
 │       │   ├── FocusScreen.tsx     ← Category preference toggles
-│       │   ├── SavedScreen.tsx     ← Grouped bookmarks + FeedbackModal
+│       │   ├── SavedScreen.tsx     ← Grouped bookmarks + FeedbackModal (single ScrollView)
 │       │   ├── SettingsScreen.tsx
-│       │   ├── LoginScreen.tsx
-│       │   └── OnboardingScreen.tsx
+│       │   ├── LoginScreen.tsx     ← Anonymous + Email OTP + Google + Apple (iOS only)
+│       │   ├── OnboardingScreen.tsx
+│       │   └── ResetPasswordScreen.tsx
 │       ├── store/
-│       │   ├── auth.store.ts
+│       │   ├── auth.store.ts       ← Zustand: session, isLoading
 │       │   └── preferences.store.ts  ← Zustand + AsyncStorage (key: cagri-preferences)
 │       └── theme/colors.ts
 ├── supabase/
+│   ├── functions/notify-feedback/  ← Edge Function: sends email via Resend on new feedback
 │   ├── migrations/
-│   │   ├── 001_profiles.sql
-│   │   ├── 002_bookmarks.sql
-│   │   ├── 003_content_feedback.sql  ← feedback table (run in Supabase dashboard)
-│   │   └── 004_content_items.sql     ← content table + RLS (run in Supabase dashboard)
-│   └── seeds/
-│       └── 001_content.sql           ← 254 content items (run in Supabase SQL Editor)
-├── docker-compose.yml              ← API container ONLY (no PostgreSQL — removed)
-├── infra/docker/Dockerfile.api
-└── content/                        ← Raw source docs (Word/PDF), not committed to git
+│   │   ├── 001_profiles.sql        ← applied ✓
+│   │   ├── 002_bookmarks.sql       ← applied ✓
+│   │   ├── 003_content_feedback.sql ← applied ✓ (+ DB trigger on_feedback_insert)
+│   │   ├── 004_content_items.sql   ← applied ✓
+│   │   └── 005_app_feedback.sql    ← applied ✓
+│   └── seeds/001_content.sql       ← 254 items (applied ✓)
+├── infra/docker/Dockerfile.api     ← Multi-stage: base/development/build/production
+├── docker-compose.yml              ← API container ONLY (no local PostgreSQL)
+├── docs/privacy.html               ← Privacy policy (GitHub Pages)
+└── scripts/fix-expo-gradle-plugin.js  ← Android build fix (postinstall hook)
 ```
 
 **Boundary rule**: `shared` → nothing; `api` → shared only; `mobile` → shared only.
@@ -79,34 +84,35 @@ the-message/                        ← npm workspaces monorepo
 
 ## Backend Status
 
+### Deployment
+- **Production**: Fly.io — `https://cagri-api.fly.dev` (region: cdg / Paris)
+- **CI/CD**: GitHub Actions (`.github/workflows/deploy.yml`) — `flyctl deploy --remote-only` on push to main
+- **CI status**: Migrated 2026-05-28 — GCP Cloud Run → Fly.io (free tier, always-on, no cold start)
+
 ### API Endpoints
 | Method | Path | Description |
 |--------|------|-------------|
 | GET | `/api/health` | Health check |
-| GET | `/api/content/daily-bundle?locale=tr&categories=hope,worship` | 5-card daily bundle |
+| GET | `/api/content/daily-bundle?locale=tr&categories=hope,worship&date=YYYY-MM-DD` | 5-card daily bundle |
 | GET | `/api/content?locale=tr&category=&page=1&limit=20` | Paginated list |
 | GET | `/api/content/:id` | Single item by ID |
 | POST | `/api/feedback` | Submit content error report |
 
-`GET /api/content/daily` (single item) was removed — only daily-bundle is used.
+### Database — Supabase PostgreSQL
+TypeORM completely removed. All data access via `@supabase/supabase-js` service_role client.
 
-### Database — Supabase PostgreSQL (NOT local Docker)
-TypeORM is **completely removed**. All data access via `@supabase/supabase-js` service_role client.
-
-**Tables:**
+**Tables (all migrations applied):**
 | Table | Description |
 |-------|-------------|
 | `content_items` | All content (esma, verse, hadith, prayer, worship, dhikr) |
 | `profiles` | User preferences sync |
 | `bookmarks` | Saved content items (snapshot JSONB) |
 | `content_feedback` | User-submitted error reports |
+| `app_feedback` | General app feedback (migration 005) |
 
-**`content_items` columns:** `id (uuid)`, `type`, `category`, `recommended_time`, `date`, `translations (jsonb)`, `audio_url`, `image_url`, `is_active`, `created_at`, `updated_at`
+**Daily bundle selection**: `Math.floor(new Date(date).getTime() / 86400000) % items.length` — deterministic per calendar day, consistent across all users. The `date` query param is required for per-day rotation in notifications.
 
-Note: column naming is **snake_case** in DB, mapped to camelCase in `toContentItem()`.
-
-### Content Seed
-**254 items** in `supabase/seeds/001_content.sql`:
+### Content Seed (254 items)
 | type | count |
 |------|-------|
 | esma | 100 (all 99 names + Allah) |
@@ -116,12 +122,10 @@ Note: column naming is **snake_case** in DB, mapped to camelCase in `toContentIt
 | worship | 21 |
 | dhikr | 27 |
 
-Daily bundle selection: `dayOfYear % items.length` — deterministic per day, same for all users.
-Category filtering: active categories from query param → falls back to all items if no match.
-
-### Docker
-`docker-compose.yml` now has **only the API container** — PostgreSQL removed.
-API requires `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` env vars at runtime.
+### Supabase Edge Function
+- `notify-feedback`: triggered by `on_feedback_insert` DB trigger (pg_net) when a row is inserted into `content_feedback`
+- Fetches content text from `content_items`, fetches user email via admin API, sends styled HTML email via Resend API
+- **Pending**: `RESEND_API_KEY` must be added to Edge Function secrets in Supabase Dashboard
 
 ---
 
@@ -130,11 +134,19 @@ API requires `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` env vars at runtime.
 ### App Flow
 ```
 App.tsx
-  ├── !isOnboarded → OnboardingScreen (logo + "Haydi Bismillah!")
-  ├── isLoading → null
-  ├── !session → LoginScreen (anonymous sign-in creates session)
+  ├── !isOnboarded → OnboardingScreen
+  ├── isPasswordRecovery && session → ResetPasswordScreen
+  ├── !session → LoginScreen (anonymous / email OTP / Google / Apple)
   └── session → AppNavigator (4 tabs)
 ```
+
+### Auth (fully implemented)
+- **Anonymous**: creates Supabase anon session, `isAnonymous: true` in store
+- **Email OTP**: 6-digit code (Supabase dashboard configured to 6 digits)
+- **Google OAuth**: `expo-web-browser` + Supabase OAuth, tokens parsed from URL hash fragment (`#access_token=...`), `prompt: 'select_account'` forces account picker every time
+- **Apple Sign In**: `expo-apple-authentication`, iOS only (Platform.OS guard), wrapped in `{Platform.OS === 'ios' && ...}`
+- **Password Reset**: `PASSWORD_RECOVERY` event handled in `onAuthStateChange`, routes to `ResetPasswordScreen`
+- All alerts use `AppModal` component (never `Alert.alert()`)
 
 ### Tabs
 | Tab | Screen | Icon |
@@ -150,52 +162,28 @@ App.tsx
 3. **Hadis** — content + source
 4. **Dua** — content + source
 5. **İbadet** — content + source
-6. **Bugünün Bildirimleri** — derived from bundle + schedule (simulated, not real push)
+6. **Bugünün Bildirimleri** — derived from bundle + schedule (simulated, not confirmed delivery)
 
-Each card has: `flag-outline` button → FeedbackModal + `bookmark` button + `share` button.
+Each card: `flag-outline` → FeedbackModal + `bookmark` toggle + `share` button.
 
-### SavedScreen Groups (order)
-`esma → verse → hadith → prayer → worship → dhikr → notification`
-Each card has `flag-outline` (FeedbackModal) + `bookmark` (remove) buttons.
+### Push Notifications (MSG-25 complete)
+- Real local notifications via `expo-notifications ~0.32.17`
+- `rescheduleNotifications(prefs, todayBundle)` fetches a **separate bundle per day** for 14 days
+- Per-day bundles cached in a `Map<string, DailyBundle>` to avoid redundant API calls
+- Date string (`YYYY-MM-DD`) passed to `fetchDailyBundle` → API uses Unix epoch day as seed
+- Notification title: `{SlotLabel} — Çağrı` (TR) / `{SlotLabel} — The Message` (EN)
+- Silent hours support including midnight-spanning ranges (e.g. 22:00–06:00)
+- Re-scheduled when: `notificationEnabled`, `frequency`, `schedule`, `silentHours`, or `locale` changes
 
-### Feedback Flow
-- User taps `flag-outline` on any card in DailyScreen or SavedScreen
-- `FeedbackModal` opens: select issue type (wrong_text / missing_text / wrong_source / other) + optional note
-- Submits to `POST /api/feedback` → stored in `content_feedback` table
-- Admin reviews via Supabase Studio (status: pending → reviewed → resolved)
+### i18n
+- Zustand preferences store hydrates async from AsyncStorage
+- `App.tsx` has `useEffect` that calls `i18n.changeLanguage(preferences.locale)` when `preferences.locale` changes — this prevents UI language mismatch on cold start
+- `AppNavigator.tsx` has a redundant safety net for the same
 
-### Push Notifications
-- **Real local notifications are implemented** via `expo-notifications ~0.32.17`
-- `notifications.ts`: `requestNotificationPermission()`, `rescheduleNotifications(prefs, bundle)`
-- 14-day rolling schedule, respects silent hours (including midnight-spanning ranges)
-- Frequency: low=1/day, medium=3/day, high=5/day
-- Re-scheduled in `App.tsx` when `notificationEnabled`, `frequency`, `schedule`, `silentHours`, or `locale` changes
-- "Bugünün Bildirimleri" card is still simulated (shows expected notifications, not confirmed-sent ones)
-
-### Auth
-- Supabase anonymous + email auth
-- `isAnonymous: true` → bookmarks and prefs sync disabled (but local prefs still work)
-- Session persisted via AsyncStorage through Supabase SDK
-
-### System Theme
-`useColorScheme()` wired in `App.tsx` — when `preferences.theme === 'system'`, `currentTheme` follows device dark/light mode automatically.
-
-### Startup Guard
-`apps/mobile/src/lib/supabase.ts` throws descriptive error if `EXPO_PUBLIC_SUPABASE_URL` or `EXPO_PUBLIC_SUPABASE_ANON_KEY` are missing.
-
----
-
-## Supabase Status
-
-- Project URL: in `apps/mobile/.env.local` (`EXPO_PUBLIC_SUPABASE_URL`)
-- Anon key: in `apps/mobile/.env.local` (`EXPO_PUBLIC_SUPABASE_ANON_KEY`) — client-safe, RLS protected
-- Service role key: in `apps/api/.env` (`SUPABASE_SERVICE_ROLE_KEY`) — server only, never in mobile
-- **Applied migrations:** 001 profiles, 002 bookmarks, 003 content_feedback ✓
-- **Pending migration:** 004_content_items.sql — must be run in Supabase dashboard
-- **Pending seed:** 001_content.sql — must be run in Supabase SQL Editor after 004
-- Auth enabled: anonymous + email
-- Google OAuth: deferred (MSG-8)
-- Apple OAuth: deferred (MSG-9)
+### Feedback Email
+- User submits feedback via `FeedbackModal` → `POST /api/feedback` → row in `content_feedback`
+- DB trigger fires → Supabase Edge Function `notify-feedback` → Resend API → email to admin
+- **Pending**: `RESEND_API_KEY` secret must be added in Supabase Dashboard
 
 ---
 
@@ -203,22 +191,16 @@ Each card has `flag-outline` (FeedbackModal) + `bookmark` (remove) buttons.
 
 ### `apps/mobile/.env.local` (gitignored)
 ```
-EXPO_PUBLIC_API_URL=http://<your-local-ip>:3000/api
-EXPO_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
+EXPO_PUBLIC_API_URL=https://cagri-api-533453726230.europe-west1.run.app/api
+EXPO_PUBLIC_SUPABASE_URL=https://***REDACTED_SUPABASE_HOST***
 EXPO_PUBLIC_SUPABASE_ANON_KEY=<anon key>
+SUPABASE_URL=https://***REDACTED_SUPABASE_HOST***
 ```
-> Physical device can't use `localhost` — use local network IP.
 
 ### `apps/api/.env` (gitignored)
 ```
-SUPABASE_URL=https://xxxx.supabase.co
+SUPABASE_URL=https://***REDACTED_SUPABASE_HOST***
 SUPABASE_SERVICE_ROLE_KEY=<service_role key from Supabase Dashboard → Settings → API>
-```
-
-### Root `.env` (for docker-compose)
-```
-SUPABASE_URL=https://xxxx.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=<service_role key>
 ```
 
 ### Key Commands
@@ -228,136 +210,126 @@ npm run shared:build
 npm run api:build
 docker compose build
 
-# Mobile dev (requires Expo native build — NOT Expo Go)
-npm run mobile:start     # then press i (iOS simulator) or a (Android)
-# Physical device:
-cd apps/mobile && npx expo run:ios  # first time
-npm run mobile:start                # subsequent runs
+# Mobile dev (requires native Expo build — NOT Expo Go)
+npm run mobile:start              # Metro bundler
+cd apps/mobile && npx expo run:ios  # first time or after native changes
 
-# Docker (API only — no local PostgreSQL anymore)
+# Docker (API only — no local PostgreSQL)
 npm run docker:up
 npm run docker:down
 
-# Type-check mobile only (root tsc won't work for mobile)
+# Type-check mobile only
 cd apps/mobile && npx tsc --noEmit
-
-# Seed Supabase (run SQL directly in Supabase SQL Editor):
-# 1. supabase/migrations/004_content_items.sql
-# 2. supabase/seeds/001_content.sql
 ```
-
----
-
-## Shared Types (`packages/shared/src/index.ts`)
-
-Key types:
-- `ContentType`: `'verse' | 'hadith' | 'prayer' | 'dhikr' | 'esma' | 'worship' | 'notification' | 'audio' | 'article'`
-- `MessageCategory`: `'hope' | 'purpose' | 'worship' | 'prayer' | 'dhikr'`
-- `ContentItem`: `{ id, type, category, recommendedTime, date, translations, audioUrl?, imageUrl? }`
-- `ContentTranslation`: `{ content, source?, title?, arabicText?, transliteration? }`
-- `DailyBundle`: `{ esma, verse, hadith, prayer, worship }` — all `ContentItem`
-- `UserPreferences`: theme, notificationEnabled, notificationFrequency, notificationSchedule, categoryPreferences, silentHours, locale
-- `FeedbackIssueType`: `'wrong_text' | 'missing_text' | 'wrong_source' | 'other'`
-- `ContentFeedback`: `{ contentId, contentType, issueType, note?, locale }`
 
 ---
 
 ## Completed Tasks
 
-- [x] NestJS API with daily-bundle endpoint + category filtering
-- [x] TypeORM removed → Supabase JS client (all data via Supabase)
-- [x] PostgreSQL Docker container removed
-- [x] content_items table + RLS in Supabase (004_content_items.sql)
-- [x] 254-item content seed (001_content.sql) — Sahih sources only
-- [x] DailyScreen — 5 content cards (esma, verse, hadith, prayer, worship)
-- [x] Bugünün Bildirimleri card (simulated notification log)
-- [x] SavedScreen — grouped bookmarks with remove + feedback
-- [x] Supabase auth (anonymous + email)
-- [x] Preferences sync (profiles table, debounced write, remote load on login)
-- [x] Bookmarks stored in Supabase (content + notification types)
-- [x] Custom pill tab bar (4 tabs)
-- [x] Light/dark/system theme (useColorScheme wired)
-- [x] i18n (tr/en) for all screens including feedback
-- [x] Notification schedule: low/medium/high with configurable slot times
-- [x] Silent hours toggle + time picker (midnight-spanning range support)
-- [x] Real local push notifications via expo-notifications (14-day schedule)
-- [x] Re-schedule on preference change
-- [x] FocusScreen category toggles filter DailyScreen content (API + mobile)
-- [x] Startup guard for missing .env.local / Supabase env vars
-- [x] System theme follows device dark mode
-- [x] User content feedback mechanism (FeedbackModal + /api/feedback + content_feedback table)
-- [x] Expo SDK upgraded 51 → 54 (requires native build, not Expo Go)
+- [x] NestJS API with daily-bundle endpoint + category filtering + date-based rotation (MSG-25)
+- [x] TypeORM removed → Supabase JS client
+- [x] PostgreSQL Docker container removed (Supabase only)
+- [x] All Supabase migrations applied (001–005)
+- [x] 254-item content seed
+- [x] GCP Cloud Run deployment + GitHub Actions CI/CD (MSG-10)
+- [x] DailyScreen — 5 content cards + simulated notification log
+- [x] SavedScreen — grouped bookmarks, crash fix (single ScrollView, always-mounted modals)
+- [x] FocusScreen category toggles → filter DailyScreen content
+- [x] Supabase auth: anonymous + email OTP (6-digit) + Google OAuth + Apple Sign In (iOS only)
+- [x] Password reset flow (ResetPasswordScreen)
+- [x] AppModal component — unified replacement for Alert.alert()
+- [x] Preferences sync (profiles table, debounced write)
+- [x] Bookmarks in Supabase (content + notification types)
+- [x] Real local push notifications — 14-day rolling schedule (MSG-1/2/3)
+- [x] Per-day notification content rotation (MSG-25)
+- [x] FeedbackModal + /api/feedback + content_feedback table
+- [x] Feedback email via Supabase Edge Function + Resend API
+- [x] i18n (tr/en) with async hydration fix
+- [x] System theme follows device dark/light mode (MSG-5/6)
+- [x] Silent hours with midnight-spanning range support
 - [x] Pull-to-refresh on DailyScreen and SavedScreen
-- [x] Linear backlog aligned with current state
+- [x] Expo SDK upgraded 51 → 54
+- [x] Dockerfile.api fix: `COPY scripts/` before `npm install` (postinstall hook)
 
 ---
 
-## Pending Tasks (Linear)
+## Pending Tasks
 
-### High Priority
+### Immediate (App Store submission blockers)
+| # | Task | Notes |
+|---|------|-------|
+| 1 | **Verify CI/CD** | Commit Dockerfile.api fix → confirm GitHub Actions green |
+| 2 | **Supabase: add Redirect URL** | Dashboard → Auth → URL Config → add `cagri://**` (Google OAuth on physical device) |
+| 3 | **Supabase: add RESEND_API_KEY** | Dashboard → Edge Functions → notify-feedback → Secrets |
+| 4 | **MSG-23: App Store screenshots** | iPhone 17 Pro Max simulator, light theme, Turkish locale. 5 screens: Onboarding, DailyScreen, SavedScreen, FocusScreen, SettingsScreen. User does manually — automation returns black screen. Output: `screenshots/` |
+| 5 | **MSG-22: App Store Connect metadata** | Description (TR+EN), keywords, Support URL, Privacy URL, submit for review |
+| 6 | **GitHub Pages check** | Confirm `docs/privacy.html` committed + Pages enabled on repo → provides Privacy Policy URL |
+
+### Backlog
 | Issue | Task |
 |-------|------|
-| **MSG-17** | **Onboarding Wizard** — 2-step flow after first launch: (1) Manevi Odak topic selection, (2) notification frequency + silent hours setup. Sets `onboardingCompleted` flag. Triggers `rescheduleNotifications` on completion. |
-| **MSG-10** | **GCP Cloud Run deployment** — Docker image to Artifact Registry, Cloud Run service, Secret Manager for env vars, CI/CD via GitHub Actions. Region: `europe-west1`. |
-
-### Low Priority / Backlog
-| Issue | Task |
-|-------|------|
-| MSG-8 | Google OAuth (needs Google Cloud Console) |
-| MSG-9 | Apple OAuth (needs Apple Developer account) |
-| MSG-11 | Audio/article content type UI (player + reader components) |
-| MSG-14 | Content library browse screen (paginated list UI) |
+| MSG-21 | Google Play Developer Account + Android AAB |
+| MSG-17 | Onboarding Wizard (2-step: topic selection + notification setup) |
+| MSG-8 | Google OAuth improvements |
+| MSG-11 | Audio/article content type UI |
+| MSG-14 | Content library browse screen |
 
 ---
 
 ## What Should NOT Be Changed
 
 - `strict: true` in all `tsconfig.json` — never disable
-- The `shared → nothing / api → shared only / mobile → shared only` boundary
+- `shared → nothing / api → shared only / mobile → shared only` package boundary
 - `bookmarks` table `unique(user_id, content_id)` constraint — upsert logic depends on it
 - Notification bookmark ID format `notif-YYYY-MM-DD-{index}` — SavedScreen and DailyScreen split on `notif-` prefix
 - `EXPO_PUBLIC_` prefix on all mobile env vars — required for Expo to bundle them
-- `SUPABASE_SERVICE_ROLE_KEY` must stay server-side only (api/.env) — never in mobile
+- `SUPABASE_SERVICE_ROLE_KEY` must stay server-side only (`apps/api/.env`) — never in mobile
 - RLS policies on all Supabase tables — do not bypass
-- `expo-notifications ~0.32.17` — SDK 54 compatible version; `shouldShowBanner`/`shouldShowList` required in notification handler
-- Column naming convention: DB uses `snake_case` (`recommended_time`, `is_active`, `audio_url`), code uses `camelCase` — mapping is in `ContentService.toContentItem()`
-
----
-
-## Unfinished / Pending Actions (requires manual steps)
-
-1. **Run migration 004** in Supabase SQL Editor: `supabase/migrations/004_content_items.sql`
-2. **Run seed** in Supabase SQL Editor: `supabase/seeds/001_content.sql` (after 004)
-3. **Add `SUPABASE_SERVICE_ROLE_KEY`** to `apps/api/.env` (Supabase Dashboard → Settings → API → service_role)
-4. **Restart Docker**: `docker compose down && docker compose up -d --build` (PostgreSQL container removed, new build needed)
-5. **MSG-13** (seed TypeORM issue) — mark as Cancelled manually in Linear (MCP state change didn't apply)
+- `expo-notifications ~0.32.17` — SDK 54 compatible; `shouldShowBanner`/`shouldShowList` required in handler
+- DB column mapping: DB is `snake_case`, code is `camelCase` — mapping in `ContentService.toContentItem()`
+- `AppModal` for all modals/alerts — do not reintroduce `Alert.alert()`
+- Email notifications must use Supabase DB trigger → Edge Function → Resend, NOT nodemailer in API
 
 ---
 
 ## Known Bugs / Issues
 
-1. **"Bugünün Bildirimleri" is simulated** — derives expected notifications from schedule, not from actual notification delivery confirmation. If prefs change mid-day, log shows updated values retroactively.
-2. **`audio` and `article` content types** — defined in `ContentType` and DB schema but no UI components exist (no player, no reader).
-3. **`apps/api/seed.ts`** — legacy file using raw `pg` client. Still in repo but no longer used. Can be deleted.
-4. **Cold start on Cloud Run (future)** — min instances=0 means first request after idle period will be slow (~2-3s). Acceptable at current scale.
+1. **"Bugünün Bildirimleri" is simulated** — derives expected notifications from current schedule, not from confirmed delivery. If prefs change mid-day, card shows updated values, not what was actually scheduled.
+2. **Apple Sign In** — works only in production build. Development build gives `Unacceptable audience in id_token: [host.exp.Exponent]`. Not a code bug.
+3. **`audio` and `article` content types** — defined in schema but no UI. No data in seed.
+4. **`apps/api/seed.ts`** — legacy file (raw `pg` client, old column names). Not used. Can be deleted.
 
 ---
 
-## Temporary Decisions / Technical Debt
+## Technical Debt / Temporary Decisions
 
-- **Notification log is derived, not confirmed** — if user's prefs change after notifications were scheduled, the log card shows different content than what was actually delivered. Acceptable for MVP.
-- **Day-of-year content selection** — deterministic but if content count changes (new seed run), users see different item on same day. Acceptable tradeoff.
-- **No content versioning** — `content_items` has no version or updated_at trigger. If a record is corrected via Studio after a user has bookmarked it, their bookmark snapshot (JSONB in `bookmarks.snapshot`) retains the old version.
-- **`apps/api/seed.ts`** — should be deleted (TypeORM dependency gone, file references `pg` and old schema column names like `recommendedTime` camelCase instead of `recommended_time`).
-- **`infra/aws/README.md`** — outdated, references AWS ECS. Now targeting GCP Cloud Run.
-- **`DailyMessage` interface** in shared/index.ts — marked `@deprecated`, kept for backward compat. Can be removed once confirmed nothing references it.
+- **No content versioning** — bookmarks store snapshot JSONB; corrections in Supabase Studio won't update old snapshots.
+- **Single Supabase project for dev+prod** — acceptable for now; create separate project before scaling.
+- **`DailyMessage` interface** in shared/index.ts — `@deprecated`, kept for compat. Can be removed.
+- **`infra/aws/README.md`** — outdated (references AWS ECS). Deployment is on GCP Cloud Run.
+- **Content accuracy** — seed is AI-generated, reviewed at high level. Feedback mechanism handles ongoing corrections. A qualified reviewer should verify hadith translations before major scale.
+- **Min instances = 0 on Cloud Run** — cold start ~2–3s after idle. Acceptable at current scale.
 
 ---
 
-## Risks
+## Supabase Project
 
-- **Supabase free tier limits**: 500MB DB, 2 projects, 50MB file storage. At 254 content items, DB usage is negligible. Monitor when seed expands.
-- **Single Supabase project for dev+prod**: Currently no separate production Supabase project. When going to prod, create a new project and point env vars at it.
-- **Content accuracy**: Seed was AI-generated and reviewed at high level. Feedback mechanism is in place for ongoing correction. Hadith sources are restricted to Sahih Bukhari/Muslim, but individual translations should be verified by a qualified reviewer before App Store submission.
-- **expo-notifications physical device testing**: Requires `npx expo run:ios` native build — simulators work, but push notification delivery only verified on physical device.
-- **No CI/CD yet**: All builds and deploys are manual. Build drift risk increases over time until MSG-10 is implemented.
+- URL: `https://***REDACTED_SUPABASE_HOST***`
+- Project ref: `gpuhhpxnxrvvjappindr`
+- Region: (check dashboard)
+- Auth: anonymous + email enabled; Google OAuth + Apple Sign In configured
+- All 5 migrations applied; seed (254 items) applied
+- Edge Function `notify-feedback` deployed (v8) — needs `RESEND_API_KEY` secret
+
+## Fly.io
+
+- App: `cagri-api` — `https://cagri-api.fly.dev`
+- Region: `cdg` (Paris, near Supabase eu-west)
+- Config: `fly.toml` (repo root)
+- Secrets: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` (set via `flyctl secrets set`)
+- GitHub Actions: `FLY_API_TOKEN` secret (replace `GCP_SA_KEY`)
+- Free tier: shared-cpu-1x, 256MB RAM, always-on (min_machines_running = 1)
+
+## EAS / Expo
+
+- EAS Project ID: `f732fcd2-cf13-4e9e-bf15-496da79cfb85`
