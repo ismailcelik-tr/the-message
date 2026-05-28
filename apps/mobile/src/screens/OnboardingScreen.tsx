@@ -235,8 +235,17 @@ export function OnboardingScreen({ onComplete }: Props) {
     <View style={styles.stepContainer}>
       <FadeSlideIn delay={40}>
         <View style={styles.logoWrap}>
-          <Text style={[styles.logo, { color: colors.primary }]}>{t('onboarding.logo')}</Text>
-          <Text style={[styles.subLogo, { color: colors.secondary }]}>{t('onboarding.subtitle')}</Text>
+          {preferences.locale === 'en' ? (
+            <>
+              <Text style={[styles.logo, { color: colors.primary }]}>{t('onboarding.subtitle')}</Text>
+              <Text style={[styles.subLogo, { color: colors.secondary }]}>{t('onboarding.logo')}</Text>
+            </>
+          ) : (
+            <>
+              <Text style={[styles.logo, { color: colors.primary }]}>{t('onboarding.logo')}</Text>
+              <Text style={[styles.subLogo, { color: colors.secondary }]}>{t('onboarding.subtitle')}</Text>
+            </>
+          )}
         </View>
       </FadeSlideIn>
 

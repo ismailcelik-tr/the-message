@@ -9,11 +9,11 @@
 | Layer | Technology |
 |-------|-----------|
 | Mobile | React Native (Expo SDK 54), TypeScript |
-| Backend | NestJS, deployed on GCP Cloud Run |
+| Backend | NestJS, deployed on Fly.io (free tier, always-on) |
 | Database | Supabase (PostgreSQL + Auth + Edge Functions) |
 | Shared types | `packages/shared` — pure TypeScript, no framework deps |
 | Notifications | `expo-notifications` (local, 14-day schedule) |
-| CI/CD | GitHub Actions → Artifact Registry → Cloud Run |
+| CI/CD | GitHub Actions → `flyctl deploy --remote-only` → Fly.io |
 
 ---
 
@@ -103,10 +103,9 @@ cd apps/mobile && npx tsc --noEmit
 
 ## Production
 
-- **API**: `https://cagri-api-533453726230.europe-west1.run.app`
-- **GCP project**: `the-message-api-prod`, region `europe-west1`
+- **API**: `https://cagri-api.fly.dev` (Fly.io, region: cdg / Paris, always-on free tier)
 - **Supabase**: `https://***REDACTED_SUPABASE_HOST***`
-- **iOS bundle ID**: `com.themessage.cagri`, build number `7`
+- **iOS bundle ID**: `com.themessage.cagri` — App Store submission in progress
 
 ---
 

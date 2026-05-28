@@ -1,7 +1,7 @@
 export default {
   onboarding: {
     logo: 'Çağrı',
-    subtitle: 'THE MESSAGE',
+    subtitle: 'The Message',
     title: 'An Invitation to Peace',
     description1: 'Small, gentle reminders throughout your day — nurturing hope, purpose, worship, and spiritual awareness.',
     description2: 'A calm companion. Non-judgmental. Never overwhelming.',

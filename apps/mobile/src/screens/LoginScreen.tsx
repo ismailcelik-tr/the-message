@@ -28,6 +28,7 @@ type Mode = 'choose' | 'email' | 'forgotPassword' | 'confirmEmail';
 export function LoginScreen({ onComplete }: Props) {
   const { t } = useTranslation();
   const currentTheme = usePreferencesStore((s) => s.currentTheme);
+  const locale = usePreferencesStore((s) => s.preferences.locale);
   const colors = COLORS[currentTheme];
   const signInAnonymously = useAuthStore((s) => s.signInAnonymously);
 
@@ -198,8 +199,17 @@ export function LoginScreen({ onComplete }: Props) {
         <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
           {/* Logo */}
           <View style={styles.logoSection}>
-            <Text style={[styles.logo, { color: colors.primary }]}>{t('onboarding.logo')}</Text>
-            <Text style={[styles.subLogo, { color: colors.secondary }]}>{t('onboarding.subtitle')}</Text>
+            {locale === 'en' ? (
+              <>
+                <Text style={[styles.logo, { color: colors.primary }]}>{t('onboarding.subtitle')}</Text>
+                <Text style={[styles.subLogo, { color: colors.secondary }]}>{t('onboarding.logo')}</Text>
+              </>
+            ) : (
+              <>
+                <Text style={[styles.logo, { color: colors.primary }]}>{t('onboarding.logo')}</Text>
+                <Text style={[styles.subLogo, { color: colors.secondary }]}>{t('onboarding.subtitle')}</Text>
+              </>
+            )}
           </View>
 
           {mode === 'choose' && (

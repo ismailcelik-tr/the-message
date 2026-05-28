@@ -145,9 +145,9 @@ Required secret: `RESEND_API_KEY` in Edge Function environment (Supabase Dashboa
 | Service | Provider | Notes |
 |---------|----------|-------|
 | Mobile build | EAS (Expo) | Project ID: `f732fcd2-cf13-4e9e-bf15-496da79cfb85` |
-| API hosting | GCP Cloud Run | `europe-west1`, min instances 0 |
-| Container registry | GCP Artifact Registry | `europe-west1-docker.pkg.dev/the-message-api-prod/cagri-api/` |
-| CI/CD | GitHub Actions | Build → push → deploy on push to main |
+| API hosting | Fly.io | `cagri-api.fly.dev`, region cdg (Paris), always-on free tier |
+| CI/CD | GitHub Actions | `flyctl deploy --remote-only` on push to main |
 | Database + Auth | Supabase | `gpuhhpxnxrvvjappindr`, all migrations applied |
-| Email | Resend | Via Supabase Edge Function |
-| Privacy policy | GitHub Pages | `docs/privacy.html` |
+| Email | Resend | Via Supabase Edge Function `notify-feedback` |
+| Privacy policy | GitHub Pages | `https://ismailcelik-tr.github.io/the-message/privacy.html` |
+| iOS | App Store Connect | Bundle ID: `com.themessage.cagri`, submission in progress |

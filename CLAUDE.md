@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Çağrı (The Message)** is a Turkish/English Islamic guidance mobile app that delivers daily messages (Quran verses, hadiths, dhikr) via push notifications. The design philosophy is warm and non-judgmental — a calm companion, not a preachy tool.
 
-Live API: `https://cagri-api-533453726230.europe-west1.run.app`
+Live API: `https://cagri-api.fly.dev`
 
 ## Commands
 
@@ -70,6 +70,7 @@ npm workspaces monorepo with strict package boundaries:
 - Email OTP is 6-digit (Supabase dashboard configured to 6)
 - Google OAuth: tokens are in the URL hash fragment (`#access_token=...`), not query params — parse with `url.indexOf('#')` + `URLSearchParams`
 - i18n language must be set after Zustand store hydrates from AsyncStorage; the sync `useEffect` in `App.tsx` handles this
+- Logo display order: in EN locale, `onboarding.subtitle` ("The Message") renders as the large primary text, `onboarding.logo` ("Çağrı") renders below as secondary — both LoginScreen and OnboardingScreen implement this via `locale === 'en'` conditional
 
 ## Notifications
 

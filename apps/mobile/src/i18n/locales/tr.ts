@@ -1,7 +1,7 @@
 export default {
   onboarding: {
     logo: 'Çağrı',
-    subtitle: 'THE MESSAGE',
+    subtitle: 'The Message',
     title: 'Bir Hatırlatıcı, Bir Nefes',
     description1: 'Gün boyu kalbini dinlendirecek, sana umut, amaç, kulluk bilinci ve manevi farkındalık kazandıracak küçük hatırlatıcılar.',
     description2: 'Yargılamayan, bunaltmayan, sakin bir yol arkadaşlığı.',

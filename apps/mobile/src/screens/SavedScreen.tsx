@@ -262,21 +262,28 @@ export function SavedScreen() {
                                 index < dateItems.length - 1 && { borderBottomWidth: 1, borderBottomColor: colors.border },
                               ]}
                             >
-                              <Text style={[styles.notifText, { color: colors.text, flex: 1 }]} numberOfLines={2}>
-                                {tr?.content}
-                              </Text>
-                              <TouchableOpacity
-                                onPress={() => setFeedbackItem(item)}
-                                style={[styles.actionBtn, { backgroundColor: colors.background }]}
-                              >
-                                <Ionicons name="flag-outline" size={15} color={colors.mutedText} />
-                              </TouchableOpacity>
-                              <TouchableOpacity
-                                onPress={() => handleRemove(item)}
-                                style={[styles.bookmarkBtn, { backgroundColor: colors.background }]}
-                              >
-                                <Ionicons name="bookmark" size={17} color={colors.primary} />
-                              </TouchableOpacity>
+                              <View style={{ flex: 1 }}>
+                                <View style={[styles.contentBox, { backgroundColor: colors.border + '66' }]}>
+                                  <Text style={[styles.contentText, { color: colors.text }]}>{tr?.content}</Text>
+                                </View>
+                                {tr?.source ? (
+                                  <Text style={[styles.notifSource, { color: colors.mutedText }]}>({tr.source})</Text>
+                                ) : null}
+                              </View>
+                              <View style={{ gap: 8 }}>
+                                <TouchableOpacity
+                                  onPress={() => setFeedbackItem(item)}
+                                  style={[styles.actionBtn, { backgroundColor: colors.background }]}
+                                >
+                                  <Ionicons name="flag-outline" size={15} color={colors.mutedText} />
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                  onPress={() => handleRemove(item)}
+                                  style={[styles.bookmarkBtn, { backgroundColor: colors.background }]}
+                                >
+                                  <Ionicons name="bookmark" size={17} color={colors.primary} />
+                                </TouchableOpacity>
+                              </View>
                             </View>
                           );
                         })}
@@ -344,6 +351,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10, gap: 10,
   },
   notifText: { fontSize: 14, lineHeight: 20 },
+  notifSource: { fontSize: 12, marginTop: 4, fontStyle: 'italic' },
 
   contentBox: { borderRadius: 14, padding: 14, marginBottom: 12 },
   contentText: { fontSize: 15, lineHeight: 24 },
