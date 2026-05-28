@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useColorScheme } from 'react-native';
+import { ActivityIndicator, View, useColorScheme } from 'react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
@@ -17,6 +17,7 @@ import { rescheduleNotifications, requestNotificationPermission } from './src/li
 import { fetchDailyBundle } from './src/api/content.api';
 
 const queryClient = new QueryClient();
+const AUTH_BOOTSTRAP_TIMEOUT_MS = 5000;
 
 function Root() {
   const { isOnboarded, setOnboarded, currentTheme, preferences, setCurrentTheme } = usePreferencesStore();
@@ -44,9 +45,29 @@ function Root() {
   const prevPrefsRef = useRef(preferences);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
+    let isMounted = true;
+
+    const bootstrapAuth = async () => {
+      try {
+        const timeout = new Promise<null>((resolve) => {
+          setTimeout(() => resolve(null), AUTH_BOOTSTRAP_TIMEOUT_MS);
+        });
+        const session = await Promise.race([
+          supabase.auth.getSession().then(({ data }) => data.session),
+          timeout,
+        ]);
+
+        if (isMounted) {
+          setSession(session);
+        }
+      } catch {
+        if (isMounted) {
+          setSession(null);
+        }
+      }
+    };
+
+    bootstrapAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'PASSWORD_RECOVERY') {
@@ -57,7 +78,10 @@ function Root() {
       setSession(session);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   // Initial permission request + scheduling on first meaningful render
@@ -106,7 +130,14 @@ function Root() {
   }
 
   if (isLoading) {
-    return null;
+    return (
+      <>
+        <StatusBar style={currentTheme === 'dark' ? 'light' : 'dark'} backgroundColor={colors.background} />
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.background }}>
+          <ActivityIndicator color={colors.primary} />
+        </View>
+      </>
+    );
   }
 
   if (isPasswordRecovery && session) {
