@@ -271,6 +271,8 @@ flyctl secrets set KEY=value      # set env secrets
 - [x] `infra/aws/README.md` deleted (outdated AWS ECS reference)
 - [x] `apps/api/seed.ts` deleted (legacy raw `pg` seed script, superseded by `supabase/seeds/001_content.sql`)
 - [x] Cleaned up accidentally generated root files/directories: `app.json` (root), `ios` (root), `.expo` (root), `infra/aws` (root), and `.codex` (root) to keep workspace clean.
+- [x] Fixed `AppModal.tsx` button collapsing bug for single-button modal actions by forcing horizontal row layout.
+- [x] Refactored `ResetPasswordScreen.tsx` to replace legacy `Alert.alert` calls with the custom `AppModal` component.
 
 ---
 

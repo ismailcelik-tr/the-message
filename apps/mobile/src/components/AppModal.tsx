@@ -17,14 +17,13 @@ interface Props {
 }
 
 export function AppModal({ visible, title, message, buttons, colors }: Props) {
-  const twoButtons = buttons.length === 2;
   return (
     <Modal visible={visible} transparent animationType="fade">
       <View style={styles.overlay}>
         <View style={[styles.box, { backgroundColor: colors.card, borderColor: colors.border }]}>
           {!!title && <Text style={[styles.title, { color: colors.text }]}>{title}</Text>}
           <Text style={[styles.body, { color: colors.mutedText, marginBottom: title ? 24 : 20 }]}>{message}</Text>
-          <View style={[styles.btnRow, twoButtons && styles.btnRowDouble]}>
+          <View style={styles.btnRow}>
             {buttons.map((btn, i) => (
               <TouchableOpacity
                 key={i}
@@ -75,8 +74,11 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     textAlign: 'center',
   },
-  btnRow: { width: '100%' },
-  btnRowDouble: { flexDirection: 'row', gap: 10 },
+  btnRow: {
+    width: '100%',
+    flexDirection: 'row',
+    gap: 10,
+  },
   btn: {
     flex: 1,
     height: 50,

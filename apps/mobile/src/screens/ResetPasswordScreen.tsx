@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity,
-  SafeAreaView, StyleSheet, ActivityIndicator, Alert,
+  SafeAreaView, StyleSheet, ActivityIndicator,
   KeyboardAvoidingView, Platform, ScrollView,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { usePreferencesStore } from '../store/preferences.store';
 import { supabase } from '../lib/supabase';
 import { COLORS } from '../theme/colors';
+import { AppModal, AppModalButton } from '../components/AppModal';
 
 interface Props {
   onComplete: () => void;
@@ -22,10 +23,11 @@ export function ResetPasswordScreen({ onComplete }: Props) {
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [loading, setLoading] = useState(false);
+  const [modal, setModal] = useState<{ title?: string; message: string; buttons?: AppModalButton[] } | null>(null);
 
   const handleSubmit = async () => {
     if (password !== confirm) {
-      Alert.alert(t('login.passwordMismatch'));
+      setModal({ title: t('login.error'), message: t('login.passwordMismatch') });
       return;
     }
     if (password.length < 6) return;
@@ -33,10 +35,13 @@ export function ResetPasswordScreen({ onComplete }: Props) {
     try {
       const { error } = await supabase.auth.updateUser({ password });
       if (error) throw error;
-      Alert.alert(t('login.passwordSuccess'));
-      onComplete();
+      setModal({
+        title: t('login.passwordSuccessTitle' as never) || 'Şifre Güncellendi',
+        message: t('login.passwordSuccess'),
+        buttons: [{ text: t('login.ok'), onPress: () => { setModal(null); onComplete(); }, variant: 'primary' }],
+      });
     } catch (e: any) {
-      Alert.alert(t('login.error'), e.message);
+      setModal({ title: t('login.error'), message: e.message });
     } finally {
       setLoading(false);
     }
@@ -86,6 +91,13 @@ export function ResetPasswordScreen({ onComplete }: Props) {
           </TouchableOpacity>
         </ScrollView>
       </KeyboardAvoidingView>
+      <AppModal
+        visible={!!modal}
+        title={modal?.title}
+        message={modal?.message ?? ''}
+        colors={colors}
+        buttons={modal?.buttons ?? [{ text: t('login.ok'), onPress: () => setModal(null), variant: 'primary' }]}
+      />
     </SafeAreaView>
   );
 }
