@@ -68,15 +68,6 @@ export interface DailyBundle {
   worship: ContentItem;
 }
 
-/** @deprecated Use ContentItem instead. Kept for backward compatibility during migration. */
-export interface DailyMessage {
-  id: string;
-  content: string;
-  source?: string;
-  category: MessageCategory;
-  recommendedTime: DayTime;
-  date: string;
-}
 
 export type FeedbackIssueType = 'wrong_text' | 'missing_text' | 'wrong_source' | 'other';
 export type FeedbackStatus = 'pending' | 'reviewed' | 'resolved';

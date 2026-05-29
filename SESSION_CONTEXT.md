@@ -1,6 +1,6 @@
 # SESSION_CONTEXT.md
 
-Last updated: 2026-05-28
+Last updated: 2026-05-29
 Branch: `main`
 GitHub: https://github.com/ismailcelik-tr/the-message
 
@@ -10,7 +10,7 @@ GitHub: https://github.com/ismailcelik-tr/the-message
 
 **Çağrı (The Message)** — Turkish/English Islamic guidance mobile app. Delivers daily Quran verses, hadiths, esmaül hüsna, prayers, worship reminders, and dhikr via scheduled local push notifications. Warm, non-judgmental tone.
 
-**Current status: iOS App Store submission in progress. EAS production build running.**
+**Current status: iOS App Store submitted. Waiting for Apple review.**
 
 ---
 
@@ -264,6 +264,12 @@ flyctl secrets set KEY=value      # set env secrets
 - [x] "THE MESSAGE" → "The Message" in both locale files
 - [x] App Store Connect: screenshots uploaded, metadata (TR+EN description, keywords, privacy URL) filled
 - [x] GitHub Pages: `docs/privacy.html` live at `https://ismailcelik-tr.github.io/the-message/privacy.html`
+- [x] App Store Connect: build submitted, waiting for Apple review
+- [x] `RESEND_API_KEY` added to Supabase Edge Function `notify-feedback` secrets — feedback emails working
+- [x] `DailyMessage` interface removed from `packages/shared/src/index.ts` (was `@deprecated`)
+- [x] Legacy `GET /api/daily-message` endpoint removed from `app.controller.ts` + `app.service.ts`
+- [x] `infra/aws/README.md` deleted (outdated AWS ECS reference)
+- [x] `apps/api/seed.ts` deleted (legacy raw `pg` seed script, superseded by `supabase/seeds/001_content.sql`)
 
 ---
 
@@ -272,10 +278,9 @@ flyctl secrets set KEY=value      # set env secrets
 ### Immediate
 | # | Task | Notes |
 |---|------|-------|
-| 1 | **iOS App Store review** | EAS build in progress → submit to App Store Connect → wait for Apple review |
-| 2 | **Supabase: add RESEND_API_KEY** | Dashboard → Edge Functions → notify-feedback → Secrets — feedback emails not sent until this is set |
+| 1 | **iOS App Store review** | Submitted to App Store Connect — waiting for Apple review |
 
-### Backlog (post-iOS submission)
+### Backlog (post-iOS approval)
 | Issue | Task |
 |-------|------|
 | MSG-21 | Google Play Developer Account + Android AAB |
@@ -308,7 +313,6 @@ flyctl secrets set KEY=value      # set env secrets
 1. **"Bugünün Bildirimleri" is simulated** — derives expected notifications from current schedule, not from confirmed delivery. If prefs change mid-day, card shows updated values, not what was actually scheduled.
 2. **Apple Sign In in dev build** — gives `Unacceptable audience in id_token` error. Works only in production build. Not a code bug.
 3. **`audio` and `article` content types** — defined in schema but no UI and no seed data. Safe to ignore.
-4. **`apps/api/seed.ts`** — legacy file (raw `pg` client, old column names). Not used. Can be deleted.
 
 ---
 
@@ -316,8 +320,6 @@ flyctl secrets set KEY=value      # set env secrets
 
 - **No content versioning** — bookmarks store snapshot JSONB; corrections in Supabase Studio won't update old saved snapshots.
 - **Single Supabase project for dev+prod** — acceptable at current scale; create separate project before scaling.
-- **`DailyMessage` interface** in `shared/index.ts` — `@deprecated`, kept for compat. Can be removed.
-- **`infra/aws/README.md`** — outdated, references old AWS ECS setup. Safe to delete.
 - **Content accuracy** — seed is AI-generated, reviewed at high level. Feedback mechanism handles ongoing corrections. A qualified reviewer should verify hadith translations before major scale.
 
 ---

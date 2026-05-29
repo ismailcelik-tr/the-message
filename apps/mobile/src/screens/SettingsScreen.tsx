@@ -59,14 +59,17 @@ export function SettingsScreen() {
       setFeedbackMessage('');
       setFeedbackEmail('');
       setShowFeedback(false);
-      setModal({
-        message: t('settings.feedbackSuccess' as never),
-        buttons: [{ text: t('settings.cancel'), onPress: () => setModal(null), variant: 'primary' }],
-      });
+      // pageSheet dismiss animasyonunun tamamlanması için kısa bekleme
+      setTimeout(() => {
+        setModal({
+          message: t('settings.feedbackSuccess' as never),
+          buttons: [{ text: t('login.ok'), onPress: () => setModal(null), variant: 'primary' }],
+        });
+      }, 400);
     } catch {
       setModal({
         message: t('settings.feedbackError' as never),
-        buttons: [{ text: t('settings.cancel'), onPress: () => setModal(null), variant: 'primary' }],
+        buttons: [{ text: t('login.ok'), onPress: () => setModal(null), variant: 'primary' }],
       });
     } finally {
       setFeedbackLoading(false);

@@ -15,8 +15,20 @@
         "simulator": false
       }
     },
+    "production-device": {
+      "distribution": "internal",
+      "environment": "production",
+      "env": {
+        "APP_ENV": "production"
+      },
+      "ios": {
+        "simulator": false,
+        "resourceClass": "m-medium"
+      }
+    },
     "production": {
       "autoIncrement": true,
+      "environment": "production",
       "ios": {
         "resourceClass": "m-medium"
       },
