@@ -5,10 +5,13 @@
   "description": "Çağrı (The Message) Monorepo - Islamic Guide Mobile App and API Backend",
   "workspaces": [
     "apps/api",
+    "apps/admin",
     "apps/mobile",
     "packages/shared"
   ],
   "scripts": {
+    "admin:dev": "npm run dev -w apps/admin",
+    "admin:build": "npm run build -w apps/admin",
     "api:dev": "npm run start:dev -w apps/api",
     "api:build": "npm run build -w apps/api",
     "mobile:start": "npm run start -w apps/mobile",

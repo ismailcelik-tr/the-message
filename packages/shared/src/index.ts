@@ -95,3 +95,50 @@ export interface PaginatedResponse<T = unknown> {
   page: number;
   limit: number;
 }
+
+export type PushPlatform = 'ios' | 'android';
+export type PushCampaignStatus = 'scheduled' | 'sending' | 'sent' | 'failed' | 'partial';
+
+export interface PushAudienceFilters {
+  enabledOnly: boolean;
+  locale?: SupportedLocale;
+  platform?: PushPlatform;
+  email?: string;
+}
+
+export interface RegisterPushTokenRequest {
+  token: string;
+  platform: PushPlatform;
+  locale: SupportedLocale;
+  notificationEnabled: boolean;
+}
+
+export interface UpdatePushPreferencesRequest {
+  notificationEnabled: boolean;
+}
+
+export interface PushCampaignRequest {
+  title: string;
+  body: string;
+  filters: PushAudienceFilters;
+  scheduledFor?: string;
+}
+
+export interface PushAudienceCount {
+  tokens: number;
+  users: number;
+}
+
+export interface PushCampaign {
+  id: string;
+  title: string;
+  body: string;
+  filters: PushAudienceFilters;
+  status: PushCampaignStatus;
+  scheduledFor?: string;
+  targetCount: number;
+  sentCount: number;
+  failedCount: number;
+  createdAt: string;
+  sentAt?: string;
+}

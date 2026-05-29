@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, View, useColorScheme } from 'react-native';
+import { ActivityIndicator, AppState, View, useColorScheme } from 'react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
@@ -13,11 +13,12 @@ import { useAuthStore } from './src/store/auth.store';
 import { supabase } from './src/lib/supabase';
 import { COLORS } from './src/theme/colors';
 import { usePreferencesSync } from './src/hooks/usePreferencesSync';
-import { rescheduleNotifications, requestNotificationPermission } from './src/lib/notifications';
-import { fetchDailyBundle } from './src/api/content.api';
+import { getExpoPushToken, rescheduleNotifications } from './src/lib/notifications';
+import { registerPushToken, updatePushPreferences } from './src/api/push.api';
 
 const queryClient = new QueryClient();
 const AUTH_BOOTSTRAP_TIMEOUT_MS = 5000;
+const NOTIFICATION_REFRESH_INTERVAL_MS = 6 * 60 * 60 * 1000;
 
 function Root() {
   const { isOnboarded, setOnboarded, currentTheme, preferences, setCurrentTheme } = usePreferencesStore();
@@ -25,6 +26,8 @@ function Root() {
   const colors = COLORS[currentTheme];
   const deviceColorScheme = useColorScheme();
   const [isPasswordRecovery, setIsPasswordRecovery] = useState(false);
+  const lastNotificationRefreshRef = useRef(0);
+  const lastRegisteredPushTokenRef = useRef<string | null>(null);
   usePreferencesSync();
 
   // Sync i18n language with stored locale preference (runs on hydration too)
@@ -84,12 +87,6 @@ function Root() {
     };
   }, []);
 
-  // Initial permission request + scheduling on first meaningful render
-  useEffect(() => {
-    if (!isOnboarded) return;
-    requestNotificationPermission();
-  }, [isOnboarded]);
-
   // Re-schedule whenever notification-related preferences change
   useEffect(() => {
     const prev = prevPrefsRef.current;
@@ -102,15 +99,14 @@ function Root() {
       prev.silentHours !== preferences.silentHours ||
       prev.locale !== preferences.locale;
 
-    if (!notifChanged) return;
     if (!isOnboarded) return;
+    if (!notifChanged) return;
 
-    const today = new Date().toISOString().split('T')[0];
-    fetchDailyBundle(preferences.locale, preferences.categoryPreferences, today)
-      .then((bundle) => rescheduleNotifications(preferences, bundle))
-      .catch(() => {
-        // Network unavailable — reschedule silently on next open
-      });
+    lastNotificationRefreshRef.current = Date.now();
+    rescheduleNotifications(preferences).catch(() => {
+      lastNotificationRefreshRef.current = 0;
+      // Network unavailable — reschedule silently on next open
+    });
   }, [
     preferences.notificationEnabled,
     preferences.notificationFrequency,
@@ -119,6 +115,67 @@ function Root() {
     preferences.locale,
     isOnboarded,
   ]);
+
+  // Schedule on first onboarding completion, and refresh periodically when the app
+  // is opened so the rolling 14-day notification window does not expire.
+  useEffect(() => {
+    if (!isOnboarded) return;
+
+    const refreshNotifications = () => {
+      const now = Date.now();
+      if (now - lastNotificationRefreshRef.current < NOTIFICATION_REFRESH_INTERVAL_MS) return;
+
+      lastNotificationRefreshRef.current = now;
+      rescheduleNotifications(preferences).catch(() => {
+        lastNotificationRefreshRef.current = 0;
+        // Network unavailable — keep existing scheduled notifications.
+      });
+    };
+
+    refreshNotifications();
+
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (state === 'active') refreshNotifications();
+    });
+
+    return () => subscription.remove();
+  }, [isOnboarded, preferences]);
+
+  useEffect(() => {
+    if (!session?.access_token || !isOnboarded) return;
+    if (!preferences.notificationEnabled) return;
+
+    let isMounted = true;
+
+    (async () => {
+      try {
+        const token = await getExpoPushToken();
+        if (!token || !isMounted) return;
+
+        await registerPushToken(
+          session.access_token,
+          token,
+          preferences.locale,
+          preferences.notificationEnabled,
+        );
+        lastRegisteredPushTokenRef.current = token;
+      } catch {
+        // Remote push registration is best-effort; local notifications still work.
+      }
+    })();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [session?.access_token, isOnboarded, preferences.locale, preferences.notificationEnabled]);
+
+  useEffect(() => {
+    if (!session?.access_token || !isOnboarded || !lastRegisteredPushTokenRef.current) return;
+
+    updatePushPreferences(session.access_token, preferences.notificationEnabled).catch(() => {
+      // Keep local preference as source of truth and retry on the next app open.
+    });
+  }, [session?.access_token, isOnboarded, preferences.notificationEnabled]);
 
   if (!isOnboarded) {
     return (

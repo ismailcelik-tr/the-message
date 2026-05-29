@@ -20,10 +20,11 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.themessage.cagri",
+      "usesAppleSignIn": true,
       "infoPlist": {
         "CFBundleDisplayName": "Çağrı"
       },
-      "buildNumber": "12"
+      "buildNumber": "13"
     },
     "plugins": [
       "expo-secure-store",

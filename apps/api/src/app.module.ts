@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { ContentModule } from './content/content.module';
 import { FeedbackModule } from './feedback/feedback.module';
 import { AuthModule } from './auth/auth.module';
+import { PushModule } from './push/push.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { AuthModule } from './auth/auth.module';
     ContentModule,
     FeedbackModule,
     AuthModule,
+    PushModule,
   ],
   controllers: [AppController],
   providers: [AppService],

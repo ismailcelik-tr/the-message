@@ -1,4 +1,5 @@
 import * as Notifications from 'expo-notifications';
+import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 import { UserPreferences, DailyBundle, SilentHours } from '@the-message/shared';
 import { fetchDailyBundle } from '../api/content.api';
@@ -30,6 +31,17 @@ export async function requestNotificationPermission(): Promise<boolean> {
   return status === 'granted';
 }
 
+export async function getExpoPushToken(): Promise<string | null> {
+  const granted = await requestNotificationPermission();
+  if (!granted) return null;
+
+  const projectId = Constants.expoConfig?.extra?.eas?.projectId ?? Constants.easConfig?.projectId;
+  if (!projectId) return null;
+
+  const { data } = await Notifications.getExpoPushTokenAsync({ projectId });
+  return data;
+}
+
 // Returns minutes since midnight for a "HH:MM" string
 function toMinutes(time: string): number {
   const [h, m] = time.split(':').map(Number);
@@ -50,6 +62,13 @@ function isInSilentWindow(timeHHMM: string, silent: SilentHours): boolean {
   return t >= start && t < end;
 }
 
+function localDateString(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 /**
  * Cancels all pending scheduled notifications and re-schedules based on current
  * preferences. Fetches a separate bundle for each day so content rotates daily.
@@ -58,11 +77,12 @@ function isInSilentWindow(timeHHMM: string, silent: SilentHours): boolean {
  */
 export async function rescheduleNotifications(
   prefs: UserPreferences,
-  todayBundle: DailyBundle,
+  todayBundle?: DailyBundle,
 ): Promise<void> {
-  await Notifications.cancelAllScheduledNotificationsAsync();
-
-  if (!prefs.notificationEnabled) return;
+  if (!prefs.notificationEnabled) {
+    await Notifications.cancelAllScheduledNotificationsAsync();
+    return;
+  }
 
   const granted = await requestNotificationPermission();
   if (!granted) return;
@@ -70,6 +90,10 @@ export async function rescheduleNotifications(
   const slots = prefs.notificationSchedule[prefs.notificationFrequency];
   const now = new Date();
   const locale = prefs.locale ?? 'tr';
+  const today = localDateString(now);
+  const initialBundle = todayBundle ?? await fetchDailyBundle(locale, prefs.categoryPreferences, today);
+
+  await Notifications.cancelAllScheduledNotificationsAsync();
 
   const SLOT_CONTENT_MAP: Record<string, keyof DailyBundle> = {
     morning: 'verse',
@@ -97,12 +121,12 @@ export async function rescheduleNotifications(
 
   // Cache bundles per date string to avoid redundant API calls
   const bundleCache = new Map<string, DailyBundle>();
-  bundleCache.set(now.toISOString().split('T')[0], todayBundle);
+  bundleCache.set(today, initialBundle);
 
   for (let dayOffset = 0; dayOffset < 14; dayOffset++) {
     const dayDate = new Date(now);
     dayDate.setDate(now.getDate() + dayOffset);
-    const dateStr = dayDate.toISOString().split('T')[0];
+    const dateStr = localDateString(dayDate);
 
     let bundle = bundleCache.get(dateStr);
     if (!bundle) {
@@ -110,7 +134,7 @@ export async function rescheduleNotifications(
         bundle = await fetchDailyBundle(locale, prefs.categoryPreferences, dateStr);
         bundleCache.set(dateStr, bundle);
       } catch {
-        bundle = todayBundle; // fallback to today's bundle on network error
+        bundle = initialBundle; // fallback to today's bundle on network error
       }
     }
 
