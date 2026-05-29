@@ -270,6 +270,7 @@ flyctl secrets set KEY=value      # set env secrets
 - [x] Legacy `GET /api/daily-message` endpoint removed from `app.controller.ts` + `app.service.ts`
 - [x] `infra/aws/README.md` deleted (outdated AWS ECS reference)
 - [x] `apps/api/seed.ts` deleted (legacy raw `pg` seed script, superseded by `supabase/seeds/001_content.sql`)
+- [x] Cleaned up accidentally generated root files/directories: `app.json` (root), `ios` (root), `.expo` (root), `infra/aws` (root), and `.codex` (root) to keep workspace clean.
 
 ---
 
