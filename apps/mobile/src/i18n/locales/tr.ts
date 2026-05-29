@@ -119,7 +119,8 @@ export default {
   saved: {
     title: 'Kaydedilenler',
     empty: 'Henüz bir şey kaydetmedin',
-    emptyDesc: 'Günün içeriklerinden beğendiklerini kaydetmek için 🔖 ikonuna dokun.',
+    emptyDescBeforeIcon: 'Günün içeriklerinden beğendiklerini kaydetmek için',
+    emptyDescAfterIcon: 'ikonuna dokun.',
     loginRequired: 'Giriş yapman gerekiyor',
     loginRequiredDesc: 'Kaydettiğin içerikleri görmek için hesabına giriş yap.',
     removeTitle: 'Kaydedilenlerden Çıkar',

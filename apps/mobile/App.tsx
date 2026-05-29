@@ -159,7 +159,8 @@ function Root() {
           preferences.notificationEnabled,
         );
         lastRegisteredPushTokenRef.current = token;
-      } catch {
+      } catch (error) {
+        console.warn('Remote push registration failed', error);
         // Remote push registration is best-effort; local notifications still work.
       }
     })();

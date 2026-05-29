@@ -119,7 +119,8 @@ export default {
   saved: {
     title: 'Saved',
     empty: "You haven't saved anything yet",
-    emptyDesc: 'Tap the 🔖 icon on any card to save it here.',
+    emptyDescBeforeIcon: 'Tap the',
+    emptyDescAfterIcon: 'icon on any card to save it here.',
     loginRequired: 'Sign in required',
     loginRequiredDesc: 'Sign in to see your saved content.',
     removeTitle: 'Remove from Saved',

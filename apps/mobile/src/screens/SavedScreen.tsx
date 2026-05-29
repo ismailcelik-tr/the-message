@@ -100,6 +100,18 @@ function SavedCard({ item, locale, colors, onRemove, onFeedback }: SavedCardProp
   );
 }
 
+function SavedEmptyDescription({ colors }: { colors: ColorScheme }) {
+  const { t } = useTranslation();
+
+  return (
+    <Text style={[styles.emptyDesc, { color: colors.mutedText }]}>
+      {t('saved.emptyDescBeforeIcon' as never)}{' '}
+      <Ionicons name="bookmark-outline" size={17} color={colors.mutedText} />{' '}
+      {t('saved.emptyDescAfterIcon' as never)}
+    </Text>
+  );
+}
+
 export function SavedScreen() {
   const { t } = useTranslation();
   const currentTheme = usePreferencesStore((s) => s.currentTheme);
@@ -215,7 +227,7 @@ export function SavedScreen() {
         <>
           <Ionicons name="bookmark-outline" size={48} color={colors.mutedText} style={{ marginBottom: 16 }} />
           <Text style={[styles.emptyTitle, { color: colors.text }]}>{t('saved.empty')}</Text>
-          <Text style={[styles.emptyDesc, { color: colors.mutedText }]}>{t('saved.emptyDesc')}</Text>
+          <SavedEmptyDescription colors={colors} />
         </>
       ) : (
         <>

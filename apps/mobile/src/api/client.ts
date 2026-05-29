@@ -7,7 +7,8 @@ export async function apiFetch<T>(path: string, options?: RequestInit): Promise<
   });
 
   if (!res.ok) {
-    throw new Error(`API error: ${res.status}`);
+    const body = await res.text().catch(() => '');
+    throw new Error(`API error: ${res.status}${body ? ` ${body}` : ''}`);
   }
 
   return res.json() as Promise<T>;
