@@ -16,7 +16,7 @@ export class ContentService {
   }
 
   async findDailyBundle(
-    locale: SupportedLocale = 'tr',
+    _locale: SupportedLocale = 'tr',
     activeCategories?: MessageCategory[],
     date?: string,
   ): Promise<DailyBundle> {
@@ -55,7 +55,7 @@ export class ContentService {
   }
 
   async findAll(
-    locale: SupportedLocale = 'tr',
+    _locale: SupportedLocale = 'tr',
     category?: MessageCategory,
     page = 1,
     limit = 20,

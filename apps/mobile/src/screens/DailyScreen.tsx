@@ -258,7 +258,6 @@ interface CardProps {
 }
 
 function ContentCard({ cardType, item, locale, colors, isBookmarked, isSaving, onShare, onBookmark, onFeedback }: CardProps) {
-  const { t } = useTranslation();
   const tr = item.translations[locale];
 
   return (
@@ -318,8 +317,6 @@ interface NotificationsCardProps {
 }
 
 function NotificationsCard({ notifications, locale, colors, todayStr, savedIds, savingId, onSave }: NotificationsCardProps) {
-  const { t } = useTranslation();
-
   // Format: 24 Mayıs 2026 / May 24, 2026
   const dateLabel = new Date(todayStr).toLocaleDateString(locale === 'tr' ? 'tr-TR' : 'en-US', {
     day: 'numeric', month: 'long', year: 'numeric',
