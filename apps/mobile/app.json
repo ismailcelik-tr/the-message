@@ -24,7 +24,7 @@
       "infoPlist": {
         "CFBundleDisplayName": "Çağrı"
       },
-      "buildNumber": "13"
+      "buildNumber": "16"
     },
     "plugins": [
       "expo-secure-store",

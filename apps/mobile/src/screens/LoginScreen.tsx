@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity,
   SafeAreaView, StyleSheet, ActivityIndicator,
@@ -25,6 +25,19 @@ interface Props {
 
 type Mode = 'choose' | 'email' | 'forgotPassword' | 'confirmEmail';
 
+const APPLE_SIGN_IN_TIMEOUT_MS = 30_000;
+
+function withTimeout<T>(promise: Promise<T>, timeoutMs: number, message: string): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => reject(new Error(message)), timeoutMs);
+
+    promise
+      .then(resolve)
+      .catch(reject)
+      .finally(() => clearTimeout(timeout));
+  });
+}
+
 export function LoginScreen({ onComplete }: Props) {
   const { t } = useTranslation();
   const currentTheme = usePreferencesStore((s) => s.currentTheme);
@@ -42,6 +55,15 @@ export function LoginScreen({ onComplete }: Props) {
   const [showResetSentModal, setShowResetSentModal] = useState(false);
   const [otp, setOtp] = useState('');
   const [modal, setModal] = useState<{ title?: string; message: string } | null>(null);
+  const [isAppleSignInAvailable, setIsAppleSignInAvailable] = useState(Platform.OS === 'ios');
+
+  useEffect(() => {
+    if (Platform.OS !== 'ios') return;
+
+    AppleAuthentication.isAvailableAsync()
+      .then(setIsAppleSignInAvailable)
+      .catch(() => setIsAppleSignInAvailable(false));
+  }, []);
 
   const handleGoogle = async () => {
     setLoading(true);
@@ -81,15 +103,24 @@ export function LoginScreen({ onComplete }: Props) {
 
   const handleApple = async () => {
     if (Platform.OS !== 'ios') return;
+    if (!isAppleSignInAvailable) {
+      setModal({ title: t('login.error'), message: t('login.appleUnavailable') });
+      return;
+    }
+
     setLoading(true);
     try {
-      const credential = await AppleAuthentication.signInAsync({
-        requestedScopes: [
-          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
-          AppleAuthentication.AppleAuthenticationScope.EMAIL,
-        ],
-      });
-      if (!credential.identityToken) throw new Error('No identity token from Apple');
+      const credential = await withTimeout(
+        AppleAuthentication.signInAsync({
+          requestedScopes: [
+            AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+            AppleAuthentication.AppleAuthenticationScope.EMAIL,
+          ],
+        }),
+        APPLE_SIGN_IN_TIMEOUT_MS,
+        t('login.appleTimeout'),
+      );
+      if (!credential.identityToken) throw new Error(t('login.appleMissingToken'));
 
       const { error } = await supabase.auth.signInWithIdToken({
         provider: 'apple',
@@ -99,7 +130,7 @@ export function LoginScreen({ onComplete }: Props) {
       onComplete();
     } catch (e: any) {
       if ((e as any).code === 'ERR_REQUEST_CANCELED') return;
-      setModal({ title: t('login.error'), message: e.message });
+      setModal({ title: t('login.error'), message: e.message || t('login.appleFailed') });
     } finally {
       setLoading(false);
     }
