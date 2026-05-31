@@ -39,6 +39,7 @@ export function DailyScreen() {
   const [modal, setModal] = useState<{ title?: string; message: string } | null>(null);
 
   const [refreshing, setRefreshing] = useState(false);
+  const [isMoodSelectorOpen, setIsMoodSelectorOpen] = useState(false);
 
   const preferences = usePreferencesStore((s) => s.preferences);
   const categoryPreferences = preferences.categoryPreferences;
@@ -165,12 +166,24 @@ export function DailyScreen() {
       { key: 'umutlu',   emoji: '🌱' },
       { key: 'hasta',    emoji: '🤕' },
       { key: 'kaygili',  emoji: '😰' },
-      { key: 'yalniz',   emoji: '👣' },
+      { key: 'yalniz',   emoji: '🌙' },
     ];
+
+    if (!isMoodSelectorOpen) {
+      return (
+        <TouchableOpacity
+          style={[styles.moodSection, styles.moodCTAButton, { backgroundColor: colors.card, borderColor: colors.border }]}
+          onPress={() => setIsMoodSelectorOpen(true)}
+          activeOpacity={0.7}
+        >
+          <Text style={[styles.moodCTAText, { color: colors.text }]}>{t('mood.todayQuestion')}</Text>
+          <Ionicons name="chevron-forward" size={16} color={colors.mutedText} />
+        </TouchableOpacity>
+      );
+    }
 
     return (
       <View style={[styles.moodSection, { backgroundColor: colors.card, borderColor: colors.border }]}>
-        <Text style={[styles.moodTitle, { color: colors.text }]}>{t('moods.title')}</Text>
         <View style={styles.moodGrid}>
           {moodsList.map((m) => (
             <TouchableOpacity
@@ -453,6 +466,17 @@ const styles = StyleSheet.create({
     padding: 16, marginVertical: 12,
     shadowColor: '#000', shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.04, shadowRadius: 10, elevation: 2,
+  },
+  moodCTAButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 18,
+    paddingHorizontal: 20,
+  },
+  moodCTAText: {
+    fontSize: 15,
+    fontWeight: '600',
   },
   moodTitle: {
     fontSize: 14, fontWeight: '700', marginBottom: 12, letterSpacing: 0.3, textAlign: 'center'

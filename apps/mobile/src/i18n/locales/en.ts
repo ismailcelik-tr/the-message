@@ -73,6 +73,10 @@ export default {
     hadith: 'Hadith',
     verse: 'Verse',
     worship: 'Worship',
+    dhikr: 'Worship',
+  },
+  mood: {
+    todayQuestion: 'How are you feeling today?',
   },
   asma: {
     allahTitle: 'Allah',
