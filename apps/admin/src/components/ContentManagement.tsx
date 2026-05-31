@@ -14,11 +14,17 @@ export function ContentManagement({ token, apiUrl }: ContentManagementProps) {
   const [items, setItems] = useState<AdminContentItem[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
-  const [limit] = useState(10);
+  const [limit, setLimit] = useState(10);
   const [categoryFilter, setCategoryFilter] = useState<string>('');
   const [typeFilter, setTypeFilter] = useState<string>('');
+  const [search, setSearch] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+
+  // Duplicates modal states
+  const [showDuplicates, setShowDuplicates] = useState(false);
+  const [duplicateGroups, setDuplicateGroups] = useState<any[]>([]);
 
   // Editor Modal States
   const [showEditor, setShowEditor] = useState(false);
@@ -69,6 +75,7 @@ export function ContentManagement({ token, apiUrl }: ContentManagementProps) {
         limit: String(limit),
         ...(categoryFilter ? { category: categoryFilter } : {}),
         ...(typeFilter ? { type: typeFilter } : {}),
+        ...(searchQuery.trim() ? { search: searchQuery.trim() } : {}),
       });
 
       const data = await apiRequest<{ items: AdminContentItem[]; total: number }>(
@@ -85,7 +92,36 @@ export function ContentManagement({ token, apiUrl }: ContentManagementProps) {
 
   useEffect(() => {
     loadContent().catch(() => undefined);
-  }, [page, categoryFilter, typeFilter]);
+  }, [page, limit, categoryFilter, typeFilter, searchQuery]);
+
+  const loadDuplicates = async () => {
+    setLoading(true);
+    try {
+      const data = await apiRequest<any[]>('/admin/content/duplicates');
+      setDuplicateGroups(data);
+      setShowDuplicates(true);
+    } catch (error: any) {
+      alert(error.message || 'Mükerrer kayıtlar yüklenemedi.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deleteDuplicateItem = async (id: string) => {
+    if (!confirm('Bu mükerrer içeriği silmek istediğinize emin misiniz?')) return;
+    setLoading(true);
+    try {
+      await apiRequest(`/admin/content/${id}`, { method: 'DELETE' });
+      // Refresh duplicates list
+      const data = await apiRequest<any[]>('/admin/content/duplicates');
+      setDuplicateGroups(data);
+      await loadContent();
+    } catch (error: any) {
+      alert(error.message || 'Silme hatası.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleOpenNew = () => {
     setEditingItem(null);
@@ -226,31 +262,68 @@ export function ContentManagement({ token, apiUrl }: ContentManagementProps) {
 
   return (
     <div>
-      <div className="admin-toolbar">
-        <div className="toolbar-filters">
-          <select value={typeFilter} onChange={(e) => { setTypeFilter(e.target.value); setPage(1); }}>
-            <option value="">Tüm Tipler</option>
-            <option value="verse">Ayet (Verse)</option>
-            <option value="hadith">Hadis (Hadith)</option>
-            <option value="prayer">Dua (Prayer)</option>
-            <option value="dhikr">Zikir (Dhikr)</option>
-            <option value="esma">Esma (Esmaü'l-Hüsna)</option>
-            <option value="worship">İbadet (Worship)</option>
-          </select>
+      <div className="admin-toolbar" style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'stretch' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+          <div className="toolbar-filters" style={{ flexWrap: 'wrap', gap: '12px' }}>
+            <select value={typeFilter} onChange={(e) => { setTypeFilter(e.target.value); setPage(1); }} style={{ width: 'auto' }}>
+              <option value="">Tüm Tipler</option>
+              <option value="verse">Ayet (Verse)</option>
+              <option value="hadith">Hadis (Hadith)</option>
+              <option value="prayer">Dua (Prayer)</option>
+              <option value="dhikr">Zikir (Dhikr)</option>
+              <option value="esma">Esma (Esmaü'l-Hüsna)</option>
+              <option value="worship">İbadet (Worship)</option>
+            </select>
 
-          <select value={categoryFilter} onChange={(e) => { setCategoryFilter(e.target.value); setPage(1); }}>
-            <option value="">Tüm Kategoriler</option>
-            <option value="hope">Umut (Hope)</option>
-            <option value="purpose">Amaç (Purpose)</option>
-            <option value="worship">İbadet (Worship)</option>
-            <option value="prayer">Dua (Prayer)</option>
-            <option value="dhikr">Zikir (Dhikr)</option>
-          </select>
+            <select value={categoryFilter} onChange={(e) => { setCategoryFilter(e.target.value); setPage(1); }} style={{ width: 'auto' }}>
+              <option value="">Tüm Kategoriler</option>
+              <option value="hope">Umut (Hope)</option>
+              <option value="purpose">Amaç (Purpose)</option>
+              <option value="worship">İbadet (Worship)</option>
+              <option value="prayer">Dua (Prayer)</option>
+              <option value="dhikr">Zikir (Dhikr)</option>
+            </select>
+
+            <form onSubmit={(e) => { e.preventDefault(); setSearchQuery(search); setPage(1); }} style={{ display: 'flex', gap: '8px' }}>
+              <input
+                type="text"
+                placeholder="Metin ara..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                style={{
+                  padding: '7px 12px',
+                  border: '1px solid #cfdad4',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                  outline: 'none',
+                  width: '200px'
+                }}
+              />
+              <button type="submit" className="btn-secondary" style={{ padding: '0 16px', minHeight: '36px' }}>
+                Ara
+              </button>
+              {searchQuery && (
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  onClick={() => { setSearch(''); setSearchQuery(''); setPage(1); }}
+                  style={{ padding: '0 12px', backgroundColor: '#f0f3f1', color: '#6c8378', minHeight: '36px' }}
+                >
+                  Temizle
+                </button>
+              )}
+            </form>
+          </div>
+
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button type="button" className="btn-secondary" onClick={loadDuplicates} disabled={loading} style={{ minHeight: '36px' }}>
+              Tekrar Eden Kayıtlar
+            </button>
+            <button type="button" onClick={handleOpenNew} disabled={loading} style={{ minHeight: '36px' }}>
+              + Yeni İçerik Ekle
+            </button>
+          </div>
         </div>
-
-        <button type="button" onClick={handleOpenNew} disabled={loading}>
-          + Yeni İçerik Ekle
-        </button>
       </div>
 
       {message && <p className="message" style={{ marginBottom: 16 }}>{message}</p>}
@@ -305,25 +378,56 @@ export function ContentManagement({ token, apiUrl }: ContentManagementProps) {
       </section>
 
       {/* Pagination controls */}
-      {total > limit && (
-        <div className="submit-row" style={{ marginTop: 16, justifyContent: 'flex-end', gap: 12 }}>
-          <button
-            type="button"
-            className="btn-secondary"
-            onClick={() => setPage(p => Math.max(1, p - 1))}
-            disabled={page === 1 || loading}
-          >
-            Önceki
-          </button>
-          <span>Sayfa {page} / {Math.ceil(total / limit)}</span>
-          <button
-            type="button"
-            className="btn-secondary"
-            onClick={() => setPage(p => Math.min(Math.ceil(total / limit), p + 1))}
-            disabled={page >= Math.ceil(total / limit) || loading}
-          >
-            Sonraki
-          </button>
+      {total > 0 && (
+        <div className="submit-row" style={{ marginTop: 16, justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontSize: '13px', color: '#6c8378' }}>Her sayfada:</span>
+            <select
+              value={limit}
+              onChange={(e) => { setLimit(Number(e.target.value)); setPage(1); }}
+              style={{
+                padding: '4px 8px',
+                border: '1px solid #cfdad4',
+                borderRadius: '6px',
+                fontSize: '13px',
+                outline: 'none',
+                width: 'auto',
+                backgroundColor: '#fff'
+              }}
+            >
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+            </select>
+            <span style={{ fontSize: '13px', color: '#6c8378', marginLeft: '8px' }}>
+              Toplam {total} içerikten {Math.min(total, (page - 1) * limit + 1)}-{Math.min(total, page * limit)} arası gösteriliyor
+            </span>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <button
+              type="button"
+              className="btn-secondary"
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={page === 1 || loading}
+              style={{ minHeight: '32px', height: '32px', padding: '0 12px' }}
+            >
+              Önceki
+            </button>
+            <span style={{ fontSize: '14px', fontWeight: 500 }}>
+              Sayfa {page} / {Math.max(1, Math.ceil(total / limit))}
+            </span>
+            <button
+              type="button"
+              className="btn-secondary"
+              onClick={() => setPage(p => Math.min(Math.ceil(total / limit), p + 1))}
+              disabled={page >= Math.ceil(total / limit) || loading}
+              style={{ minHeight: '32px', height: '32px', padding: '0 12px' }}
+            >
+              Sonraki
+            </button>
+          </div>
         </div>
       )}
 
@@ -504,6 +608,61 @@ export function ContentManagement({ token, apiUrl }: ContentManagementProps) {
               </button>
             </div>
           </form>
+        </div>
+      )}
+      {/* Duplicates Modal */}
+      {showDuplicates && (
+        <div className="modal-overlay">
+          <div className="modal-content" style={{ maxWidth: '800px' }}>
+            <div className="section-title">
+              <h2>Tekrar Eden Kayıtlar</h2>
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={() => setShowDuplicates(false)}
+                style={{ minHeight: '32px', height: '32px', padding: '0 12px' }}
+              >
+                Kapat
+              </button>
+            </div>
+            <p style={{ fontSize: '13px', color: '#6c8378', margin: '0 0 12px 0' }}>
+              Aşağıdaki içerikler veritabanında birden fazla kez kayıtlıdır. Eski olanı koruyup mükerrer olanları "Sil" butonuna tıklayarak silebilirsiniz.
+            </p>
+
+            <div style={{ display: 'grid', gap: '16px', overflowY: 'auto', maxHeight: '60vh', paddingRight: '8px' }}>
+              {duplicateGroups.map((group, i) => (
+                <div key={i} style={{ border: '1px solid #d8e2dd', borderRadius: '8px', padding: '12px', background: '#fcfdfe' }}>
+                  <div style={{ marginBottom: '8px', fontWeight: 600 }}>"{group.content_text}"</div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '13px', color: '#a12a2a', fontWeight: 'bold' }}>
+                      Tekrar Sayısı: {group.count}
+                    </span>
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                      {group.ids.map((id: string, idx: number) => (
+                        <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', background: '#f1f5f3', padding: '4px 8px', borderRadius: '4px' }}>
+                          <span>ID: {id.slice(0, 8)}... {idx === 0 ? '(Korunan - Eski)' : '(Kopyalanmış)'}</span>
+                          {idx > 0 && (
+                            <span
+                              className="action-link danger"
+                              onClick={() => deleteDuplicateItem(id)}
+                              style={{ fontWeight: 'bold', marginLeft: '6px' }}
+                            >
+                              Sil
+                            </span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {duplicateGroups.length === 0 && (
+                <p style={{ textAlign: 'center', color: '#6c8378', padding: '24px' }}>
+                  Harika! Veritabanında tekrar eden kayıt bulunamadı.
+                </p>
+              )}
+            </div>
+          </div>
         </div>
       )}
     </div>

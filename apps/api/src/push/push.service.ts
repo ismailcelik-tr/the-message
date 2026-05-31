@@ -335,6 +335,67 @@ export class PushService {
     };
   }
 
+  private async pickUniqueContentForUser(
+    userId: string,
+    type: string,
+    categories: string[],
+    dateStr: string,
+  ): Promise<any | null> {
+    // 1. Fetch all active content items of this type
+    const { data: allItems, error: itemsError } = await this.db
+      .from('content_items')
+      .select('*')
+      .eq('type', type)
+      .eq('is_active', true);
+
+    if (itemsError || !allItems || allItems.length === 0) {
+      return null;
+    }
+
+    // 2. Filter by user category preferences if any
+    let filtered = allItems;
+    if (categories && categories.length > 0) {
+      filtered = allItems.filter((item) => categories.includes(item.category));
+      if (filtered.length === 0) {
+        filtered = allItems; // Fallback
+      }
+    }
+
+    // 3. Fetch user's sent content logs in the last 7 days (or sent today)
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    const { data: sentLogs, error: logsError } = await this.db
+      .from('push_logs')
+      .select('content_id')
+      .eq('user_id', userId)
+      .gte('created_at', sevenDaysAgo.toISOString());
+
+    const sentContentIds = new Set((sentLogs ?? []).map((log) => log.content_id));
+
+    // 4. Filter out sent items
+    let remaining = filtered.filter((item) => !sentContentIds.has(item.id));
+
+    // 5. If no items left, fallback to all filtered items (no duplicate prevention)
+    if (remaining.length === 0) {
+      remaining = filtered;
+    }
+
+    // 6. Deterministically pick an item using a seed based on user_id + dateStr
+    const seed = dateStr
+      ? Math.floor(new Date(dateStr).getTime() / 86400000)
+      : Math.floor(Date.now() / 86400000);
+    
+    let hash = 0;
+    for (let i = 0; i < userId.length; i++) {
+      hash = userId.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    hash = Math.abs(hash);
+
+    const index = (seed + hash) % remaining.length;
+    return remaining[index];
+  }
+
   @Cron(CronExpression.EVERY_MINUTE)
   async handleDailyPushScheduler(): Promise<void> {
     const now = new Date();
@@ -384,16 +445,18 @@ export class PushService {
               (key) => profile.categoryPreferences[key as keyof typeof profile.categoryPreferences],
             ) as any[];
 
-            const bundle = await this.contentService.findDailyBundle(token.locale, categories, userDateStr);
-            const slotContentMap: Record<string, keyof typeof bundle> = {
+            // Determine appropriate content type based on the slot label
+            const slotTypeMap: Record<string, string> = {
               morning: 'verse',
               midMorning: 'esma',
               noon: 'hadith',
               afternoon: 'esma',
               evening: 'prayer',
             };
-            const contentKey = slotContentMap[slot.label] || 'verse';
-            const contentItem = bundle[contentKey];
+            const type = slotTypeMap[slot.label] || 'verse';
+
+            // Pick a unique content item not sent in the last 7 days
+            const contentItem = await this.pickUniqueContentForUser(token.user_id, type, categories, userDateStr);
             if (!contentItem) continue;
 
             const localePref = (token.locale as SupportedLocale) || 'tr';

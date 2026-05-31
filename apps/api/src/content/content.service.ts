@@ -112,6 +112,7 @@ export class ContentService {
     type?: string,
     page = 1,
     limit = 20,
+    search?: string,
   ): Promise<PaginatedResponse<ContentItem & { isActive: boolean }>> {
     let query = this.db
       .from('content_items')
@@ -124,6 +125,10 @@ export class ContentService {
     }
     if (type) {
       query = query.eq('type', type);
+    }
+    if (search?.trim()) {
+      const q = search.trim();
+      query = query.or(`translations->tr->>content.ilike.%${q}%,translations->en->>content.ilike.%${q}%`);
     }
 
     const { data, error, count } = await query;
@@ -212,6 +217,12 @@ export class ContentService {
       throw new Error(error?.message ?? 'Content could not be updated');
     }
     return this.toContentItemAdmin(data);
+  }
+
+  async findDuplicatesAdmin(): Promise<any[]> {
+    const { data, error } = await this.db.rpc('get_duplicate_content');
+    if (error) throw new Error(error.message);
+    return data ?? [];
   }
 
   async deleteContent(id: string): Promise<void> {

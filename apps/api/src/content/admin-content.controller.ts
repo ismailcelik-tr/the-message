@@ -14,13 +14,21 @@ export class AdminContentController {
     @Query('type') type?: string,
     @Query('page') page = 1,
     @Query('limit') limit = 20,
+    @Query('search') search?: string,
   ): Promise<ApiResponse<PaginatedResponse<ContentItem & { isActive: boolean }>>> {
     const data = await this.contentService.findAllAdmin(
       category,
       type,
       Number(page),
       Number(limit),
+      search,
     );
+    return { success: true, data };
+  }
+
+  @Get('duplicates')
+  async getDuplicates(): Promise<ApiResponse<any[]>> {
+    const data = await this.contentService.findDuplicatesAdmin();
     return { success: true, data };
   }
 

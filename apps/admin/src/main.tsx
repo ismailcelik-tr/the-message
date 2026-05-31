@@ -12,12 +12,13 @@ import {
 import { supabase } from './supabase';
 import { Login } from './components/Login';
 import { ContentManagement } from './components/ContentManagement';
+import { UsersManagement } from './components/UsersManagement';
 import './styles.css';
 
 const API_URL = import.meta.env.VITE_API_URL ?? '/api';
 
 type SendMode = 'now' | 'scheduled';
-type TabType = 'push' | 'content';
+type TabType = 'push' | 'content' | 'users';
 
 interface FormState {
   title: string;
@@ -260,7 +261,6 @@ function App() {
     <main className="app-shell">
       <header className="topbar">
         <div>
-          <p className="eyebrow">The Message Admin Dashboard</p>
           <h1>Yönetim Paneli</h1>
           {userEmail && <small style={{ color: '#6c8378' }}>Giriş yapan: {userEmail}</small>}
         </div>
@@ -280,6 +280,13 @@ function App() {
           onClick={() => setActiveTab('content')}
         >
           İçerik Yönetimi
+        </button>
+        <button
+          type="button"
+          className={`tab-button ${activeTab === 'users' ? 'active' : ''}`}
+          onClick={() => setActiveTab('users')}
+        >
+          Kullanıcılar & Kaydedilenler
         </button>
         <button
           type="button"
@@ -434,8 +441,10 @@ function App() {
             </div>
           </section>
         </>
-      ) : (
+      ) : activeTab === 'content' ? (
         <ContentManagement token={token} apiUrl={API_URL} />
+      ) : (
+        <UsersManagement token={token} apiUrl={API_URL} />
       )}
     </main>
   );
