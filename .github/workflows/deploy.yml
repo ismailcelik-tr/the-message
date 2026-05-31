@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - 'apps/api/**'
+      - 'apps/admin/**'
       - 'packages/shared/**'
       - 'infra/docker/Dockerfile.api'
       - 'fly.toml'
