@@ -123,6 +123,7 @@ export class ContentService {
     type?: string,
     page = 1,
     limit = 20,
+    mood?: string,
   ): Promise<PaginatedResponse<ContentItem>> {
     const offset = (page - 1) * limit;
 
@@ -132,6 +133,7 @@ export class ContentService {
         p_seed: seed,
         p_exclude_types: excludeTypes?.length ? excludeTypes : null,
         p_categories: categories?.length ? categories : null,
+        p_mood: mood || null,
         p_limit: limit,
         p_offset: offset,
       });
@@ -141,6 +143,7 @@ export class ContentService {
       const { data: countData, error: countError } = await this.db.rpc('get_shuffled_content_count', {
         p_exclude_types: excludeTypes?.length ? excludeTypes : null,
         p_categories: categories?.length ? categories : null,
+        p_mood: mood || null,
       });
 
       if (countError) throw new Error(countError.message);
@@ -168,6 +171,9 @@ export class ContentService {
     }
     if (type) {
       query = query.eq('type', type);
+    }
+    if (mood) {
+      query = query.contains('moods', [mood]);
     }
 
     const { data, error, count } = await query;
@@ -203,6 +209,7 @@ export class ContentService {
       translations: row.translations as ContentItem['translations'],
       audioUrl: (row.audio_url as string) ?? undefined,
       imageUrl: (row.image_url as string) ?? undefined,
+      moods: (row.moods as string[]) ?? [],
     };
   }
 
@@ -260,6 +267,7 @@ export class ContentService {
     translations: any;
     audioUrl?: string;
     imageUrl?: string;
+    moods?: string[];
   }): Promise<ContentItem & { isActive: boolean }> {
     const { data, error } = await this.db
       .from('content_items')
@@ -271,6 +279,7 @@ export class ContentService {
         translations: item.translations,
         audio_url: item.audioUrl || null,
         image_url: item.imageUrl || null,
+        moods: item.moods || [],
         is_active: true,
       })
       .select('*')
@@ -293,6 +302,7 @@ export class ContentService {
       audioUrl?: string;
       imageUrl?: string;
       isActive?: boolean;
+      moods?: string[];
     },
   ): Promise<ContentItem & { isActive: boolean }> {
     const updateData: Record<string, any> = {};
@@ -304,6 +314,7 @@ export class ContentService {
     if (item.audioUrl !== undefined) updateData.audio_url = item.audioUrl || null;
     if (item.imageUrl !== undefined) updateData.image_url = item.imageUrl || null;
     if (item.isActive !== undefined) updateData.is_active = item.isActive;
+    if (item.moods !== undefined) updateData.moods = item.moods;
 
     const { data, error } = await this.db
       .from('content_items')
@@ -344,6 +355,7 @@ export class ContentService {
       audioUrl: (row.audio_url as string) ?? undefined,
       imageUrl: (row.image_url as string) ?? undefined,
       isActive: row.is_active as boolean,
+      moods: (row.moods as string[]) ?? [],
     };
   }
 }

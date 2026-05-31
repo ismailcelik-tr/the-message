@@ -29,6 +29,7 @@ export class ContentController {
     @Query('type') type?: string,
     @Query('page') page = 1,
     @Query('limit') limit = 20,
+    @Query('mood') mood?: string,
   ): Promise<ApiResponse<PaginatedResponse<ContentItem>>> {
     const categories = categoriesParam
       ? (categoriesParam.split(',').filter(Boolean) as MessageCategory[])
@@ -45,6 +46,7 @@ export class ContentController {
       type,
       Number(page),
       Number(limit),
+      mood,
     );
     return { success: true, data };
   }

@@ -3,7 +3,7 @@ import { View, Text, FlatList, ActivityIndicator, StyleSheet, TouchableOpacity, 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { usePreferencesStore } from '../store/preferences.store';
 import { useAuthStore } from '../store/auth.store';
@@ -18,6 +18,9 @@ import { AppModal } from '../components/AppModal';
 export function FocusFeedScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation();
+  const route = useRoute();
+  const { mood } = (route.params ?? {}) as { mood?: string };
+
   const currentTheme = usePreferencesStore((s) => s.currentTheme);
   const locale = usePreferencesStore((s) => s.preferences.locale);
   const categoryPreferences = usePreferencesStore((s) => s.preferences.categoryPreferences);
@@ -52,11 +55,14 @@ export function FocusFeedScreen() {
     isError,
     refetch,
   } = useInfiniteQuery({
-    queryKey: ['focus-feed', locale, activeCategories, feedSeed],
+    queryKey: ['focus-feed', locale, activeCategories, feedSeed, mood],
     queryFn: async ({ pageParam = 1 }) => {
       let url = `/content?locale=${locale}&page=${pageParam}&limit=20&excludeTypes=esma&seed=${feedSeed}`;
-      if (activeCategories) {
+      if (activeCategories && !mood) {
         url += `&categories=${activeCategories}`;
+      }
+      if (mood) {
+        url += `&mood=${mood}`;
       }
       const res = await apiFetch<ApiResponse<PaginatedResponse<ContentItem>>>(url);
       return res.data;
@@ -107,13 +113,17 @@ export function FocusFeedScreen() {
 
   const items = data?.pages.flatMap(p => p?.items ?? []) ?? [];
 
+  const headerTitle = mood
+    ? t('moods.feedTitle', { mood: t(`moods.${mood}` as never) })
+    : (locale === 'tr' ? 'Daha Fazlasını Oku' : 'Read More');
+
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
       <View style={[styles.header, { paddingTop: insets.top + 12, paddingBottom: 12, borderBottomColor: colors.border }]}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
           <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>{locale === 'tr' ? 'Daha Fazlasını Oku' : 'Read More'}</Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>{headerTitle}</Text>
         <View style={{ width: 40 }} />
       </View>
 

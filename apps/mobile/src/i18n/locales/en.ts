@@ -225,4 +225,17 @@ export default {
     successMessage: 'Your report has been received. We\'ll review and correct it soon.',
     errorMessage: 'Could not send report. Please try again.',
   },
+  moods: {
+    title: 'How do you feel today?',
+    sukurlu: 'Thankful',
+    huzunlu: 'Sad',
+    stresli: 'Stressed',
+    kararsiz: 'Confused',
+    yorgun: 'Tired',
+    umutlu: 'Hopeful',
+    hasta: 'Ailing',
+    kaygili: 'Anxious',
+    yalniz: 'Lonely',
+    feedTitle: 'For When You Feel {{mood}}',
+  },
 } as const;

@@ -41,6 +41,8 @@ export interface UserPreferences {
   locale: SupportedLocale;
 }
 
+export type ContentMood = 'huzunlu' | 'stresli' | 'yorgun' | 'sukurlu' | 'hasta' | 'kaygili' | 'yalniz' | 'kararsiz' | 'umutlu';
+
 export interface ContentItem {
   id: string;
   type: ContentType;
@@ -50,6 +52,7 @@ export interface ContentItem {
   translations: Record<SupportedLocale, ContentTranslation>;
   audioUrl?: string; // S3 URL, only for type 'audio'
   imageUrl?: string; // S3 URL, only for type 'article'
+  moods?: string[];
 }
 
 export interface ContentTranslation {

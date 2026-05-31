@@ -155,6 +155,41 @@ export function DailyScreen() {
 
   const nextNotificationTime = getNextNotificationTime(preferences, todayStr);
 
+  const renderMoodSelector = () => {
+    const moodsList = [
+      { key: 'sukurlu',  emoji: '🤲' },
+      { key: 'huzunlu',  emoji: '😔' },
+      { key: 'stresli',  emoji: '🤯' },
+      { key: 'kararsiz', emoji: '🧭' },
+      { key: 'yorgun',   emoji: '🥀' },
+      { key: 'umutlu',   emoji: '🌱' },
+      { key: 'hasta',    emoji: '🤕' },
+      { key: 'kaygili',  emoji: '😰' },
+      { key: 'yalniz',   emoji: '👣' },
+    ];
+
+    return (
+      <View style={[styles.moodSection, { backgroundColor: colors.card, borderColor: colors.border }]}>
+        <Text style={[styles.moodTitle, { color: colors.text }]}>{t('moods.title')}</Text>
+        <View style={styles.moodGrid}>
+          {moodsList.map((m) => (
+            <TouchableOpacity
+              key={m.key}
+              style={[styles.moodBtn, { backgroundColor: colors.background, borderColor: colors.border }]}
+              onPress={() => (navigation as any).navigate('FocusFeed', { mood: m.key })}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.moodEmoji}>{m.emoji}</Text>
+              <Text style={[styles.moodLabel, { color: colors.text }]} numberOfLines={1}>
+                {t(`moods.${m.key}` as never)}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </View>
+    );
+  };
+
   return (
     <ScrollView
       style={{ backgroundColor: colors.background }}
@@ -206,6 +241,8 @@ export function DailyScreen() {
               </TouchableOpacity>
             )}
           </ContentCard>
+          
+          {key === 'esma' && renderMoodSelector()}
         </View>
       ))}
 
@@ -410,5 +447,28 @@ const styles = StyleSheet.create({
   },
   allAsmaText: {
     fontSize: 14, fontWeight: '600',
+  },
+  moodSection: {
+    borderRadius: 20, borderWidth: 1,
+    padding: 16, marginVertical: 12,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.04, shadowRadius: 10, elevation: 2,
+  },
+  moodTitle: {
+    fontSize: 14, fontWeight: '700', marginBottom: 12, letterSpacing: 0.3, textAlign: 'center'
+  },
+  moodGrid: {
+    flexDirection: 'row', flexWrap: 'wrap', gap: 6, justifyContent: 'space-between'
+  },
+  moodBtn: {
+    width: '31%', borderRadius: 12, borderWidth: 1,
+    paddingVertical: 10, alignItems: 'center', justifyContent: 'center',
+    gap: 4, marginBottom: 4,
+  },
+  moodEmoji: {
+    fontSize: 20
+  },
+  moodLabel: {
+    fontSize: 11, fontWeight: '600', opacity: 0.85
   },
 });

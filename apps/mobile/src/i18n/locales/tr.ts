@@ -225,4 +225,17 @@ export default {
     successMessage: 'Bildirimin alındı. En kısa sürede inceleyip düzelteceğiz.',
     errorMessage: 'Bildirim gönderilemedi. Lütfen tekrar dene.',
   },
+  moods: {
+    title: 'Bugün nasıl hissediyorsun?',
+    sukurlu: 'Şükür Dolu',
+    huzunlu: 'Hüzünlü',
+    stresli: 'Stresli',
+    kararsiz: 'Kararsız',
+    yorgun: 'Yorgun',
+    umutlu: 'Ümitli',
+    hasta: 'Hasta',
+    kaygili: 'Kaygılı',
+    yalniz: 'Yalnız',
+    feedTitle: '{{mood}} Hissedenler İçin',
+  },
 } as const;
