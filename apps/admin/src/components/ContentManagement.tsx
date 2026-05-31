@@ -37,6 +37,7 @@ export function ContentManagement({ token, apiUrl }: ContentManagementProps) {
   const [editRecommendedTime, setEditRecommendedTime] = useState('any');
   const [editDate, setEditDate] = useState('');
   const [editIsActive, setEditIsActive] = useState(true);
+  const [editMoods, setEditMoods] = useState<string[]>([]);
 
   // Translations
   const [trContent, setTrContent] = useState('');
@@ -130,21 +131,22 @@ export function ContentManagement({ token, apiUrl }: ContentManagementProps) {
     setEditRecommendedTime('any');
     setEditDate('');
     setEditIsActive(true);
-
-    // Clear Translations
-    setTrContent('');
-    setTrSource('');
-    setTrArabic('');
-    setTrTransliteration('');
-
-    setEnContent('');
-    setEnSource('');
-    setEnArabic('');
-    setEnTransliteration('');
-
-    setEditorLang('tr');
-    setShowEditor(true);
-  };
+    setEditMoods([]);
+ 
+     // Clear Translations
+     setTrContent('');
+     setTrSource('');
+     setTrArabic('');
+     setTrTransliteration('');
+ 
+     setEnContent('');
+     setEnSource('');
+     setEnArabic('');
+     setEnTransliteration('');
+ 
+     setEditorLang('tr');
+     setShowEditor(true);
+   };
 
   const handleOpenEdit = (item: AdminContentItem) => {
     setEditingItem(item);
@@ -153,24 +155,25 @@ export function ContentManagement({ token, apiUrl }: ContentManagementProps) {
     setEditRecommendedTime(item.recommendedTime);
     setEditDate(item.date || '');
     setEditIsActive(item.isActive);
-
-    // Set Turkish Translations
-    const tr = item.translations?.tr || {};
-    setTrContent(tr.content || '');
-    setTrSource(tr.source || '');
-    setTrArabic(tr.arabicText || '');
-    setTrTransliteration(tr.transliteration || '');
-
-    // Set English Translations
-    const en = item.translations?.en || {};
-    setEnContent(en.content || '');
-    setEnSource(en.source || '');
-    setEnArabic(en.arabicText || '');
-    setEnTransliteration(en.transliteration || '');
-
-    setEditorLang('tr');
-    setShowEditor(true);
-  };
+    setEditMoods(item.moods || []);
+ 
+     // Set Turkish Translations
+     const tr = item.translations?.tr || {};
+     setTrContent(tr.content || '');
+     setTrSource(tr.source || '');
+     setTrArabic(tr.arabicText || '');
+     setTrTransliteration(tr.transliteration || '');
+ 
+     // Set English Translations
+     const en = item.translations?.en || {};
+     setEnContent(en.content || '');
+     setEnSource(en.source || '');
+     setEnArabic(en.arabicText || '');
+     setEnTransliteration(en.transliteration || '');
+ 
+     setEditorLang('tr');
+     setShowEditor(true);
+   };
 
   const handleSave = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -187,6 +190,7 @@ export function ContentManagement({ token, apiUrl }: ContentManagementProps) {
         recommendedTime: editRecommendedTime,
         date: editDate || undefined,
         isActive: editIsActive,
+        moods: editMoods,
         translations: {
           tr: {
             content: trContent.trim(),
@@ -481,6 +485,56 @@ export function ContentManagement({ token, apiUrl }: ContentManagementProps) {
                   onChange={(e) => setEditDate(e.target.value)}
                 />
               </label>
+
+              {editType !== 'esma' && (
+                <div className="editor-full" style={{ marginTop: '8px' }}>
+                  <span style={{ fontSize: '13px', fontWeight: 600, color: '#2a4b3d', display: 'block', marginBottom: '8px' }}>
+                    Ruh Hali Etiketleri (Moods)
+                  </span>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                    {[
+                      { key: 'sukurlu',  label: '🤲 Şükür Dolu' },
+                      { key: 'huzunlu',  label: '😔 Hüzünlü' },
+                      { key: 'stresli',  label: '🤯 Stresli' },
+                      { key: 'kararsiz', label: '🧭 Kararsız' },
+                      { key: 'yorgun',   label: '🥀 Yorgun' },
+                      { key: 'umutlu',   label: '🌱 Ümitli' },
+                      { key: 'hasta',    label: '🤕 Hasta' },
+                      { key: 'kaygili',  label: '😰 Kaygılı' },
+                      { key: 'yalniz',   label: '👣 Yalnız' }
+                    ].map((mood) => {
+                      const isChecked = editMoods.includes(mood.key);
+                      return (
+                        <button
+                          type="button"
+                          key={mood.key}
+                          onClick={() => {
+                            if (isChecked) {
+                              setEditMoods(editMoods.filter(m => m !== mood.key));
+                            } else {
+                              setEditMoods([...editMoods, mood.key]);
+                            }
+                          }}
+                          style={{
+                            padding: '6px 12px',
+                            borderRadius: '20px',
+                            border: '1px solid',
+                            borderColor: isChecked ? '#2a4b3d' : '#cfdad4',
+                            backgroundColor: isChecked ? '#2a4b3d' : '#fff',
+                            color: isChecked ? '#fff' : '#2a4b3d',
+                            fontSize: '12px',
+                            fontWeight: 500,
+                            cursor: 'pointer',
+                            transition: 'all 0.15s ease'
+                          }}
+                        >
+                          {mood.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
 
               <label className="check-row editor-full">
                 <input
