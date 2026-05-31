@@ -14,7 +14,7 @@ import { Login } from './components/Login';
 import { ContentManagement } from './components/ContentManagement';
 import './styles.css';
 
-const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api';
+const API_URL = import.meta.env.VITE_API_URL ?? '/api';
 
 type SendMode = 'now' | 'scheduled';
 type TabType = 'push' | 'content';
