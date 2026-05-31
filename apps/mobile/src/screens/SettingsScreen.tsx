@@ -41,8 +41,9 @@ export function SettingsScreen() {
   const [feedbackEmail, setFeedbackEmail] = React.useState('');
   const [feedbackLoading, setFeedbackLoading] = React.useState(false);
   const [modal, setModal] = React.useState<{ title?: string; message: string; buttons: AppModalButton[] } | null>(null);
-
+  const [showAboutModal, setShowAboutModal] = React.useState(false);
   const appVersion = Constants.expoConfig?.version ?? '1.0.0';
+  const appBuild = Constants.expoConfig?.ios?.buildNumber ?? Constants.expoConfig?.android?.versionCode ?? '1';
 
   const handleSendFeedback = async () => {
     if (!feedbackMessage.trim()) return;
@@ -332,10 +333,14 @@ export function SettingsScreen() {
           <Text style={[styles.label, { color: colors.text }]}>{t('settings.privacyPolicy' as never)}</Text>
           <Text style={{ color: colors.secondary, fontSize: 16 }}>↗</Text>
         </TouchableOpacity>
-        <View style={[styles.row, styles.lastRow]}>
+        <TouchableOpacity
+          style={[styles.row, styles.lastRow]}
+          onPress={() => setShowAboutModal(true)}
+          activeOpacity={0.8}
+        >
           <Text style={[styles.label, { color: colors.text }]}>{t('settings.version' as never)}</Text>
           <Text style={[styles.desc, { color: colors.mutedText }]}>{appVersion}</Text>
-        </View>
+        </TouchableOpacity>
       </View>
 
       {/* Geri Bildirim Modal */}
@@ -387,6 +392,34 @@ export function SettingsScreen() {
         </ScrollView>
       </Modal>
 
+      {/* About Modal */}
+      <Modal visible={showAboutModal} transparent animationType="fade" onRequestClose={() => setShowAboutModal(false)}>
+        <TouchableOpacity style={styles.aboutOverlay} activeOpacity={1} onPress={() => setShowAboutModal(false)}>
+          <View style={[styles.aboutBox, { backgroundColor: colors.card, borderColor: colors.border }]} onStartShouldSetResponder={() => true}>
+            <View style={[styles.aboutIconPlaceholder, { backgroundColor: colors.primary }]} />
+            <Text style={[styles.aboutTitle, { color: colors.text }]}>{t('settings.appName' as never)}</Text>
+            <Text style={[styles.aboutDesc, { color: colors.mutedText }]}>{t('settings.aboutDesc' as never)}</Text>
+            
+            <View style={styles.aboutVersionRow}>
+              <Text style={[styles.aboutVersionText, { color: colors.mutedText }]}>
+                {t('settings.version' as never)} {appVersion}
+              </Text>
+              <Text style={[styles.aboutVersionText, { color: colors.mutedText }]}>
+                {t('settings.build' as never)} {appBuild}
+              </Text>
+            </View>
+
+            <TouchableOpacity
+              style={[styles.aboutCloseBtn, { backgroundColor: colors.primary }]}
+              onPress={() => setShowAboutModal(false)}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.aboutCloseText}>{t('settings.close' as never)}</Text>
+            </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
+      </Modal>
+
       {/* Login modal (anonim kullanıcı için) */}
       <Modal visible={showLogin} animationType="slide" presentationStyle="pageSheet">
         <LoginScreen onComplete={() => setShowLogin(false)} />
@@ -431,6 +464,40 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderRadius: 14,
     paddingVertical: 14, paddingHorizontal: 16,
     fontSize: 15,
+  },
+  inputDisabled: {
+    opacity: 0.5,
+  },
+  aboutOverlay: {
+    flex: 1, backgroundColor: 'rgba(0,0,0,0.45)',
+    justifyContent: 'center', alignItems: 'center', padding: 32,
+  },
+  aboutBox: {
+    width: '100%', borderRadius: 24, borderWidth: 1,
+    padding: 28, alignItems: 'center',
+  },
+  aboutIconPlaceholder: {
+    width: 64, height: 64, borderRadius: 16,
+    marginBottom: 16,
+  },
+  aboutTitle: {
+    fontSize: 20, fontWeight: '700', marginBottom: 12, textAlign: 'center',
+  },
+  aboutDesc: {
+    fontSize: 15, lineHeight: 24, textAlign: 'center', marginBottom: 20,
+  },
+  aboutVersionRow: {
+    flexDirection: 'row', gap: 16, marginBottom: 24,
+  },
+  aboutVersionText: {
+    fontSize: 13, fontWeight: '500',
+  },
+  aboutCloseBtn: {
+    width: '100%', height: 50, borderRadius: 25,
+    justifyContent: 'center', alignItems: 'center',
+  },
+  aboutCloseText: {
+    color: '#FFF', fontSize: 15, fontWeight: '600',
   },
   submitBtn: {
     height: 54, borderRadius: 27,

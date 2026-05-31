@@ -24,13 +24,28 @@ export class ContentController {
   async getAll(
     @Query('locale') locale: SupportedLocale = 'tr',
     @Query('categories') categoriesParam?: string,
+    @Query('excludeTypes') excludeTypesParam?: string,
+    @Query('seed') seed?: string,
+    @Query('type') type?: string,
     @Query('page') page = 1,
     @Query('limit') limit = 20,
   ): Promise<ApiResponse<PaginatedResponse<ContentItem>>> {
     const categories = categoriesParam
       ? (categoriesParam.split(',').filter(Boolean) as MessageCategory[])
       : undefined;
-    const data = await this.contentService.findAll(locale, categories, Number(page), Number(limit));
+    const excludeTypes = excludeTypesParam
+      ? excludeTypesParam.split(',').filter(Boolean)
+      : undefined;
+
+    const data = await this.contentService.findAll(
+      locale,
+      categories,
+      excludeTypes,
+      seed,
+      type,
+      Number(page),
+      Number(limit),
+    );
     return { success: true, data };
   }
 

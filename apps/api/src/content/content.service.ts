@@ -118,18 +118,56 @@ export class ContentService {
   async findAll(
     _locale: SupportedLocale = 'tr',
     categories?: MessageCategory[],
+    excludeTypes?: string[],
+    seed?: string,
+    type?: string,
     page = 1,
     limit = 20,
   ): Promise<PaginatedResponse<ContentItem>> {
+    const offset = (page - 1) * limit;
+
+    if (seed) {
+      // Use RPC for seeded shuffled pagination
+      const { data, error } = await this.db.rpc('get_shuffled_content', {
+        p_seed: seed,
+        p_exclude_types: excludeTypes?.length ? excludeTypes : null,
+        p_categories: categories?.length ? categories : null,
+        p_limit: limit,
+        p_offset: offset,
+      });
+
+      if (error) throw new Error(error.message);
+
+      const { data: countData, error: countError } = await this.db.rpc('get_shuffled_content_count', {
+        p_exclude_types: excludeTypes?.length ? excludeTypes : null,
+        p_categories: categories?.length ? categories : null,
+      });
+
+      if (countError) throw new Error(countError.message);
+
+      return {
+        items: (data ?? []).map((e: any) => this.toContentItem(e)),
+        total: countData ?? 0,
+        page,
+        limit,
+      };
+    }
+
     let query = this.db
       .from('content_items')
       .select('*', { count: 'exact' })
       .eq('is_active', true)
       .order('created_at', { ascending: false })
-      .range((page - 1) * limit, page * limit - 1);
+      .range(offset, offset + limit - 1);
 
     if (categories && categories.length > 0) {
       query = query.in('category', categories);
+    }
+    if (excludeTypes && excludeTypes.length > 0) {
+      query = query.not('type', 'in', `(${excludeTypes.join(',')})`);
+    }
+    if (type) {
+      query = query.eq('type', type);
     }
 
     const { data, error, count } = await query;

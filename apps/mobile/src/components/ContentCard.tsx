@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { ContentItem } from '@the-message/shared';
 import { ColorScheme } from '../theme/colors';
 
@@ -16,9 +17,12 @@ export interface ContentCardProps {
   onShare: () => void;
   onBookmark: () => void;
   onFeedback: () => void;
+  children?: React.ReactNode;
+  showBadge?: boolean;
 }
 
-export function ContentCard({ cardType, item, locale, colors, isBookmarked, isSaving, onShare, onBookmark, onFeedback }: ContentCardProps) {
+export function ContentCard({ cardType, item, locale, colors, isBookmarked, isSaving, onShare, onBookmark, onFeedback, children, showBadge = false }: ContentCardProps) {
+  const { t } = useTranslation();
   const tr = item.translations[locale];
 
   return (
@@ -43,9 +47,18 @@ export function ContentCard({ cardType, item, locale, colors, isBookmarked, isSa
         <View style={[styles.sourceIconBox, { backgroundColor: colors.primary + '22' }]}>
           <Ionicons name="bookmark" size={11} color={colors.primary} />
         </View>
-        <Text style={[styles.sourceText, { color: colors.mutedText, flex: 1 }]}>
-          {tr?.source ? `(${tr.source})` : ''}
-        </Text>
+        <View style={{ flex: 1, paddingRight: 8 }}>
+          {showBadge && cardType !== 'esma' && (
+            <View style={[styles.badge, { backgroundColor: colors.border }]}>
+              <Text style={[styles.badgeText, { color: colors.text }]}>
+                {t(`badges.${cardType}` as never)}
+              </Text>
+            </View>
+          )}
+          <Text style={[styles.sourceText, { color: colors.mutedText }]}>
+            {tr?.source ? `(${tr.source})` : ''}
+          </Text>
+        </View>
         <TouchableOpacity onPress={onFeedback} style={[styles.actionBtn, { backgroundColor: colors.background }]}>
           <Ionicons name="flag-outline" size={17} color={colors.mutedText} />
         </TouchableOpacity>
@@ -63,6 +76,7 @@ export function ContentCard({ cardType, item, locale, colors, isBookmarked, isSa
           <Ionicons name="share-outline" size={17} color={colors.mutedText} />
         </TouchableOpacity>
       </View>
+      {children}
     </View>
   );
 }
@@ -90,5 +104,17 @@ const styles = StyleSheet.create({
     width: 26, height: 26, borderRadius: 6,
     justifyContent: 'center', alignItems: 'center',
   },
-  sourceText: { fontSize: 13 },
+  sourceText: { fontSize: 13, marginTop: 2 },
+  badge: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+    marginBottom: 2,
+  },
+  badgeText: {
+    fontSize: 10,
+    fontWeight: '600',
+    opacity: 0.8,
+  },
 });

@@ -195,7 +195,17 @@ export function DailyScreen() {
             onShare={() => handleShare(item)}
             onBookmark={() => handleBookmark(item)}
             onFeedback={() => setFeedbackItem(item)}
-          />
+          >
+            {key === 'esma' && (
+              <TouchableOpacity
+                style={[styles.allAsmaBtn, { borderColor: colors.primary }]}
+                onPress={() => (navigation as any).navigate('AsmaAlHusna')}
+              >
+                <Text style={[styles.allAsmaText, { color: colors.primary }]}>{t('daily.allAsma')}</Text>
+                <Ionicons name="arrow-forward" size={14} color={colors.primary} />
+              </TouchableOpacity>
+            )}
+          </ContentCard>
         </View>
       ))}
 
@@ -391,5 +401,14 @@ const styles = StyleSheet.create({
   },
   readMoreText: {
     color: '#FFF', fontSize: 16, fontWeight: '600', letterSpacing: 0.5,
+  },
+
+  allAsmaBtn: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+    gap: 6, paddingVertical: 10, borderRadius: 16,
+    borderWidth: 1, marginTop: 12,
+  },
+  allAsmaText: {
+    fontSize: 14, fontWeight: '600',
   },
 });

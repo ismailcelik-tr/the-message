@@ -15,12 +15,11 @@ import { addBookmark, removeBookmark, fetchBookmarks } from '../lib/bookmarks';
 import { FeedbackModal } from '../components/FeedbackModal';
 import { AppModal } from '../components/AppModal';
 
-export function FocusFeedScreen() {
+export function AsmaAlHusnaScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const currentTheme = usePreferencesStore((s) => s.currentTheme);
   const locale = usePreferencesStore((s) => s.preferences.locale);
-  const categoryPreferences = usePreferencesStore((s) => s.preferences.categoryPreferences);
   const { user, isAnonymous } = useAuthStore();
   const colors = COLORS[currentTheme];
   const insets = useSafeAreaInsets();
@@ -29,19 +28,11 @@ export function FocusFeedScreen() {
   const [savingId, setSavingId] = useState<string | null>(null);
   const [feedbackItem, setFeedbackItem] = useState<ContentItem | null>(null);
   const [modal, setModal] = useState<{ title?: string; message: string } | null>(null);
-  
-  // Seed for shuffling the feed, changes on pull-to-refresh
-  const [feedSeed, setFeedSeed] = useState(() => Math.random().toString(36).substring(7));
-  const [isRefreshing, setIsRefreshing] = useState(false);
 
   React.useEffect(() => {
     if (!user || isAnonymous) return;
     fetchBookmarks(user.id).then(ids => setBookmarkedIds(new Set(ids))).catch(() => {});
   }, [user, isAnonymous]);
-
-  const activeCategories = (Object.keys(categoryPreferences) as Array<keyof typeof categoryPreferences>)
-    .filter(k => categoryPreferences[k])
-    .join(',');
 
   const {
     data,
@@ -52,12 +43,9 @@ export function FocusFeedScreen() {
     isError,
     refetch,
   } = useInfiniteQuery({
-    queryKey: ['focus-feed', locale, activeCategories, feedSeed],
+    queryKey: ['asma-al-husna', locale],
     queryFn: async ({ pageParam = 1 }) => {
-      let url = `/content?locale=${locale}&page=${pageParam}&limit=20&excludeTypes=esma&seed=${feedSeed}`;
-      if (activeCategories) {
-        url += `&categories=${activeCategories}`;
-      }
+      const url = `/content?locale=${locale}&type=esma&page=${pageParam}&limit=20`;
       const res = await apiFetch<ApiResponse<PaginatedResponse<ContentItem>>>(url);
       return res.data;
     },
@@ -82,6 +70,7 @@ export function FocusFeedScreen() {
       setModal({ title: t('settings.saveRequiresAccountTitle'), message: t('settings.saveRequiresAccountDesc') });
       return;
     }
+    if (item.id === 'static-allah') return; // Cannot bookmark the static one right now
     setSavingId(item.id);
     try {
       if (bookmarkedIds.has(item.id)) {
@@ -98,14 +87,37 @@ export function FocusFeedScreen() {
     }
   }, [user, isAnonymous, bookmarkedIds, t]);
 
-  const handleRefresh = useCallback(async () => {
-    setIsRefreshing(true);
-    setFeedSeed(Math.random().toString(36).substring(7));
-    // The query key change will automatically trigger a fetch
-    setTimeout(() => setIsRefreshing(false), 500); // UI feel
-  }, []);
+  // Exclude Allah from the dynamic list to prevent duplicates
+  const dynamicItems = data?.pages.flatMap(p => p?.items ?? []) ?? [];
+  const filteredItems = dynamicItems.filter(item => {
+    const tr = item.translations['tr'];
+    const arabic = tr?.arabicText?.trim();
+    return arabic !== 'الله' && arabic !== 'اللّٰه';
+  });
 
-  const items = data?.pages.flatMap(p => p?.items ?? []) ?? [];
+  const staticAllahItem: ContentItem = {
+    id: 'static-allah',
+    type: 'esma' as any,
+    category: 'dhikr',
+    recommendedTime: 'any',
+    date: new Date().toISOString().split('T')[0],
+    translations: {
+      tr: {
+        content: t('asma.allahDesc'),
+        source: 'Kur\'an-ı Kerim',
+        arabicText: 'اللّٰه',
+        transliteration: t('asma.allahTitle'),
+      },
+      en: {
+        content: t('asma.allahDesc'),
+        source: 'Quran',
+        arabicText: 'اللّٰه',
+        transliteration: t('asma.allahTitle'),
+      }
+    }
+  };
+
+  const allItems = [staticAllahItem, ...filteredItems];
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
@@ -113,7 +125,7 @@ export function FocusFeedScreen() {
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
           <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>{locale === 'tr' ? 'Daha Fazlasını Oku' : 'Read More'}</Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>{t('daily.allAsma')}</Text>
         <View style={{ width: 40 }} />
       </View>
 
@@ -130,11 +142,9 @@ export function FocusFeedScreen() {
         </View>
       ) : (
         <FlatList
-          data={items}
+          data={allItems}
           keyExtractor={item => item.id}
           contentContainerStyle={[styles.list, { paddingBottom: insets.bottom + 20 }]}
-          refreshing={isRefreshing}
-          onRefresh={handleRefresh}
           renderItem={({ item }) => (
             <ContentCard
               cardType={item.type}
@@ -146,7 +156,6 @@ export function FocusFeedScreen() {
               onShare={() => handleShare(item)}
               onBookmark={() => handleBookmark(item)}
               onFeedback={() => setFeedbackItem(item)}
-              showBadge={true}
             />
           )}
           onEndReached={() => {

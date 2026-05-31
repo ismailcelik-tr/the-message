@@ -65,6 +65,18 @@ export default {
     saved: 'Kaydedildi',
     saveError: 'Kaydedilemedi',
     shareText: '{{content}}\n— {{source}}\n\nÇağrı uygulamasından',
+    readMore: 'Daha Fazlasını Oku',
+    allAsma: "Tüm Esmâü'l-Hüsnâ",
+  },
+  badges: {
+    prayer: 'Dua',
+    hadith: 'Hadis',
+    verse: 'Ayet',
+    worship: 'İbadet',
+  },
+  asma: {
+    allahTitle: 'Allah',
+    allahDesc: 'Allah, tüm varlıkların yaratıcısı ve sahibi olan yüce isimdir. Bütün güzel isimler ve yüce sıfatlar O\'na aittir.',
   },
   focus: {
     title: 'Manevi Odaklar',
@@ -187,9 +199,13 @@ export default {
     feedbackSuccess: 'Teşekkürler! Mesajın alındı.',
     feedbackError: 'Gönderilemedi, tekrar dene.',
     about: 'Hakkında',
+    appName: 'The Message',
+    aboutDesc: 'The Message, gün içinde anlamlı hatırlatmalarla manevi farkındalığını canlı tutmana yardımcı olmak için tasarlanmıştır.',
     version: 'Versiyon',
+    build: 'Build',
     privacyPolicy: 'Gizlilik Politikası',
     rateApp: 'Uygulamayı Değerlendir',
+    close: 'Kapat',
   },
   feedback: {
     buttonLabel: 'Hata Bildir',

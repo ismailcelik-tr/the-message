@@ -65,6 +65,18 @@ export default {
     saveError: 'Could not save',
     shareText: '{{content}}\n— {{source}}\n\nVia The Message app',
     dhikrTitle: 'Dhikr',
+    readMore: 'Read More',
+    allAsma: 'All Asma al-Husna',
+  },
+  badges: {
+    prayer: 'Prayer',
+    hadith: 'Hadith',
+    verse: 'Verse',
+    worship: 'Worship',
+  },
+  asma: {
+    allahTitle: 'Allah',
+    allahDesc: 'Allah is the supreme name of the Creator and Owner of all existence. All beautiful names and exalted attributes belong to Him.',
   },
   focus: {
     title: 'Spiritual Focus',
@@ -187,9 +199,13 @@ export default {
     feedbackSuccess: 'Thank you! Your message was received.',
     feedbackError: 'Could not send, please try again.',
     about: 'About',
+    appName: 'The Message',
+    aboutDesc: 'The Message is designed to help you keep your spiritual awareness alive through meaningful reminders throughout the day.',
     version: 'Version',
+    build: 'Build',
     privacyPolicy: 'Privacy Policy',
     rateApp: 'Rate the App',
+    close: 'Close',
   },
   feedback: {
     buttonLabel: 'Report Issue',

@@ -14,6 +14,7 @@ import { FocusScreen } from '../screens/FocusScreen';
 import { SavedScreen } from '../screens/SavedScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
 import { FocusFeedScreen } from '../screens/FocusFeedScreen';
+import { AsmaAlHusnaScreen } from '../screens/AsmaAlHusnaScreen';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 const Tab = createBottomTabNavigator();
@@ -24,6 +25,7 @@ function DailyStackScreen() {
     <DailyStack.Navigator screenOptions={{ headerShown: false }}>
       <DailyStack.Screen name="DailyMain" component={DailyScreen} />
       <DailyStack.Screen name="FocusFeed" component={FocusFeedScreen} />
+      <DailyStack.Screen name="AsmaAlHusna" component={AsmaAlHusnaScreen} />
     </DailyStack.Navigator>
   );
 }
