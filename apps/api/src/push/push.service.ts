@@ -485,6 +485,12 @@ export class PushService {
             const full = source ? `${rawContent} — ${source}` : rawContent;
             const body = full.length > 180 ? full.slice(0, 177) + '…' : full;
 
+            // Acquire atomic lock to prevent multiple deployed containers from sending duplicates
+            const hasLock = await this.acquirePushLock(token.user_id, userDateStr, slot.label, contentItem.id);
+            if (!hasLock) {
+              continue;
+            }
+
             dueNotifications.push({
               token: token.expo_push_token,
               title,
@@ -637,6 +643,30 @@ export class PushService {
     return !!data;
   }
 
+  private async acquirePushLock(
+    userId: string,
+    date: string,
+    slot: string,
+    contentId: string,
+  ): Promise<boolean> {
+    const { error } = await this.db
+      .from('push_logs')
+      .insert({
+        user_id: userId,
+        date,
+        slot,
+        content_id: contentId,
+        status: 'failed',
+        error_message: 'sending',
+      });
+
+    if (error) {
+      // If insertion fails (e.g. unique constraint violation), lock is not acquired.
+      return false;
+    }
+    return true;
+  }
+
   private async logPushSent(
     userId: string,
     date: string,
@@ -647,14 +677,13 @@ export class PushService {
   ): Promise<void> {
     const { error } = await this.db
       .from('push_logs')
-      .insert({
-        user_id: userId,
-        date,
-        slot,
-        content_id: contentId,
+      .update({
         status,
         error_message: errorMessage || null,
-      });
+      })
+      .eq('user_id', userId)
+      .eq('date', date)
+      .eq('slot', slot);
 
     if (error) {
       console.error('Error logging push sent:', error);
