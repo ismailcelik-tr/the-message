@@ -62,6 +62,40 @@ export function getNextNotificationTime(
   return null;
 }
 
+export async function fetchTodayPushLogs(
+  userId: string,
+  todayStr: string,
+  prefs: UserPreferences,
+): Promise<NotificationLogItem[]> {
+  const { data, error } = await supabase
+    .from('push_logs')
+    .select('*, content:content_items(*)')
+    .eq('user_id', userId)
+    .eq('date', todayStr)
+    .eq('status', 'success')
+    .order('created_at', { ascending: true });
+
+  if (error) throw error;
+  if (!data) return [];
+
+  const slots = prefs.notificationSchedule[prefs.notificationFrequency];
+  const slotMap = new Map(slots.map(s => [s.label, s.time]));
+
+  return data.map((log) => {
+    const time = slotMap.get(log.slot) ?? '00:00';
+    const [hh, mm] = time.split(':').map(Number);
+    const scheduledDate = new Date(todayStr);
+    scheduledDate.setHours(hh, mm, 0, 0);
+
+    return {
+      id: `notif-${log.id}`, // prefix with notif- to identify as notification bookmark
+      scheduledTime: time,
+      sentAt: scheduledDate,
+      content: log.content,
+    };
+  });
+}
+
 // Saves a notification log item as a bookmark (type: 'notification')
 export async function saveNotificationBookmark(
   userId: string,

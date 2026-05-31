@@ -168,6 +168,9 @@ export default {
     deleteAccountMessage: 'Bu işlem geri alınamaz. Tüm verileriniz kalıcı olarak silinecek.',
     deleteAccountConfirm: 'Evet, Sil',
     cancel: 'İptal',
+    ok: 'Tamam',
+    hour: 'Saat',
+    minute: 'Dakika',
     slotLabels: {
       morning: 'Sabah',
       midMorning: 'Kuşluk',

@@ -16,16 +16,55 @@ export class ContentService {
   }
 
   async findDailyBundle(
-    _locale: SupportedLocale = 'tr',
+    authHeader: string | undefined,
+    locale: SupportedLocale = 'tr',
     activeCategories?: MessageCategory[],
     date?: string,
   ): Promise<DailyBundle> {
-    // Absolute day number since Unix epoch — unique per calendar day, stable across years
-    const seed = date
-      ? Math.floor(new Date(date).getTime() / 86400000)
-      : Math.floor(Date.now() / 86400000);
+    const targetDate = date ?? new Date().toISOString().split('T')[0];
+    let userId: string | null = null;
 
-    const pick = async (type: string): Promise<ContentItem> => {
+    if (authHeader) {
+      const token = authHeader.replace('Bearer ', '');
+      const { data: { user } } = await this.db.auth.getUser(token);
+      if (user) userId = user.id;
+    }
+
+    if (userId) {
+      const { data: existingBundle } = await this.db
+        .from('user_daily_bundles')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('date', targetDate)
+        .eq('locale', locale)
+        .maybeSingle();
+
+      if (existingBundle) {
+        const { data: items } = await this.db
+          .from('content_items')
+          .select('*')
+          .in('id', [
+            existingBundle.esma_id,
+            existingBundle.verse_id,
+            existingBundle.hadith_id,
+            existingBundle.prayer_id,
+            existingBundle.worship_id,
+          ]);
+
+        if (items && items.length === 5) {
+          const map = new Map(items.map((i) => [i.id, this.toContentItem(i)]));
+          return {
+            esma: map.get(existingBundle.esma_id)!,
+            verse: map.get(existingBundle.verse_id)!,
+            hadith: map.get(existingBundle.hadith_id)!,
+            prayer: map.get(existingBundle.prayer_id)!,
+            worship: map.get(existingBundle.worship_id)!,
+          };
+        }
+      }
+    }
+
+    const pick = async (type: string, ignoreCategories = false): Promise<ContentItem> => {
       const { data, error } = await this.db
         .from('content_items')
         .select('*')
@@ -35,28 +74,50 @@ export class ContentService {
       if (error || !data?.length) throw new NotFoundException(`No active ${type} content found`);
 
       let items = data;
-      if (activeCategories && activeCategories.length > 0) {
+      if (!ignoreCategories && activeCategories && activeCategories.length > 0) {
         const filtered = items.filter((item) => activeCategories.includes(item.category));
         if (filtered.length > 0) items = filtered;
       }
 
-      return this.toContentItem(items[seed % items.length]);
+      const seed = Math.floor(new Date(targetDate).getTime() / 86400000);
+      let hash = 0;
+      if (userId) {
+        for (let i = 0; i < userId.length; i++) hash = userId.charCodeAt(i) + ((hash << 5) - hash);
+        hash = Math.abs(hash);
+      }
+
+      return this.toContentItem(items[(seed + hash) % items.length]);
     };
 
     const [esma, verse, hadith, prayer, worship] = await Promise.all([
-      pick('esma'),
+      pick('esma', true),
       pick('verse'),
       pick('hadith'),
       pick('prayer'),
       pick('worship'),
     ]);
 
-    return { esma, verse, hadith, prayer, worship };
+    const bundle = { esma, verse, hadith, prayer, worship };
+
+    if (userId) {
+      await this.db.from('user_daily_bundles').upsert({
+        user_id: userId,
+        date: targetDate,
+        locale,
+        esma_id: esma.id,
+        verse_id: verse.id,
+        hadith_id: hadith.id,
+        prayer_id: prayer.id,
+        worship_id: worship.id,
+      }, { onConflict: 'user_id,date' });
+    }
+
+    return bundle;
   }
 
   async findAll(
     _locale: SupportedLocale = 'tr',
-    category?: MessageCategory,
+    categories?: MessageCategory[],
     page = 1,
     limit = 20,
   ): Promise<PaginatedResponse<ContentItem>> {
@@ -67,8 +128,8 @@ export class ContentService {
       .order('created_at', { ascending: false })
       .range((page - 1) * limit, page * limit - 1);
 
-    if (category) {
-      query = query.eq('category', category);
+    if (categories && categories.length > 0) {
+      query = query.in('category', categories);
     }
 
     const { data, error, count } = await query;

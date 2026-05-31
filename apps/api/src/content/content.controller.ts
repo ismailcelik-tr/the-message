@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query, Headers } from '@nestjs/common';
 import { ContentService } from './content.service';
 import { ApiResponse, DailyBundle, MessageCategory, PaginatedResponse, ContentItem, SupportedLocale } from '@the-message/shared';
 
@@ -8,6 +8,7 @@ export class ContentController {
 
   @Get('daily-bundle')
   async getDailyBundle(
+    @Headers('authorization') authHeader: string | undefined,
     @Query('locale') locale: SupportedLocale = 'tr',
     @Query('categories') categoriesParam?: string,
     @Query('date') date?: string,
@@ -15,18 +16,21 @@ export class ContentController {
     const activeCategories = categoriesParam
       ? (categoriesParam.split(',').filter(Boolean) as MessageCategory[])
       : undefined;
-    const data = await this.contentService.findDailyBundle(locale, activeCategories, date);
+    const data = await this.contentService.findDailyBundle(authHeader, locale, activeCategories, date);
     return { success: true, data };
   }
 
   @Get()
   async getAll(
     @Query('locale') locale: SupportedLocale = 'tr',
-    @Query('category') category?: MessageCategory,
+    @Query('categories') categoriesParam?: string,
     @Query('page') page = 1,
     @Query('limit') limit = 20,
   ): Promise<ApiResponse<PaginatedResponse<ContentItem>>> {
-    const data = await this.contentService.findAll(locale, category, Number(page), Number(limit));
+    const categories = categoriesParam
+      ? (categoriesParam.split(',').filter(Boolean) as MessageCategory[])
+      : undefined;
+    const data = await this.contentService.findAll(locale, categories, Number(page), Number(limit));
     return { success: true, data };
   }
 

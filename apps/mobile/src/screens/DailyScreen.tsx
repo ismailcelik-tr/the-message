@@ -7,21 +7,24 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { useNavigation } from '@react-navigation/native';
 import { ContentItem } from '@the-message/shared';
 import { usePreferencesStore } from '../store/preferences.store';
 import { useAuthStore } from '../store/auth.store';
 import { fetchDailyBundle } from '../api/content.api';
 import { addBookmark, removeBookmark, fetchBookmarks } from '../lib/bookmarks';
-import { buildTodayNotifications, getNextNotificationTime, saveNotificationBookmark, NotificationLogItem } from '../lib/notificationLog';
+import { fetchTodayPushLogs, getNextNotificationTime, saveNotificationBookmark, NotificationLogItem } from '../lib/notificationLog';
 import { COLORS, ColorScheme } from '../theme/colors';
 import { FeedbackModal } from '../components/FeedbackModal';
 import { AppModal } from '../components/AppModal';
+import { ContentCard } from '../components/ContentCard';
 
 type CardType = 'esma' | 'verse' | 'hadith' | 'prayer' | 'worship';
 type IoniconsName = React.ComponentProps<typeof Ionicons>['name'];
 
 export function DailyScreen() {
   const { t } = useTranslation();
+  const navigation = useNavigation();
   const currentTheme = usePreferencesStore((s) => s.currentTheme);
   const locale = usePreferencesStore((s) => s.preferences.locale);
   const { user, isAnonymous } = useAuthStore();
@@ -56,11 +59,19 @@ export function DailyScreen() {
 
   useEffect(() => { loadBookmarks().catch(() => {}); }, [loadBookmarks]);
 
+  const { data: rawTodayNotifications, refetch: refetchNotifs } = useQuery({
+    queryKey: ['push-logs', user?.id, todayStr],
+    queryFn: () => user ? fetchTodayPushLogs(user.id, todayStr, preferences) : [],
+    enabled: !!user && !isAnonymous,
+  });
+
+  const todayNotifications = rawTodayNotifications ?? [];
+
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
-    await Promise.all([refetch(), loadBookmarks()]);
+    await Promise.all([refetch(), refetchNotifs(), loadBookmarks()]);
     setRefreshing(false);
-  }, [refetch, loadBookmarks]);
+  }, [refetch, refetchNotifs, loadBookmarks]);
 
   const handleSaveNotification = useCallback(async (logItem: NotificationLogItem) => {
     if (!user || isAnonymous) {
@@ -142,7 +153,6 @@ export function DailyScreen() {
     { key: 'worship', item: bundle.worship, titleKey: 'daily.worshipTitle' },
   ];
 
-  const todayNotifications = buildTodayNotifications(bundle, preferences, todayStr);
   const nextNotificationTime = getNextNotificationTime(preferences, todayStr);
 
   return (
@@ -200,6 +210,15 @@ export function DailyScreen() {
         />
       )}
 
+      <TouchableOpacity
+        style={[styles.readMoreBtn, { backgroundColor: colors.primary }]}
+        onPress={() => (navigation as any).navigate('FocusFeed')}
+        activeOpacity={0.8}
+      >
+        <Text style={styles.readMoreText}>{locale === 'tr' ? 'Daha Fazlasını Oku' : 'Read More'}</Text>
+        <Ionicons name="arrow-forward" size={18} color="#FFF" />
+      </TouchableOpacity>
+
       <AppModal
         visible={!!modal}
         title={modal?.title}
@@ -245,66 +264,7 @@ export function DailyScreen() {
   );
 }
 
-interface CardProps {
-  cardType: CardType;
-  item: ContentItem;
-  locale: 'tr' | 'en';
-  colors: ColorScheme;
-  isBookmarked: boolean;
-  isSaving: boolean;
-  onShare: () => void;
-  onBookmark: () => void;
-  onFeedback: () => void;
-}
 
-function ContentCard({ cardType, item, locale, colors, isBookmarked, isSaving, onShare, onBookmark, onFeedback }: CardProps) {
-  const tr = item.translations[locale];
-
-  return (
-    <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
-      {/* Esma: Arapça büyük + transliterasyon */}
-      {cardType === 'esma' && tr?.arabicText && (
-        <View style={styles.esmaArabicWrap}>
-          <Text style={[styles.esmaArabic, { color: colors.text }]}>{tr.arabicText}</Text>
-          {tr.transliteration && (
-            <Text style={[styles.esmaLatin, { color: colors.primary }]}>{tr.transliteration}</Text>
-          )}
-        </View>
-      )}
-
-      {/* İçerik kutusu */}
-      <View style={[styles.contentBox, { backgroundColor: colors.border + '66' }]}>
-        <Text style={[styles.contentText, { color: colors.text }]}>{tr?.content}</Text>
-      </View>
-
-      {/* Kaynak + aksiyon butonları */}
-      <View style={styles.sourceRow}>
-        <View style={[styles.sourceIconBox, { backgroundColor: colors.primary + '22' }]}>
-          <Ionicons name="bookmark" size={11} color={colors.primary} />
-        </View>
-        <Text style={[styles.sourceText, { color: colors.mutedText, flex: 1 }]}>
-          {tr?.source ? `(${tr.source})` : ''}
-        </Text>
-        <TouchableOpacity onPress={onFeedback} style={[styles.actionBtn, { backgroundColor: colors.background }]}>
-          <Ionicons name="flag-outline" size={17} color={colors.mutedText} />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={onBookmark} style={[styles.actionBtn, { backgroundColor: colors.background }]} disabled={isSaving}>
-          {isSaving
-            ? <ActivityIndicator size="small" color={colors.mutedText} />
-            : <Ionicons
-                name={isBookmarked ? 'bookmark' : 'bookmark-outline'}
-                size={17}
-                color={isBookmarked ? colors.primary : colors.mutedText}
-              />
-          }
-        </TouchableOpacity>
-        <TouchableOpacity onPress={onShare} style={[styles.actionBtn, { backgroundColor: colors.background }]}>
-          <Ionicons name="share-outline" size={17} color={colors.mutedText} />
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
-}
 
 interface NotificationsCardProps {
   notifications: NotificationLogItem[];
@@ -418,25 +378,18 @@ const styles = StyleSheet.create({
   notifText: { fontSize: 13, lineHeight: 18 },
   notifSource: { fontSize: 11, marginTop: 3 },
 
-  esmaArabicWrap: { alignItems: 'center', marginBottom: 12 },
-  esmaArabic: { fontSize: 48, fontWeight: '300', textAlign: 'center', lineHeight: 68 },
-  esmaLatin: { fontSize: 18, fontWeight: '600', marginTop: 4, letterSpacing: 0.5 },
-
-  contentBox: {
-    borderRadius: 14, padding: 16, marginBottom: 12,
-  },
-  contentText: { fontSize: 16, lineHeight: 26, fontWeight: '400' },
-
-  sourceRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  sourceIconBox: {
-    width: 26, height: 26, borderRadius: 6,
-    justifyContent: 'center', alignItems: 'center',
-  },
-  sourceText: { fontSize: 13 },
-
   upcomingCard: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
     padding: 16, marginTop: 6,
   },
   upcomingText: { flex: 1, fontSize: 13, lineHeight: 20 },
+
+  readMoreBtn: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+    gap: 8, paddingVertical: 14, borderRadius: 24,
+    marginVertical: 16,
+  },
+  readMoreText: {
+    color: '#FFF', fontSize: 16, fontWeight: '600', letterSpacing: 0.5,
+  },
 });

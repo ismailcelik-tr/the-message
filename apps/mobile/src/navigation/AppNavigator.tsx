@@ -13,8 +13,20 @@ import { DailyScreen } from '../screens/DailyScreen';
 import { FocusScreen } from '../screens/FocusScreen';
 import { SavedScreen } from '../screens/SavedScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
+import { FocusFeedScreen } from '../screens/FocusFeedScreen';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 const Tab = createBottomTabNavigator();
+const DailyStack = createNativeStackNavigator();
+
+function DailyStackScreen() {
+  return (
+    <DailyStack.Navigator screenOptions={{ headerShown: false }}>
+      <DailyStack.Screen name="DailyMain" component={DailyScreen} />
+      <DailyStack.Screen name="FocusFeed" component={FocusFeedScreen} />
+    </DailyStack.Navigator>
+  );
+}
 
 type IoniconsName = React.ComponentProps<typeof Ionicons>['name'];
 
@@ -107,7 +119,7 @@ export function AppNavigator() {
         tabBar={(props) => <PillTabBar {...props} />}
         screenOptions={{ headerShown: false }}
       >
-        <Tab.Screen name="Daily"    component={DailyScreen} />
+        <Tab.Screen name="Daily"    component={DailyStackScreen} />
         <Tab.Screen name="Focus"    component={FocusScreen} />
         <Tab.Screen name="Saved"    component={SavedScreen} />
         <Tab.Screen name="Settings" component={SettingsScreen} />

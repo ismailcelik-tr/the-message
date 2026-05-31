@@ -168,6 +168,9 @@ export default {
     deleteAccountMessage: 'This action cannot be undone. All your data will be permanently deleted.',
     deleteAccountConfirm: 'Yes, Delete',
     cancel: 'Cancel',
+    ok: 'OK',
+    hour: 'Hour',
+    minute: 'Minute',
     slotLabels: {
       morning: 'Morning',
       midMorning: 'Mid-Morning',

@@ -171,15 +171,32 @@ export function SettingsScreen() {
           {/* Notification times */}
           <Text style={[styles.groupHeader, { color: colors.secondary }]}>{t('settings.notificationTimes')}</Text>
           <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
-            {currentSlots.map((slot, index) => (
-              <TimePickerRow
-                key={`${preferences.notificationFrequency}-${index}`}
-                label={t(SLOT_LABEL_KEYS[slot.label] as never)}
-                time={slot.time}
-                theme={currentTheme}
-                onConfirm={(time) => updateSlotTime(preferences.notificationFrequency, index, time)}
-              />
-            ))}
+            {currentSlots.map((slot, index) => {
+              const prevSlot = index > 0 ? currentSlots[index - 1] : null;
+              const nextSlot = index < currentSlots.length - 1 ? currentSlots[index + 1] : null;
+              
+              const addMins = (t: string, m: number) => {
+                const [hh, mm] = t.split(':').map(Number);
+                const dt = new Date();
+                dt.setHours(hh, mm + m, 0, 0);
+                return `${String(dt.getHours()).padStart(2, '0')}:${String(dt.getMinutes()).padStart(2, '0')}`;
+              };
+
+              const minTimeStr = prevSlot ? addMins(prevSlot.time, 1) : undefined;
+              const maxTimeStr = nextSlot ? addMins(nextSlot.time, -1) : undefined;
+
+              return (
+                <TimePickerRow
+                  key={`${preferences.notificationFrequency}-${index}`}
+                  label={t(SLOT_LABEL_KEYS[slot.label] as never)}
+                  time={slot.time}
+                  theme={currentTheme}
+                  minTime={minTimeStr}
+                  maxTime={maxTimeStr}
+                  onConfirm={(time) => updateSlotTime(preferences.notificationFrequency, index, time)}
+                />
+              );
+            })}
             {/* Remove bottom border on last row */}
             <View style={styles.cardBottomFix} />
           </View>

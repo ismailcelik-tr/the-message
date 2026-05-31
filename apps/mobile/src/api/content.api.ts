@@ -1,5 +1,6 @@
 import { ApiResponse, CategoryPreferences, ContentItem, DailyBundle, SupportedLocale } from '@the-message/shared';
 import { apiFetch } from './client';
+import { supabase } from '../lib/supabase';
 
 export async function fetchDailyContent(locale: SupportedLocale): Promise<ContentItem | null> {
   const res = await apiFetch<ApiResponse<ContentItem | null>>(`/content/daily?locale=${locale}`);
@@ -25,7 +26,13 @@ export async function fetchDailyBundle(
     url += `&date=${date}`;
   }
 
-  const res = await apiFetch<ApiResponse<DailyBundle>>(url);
+  const { data: { session } } = await supabase.auth.getSession();
+  const headers: Record<string, string> = {};
+  if (session?.access_token) {
+    headers.Authorization = `Bearer ${session.access_token}`;
+  }
+
+  const res = await apiFetch<ApiResponse<DailyBundle>>(url, { headers });
   if (!res.data) throw new Error('Empty bundle response');
   return res.data;
 }
