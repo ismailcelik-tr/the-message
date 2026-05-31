@@ -233,8 +233,9 @@ export function UsersManagement({ token, apiUrl }: UsersManagementProps) {
                 {bookmarks.map((bookmark) => {
                   const snap = bookmark.snapshot ?? {};
                   const type = bookmark.content_type;
-                  const text = snap.content ?? snap.body ?? snap.text ?? 'İçerik detayı yok';
-                  const source = snap.source ?? '';
+                  const trans = snap.translations ?? {};
+                  const text = trans.tr?.content ?? trans.en?.content ?? snap.content ?? snap.body ?? snap.text ?? 'İçerik detayı yok';
+                  const source = trans.tr?.source ?? trans.en?.source ?? snap.source ?? '';
 
                   return (
                     <div key={bookmark.id} style={{ border: '1px solid #d8e2dd', borderRadius: '8px', padding: '12px', background: '#fcfdfe' }}>

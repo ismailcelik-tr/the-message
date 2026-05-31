@@ -128,28 +128,50 @@ export function SavedScreen() {
 
   const load = useCallback(async () => {
     if (!user || isAnonymous) { setLoading(false); return; }
-    const { data, error } = await supabase
+    
+    // 1. Fetch bookmarks without joining content_items (avoids relationship/join error)
+    const { data: bookmarksData, error: bookmarksError } = await supabase
       .from('bookmarks')
-      .select('snapshot, content_id, created_at, content_items(id, type, category, recommended_time, date, translations, audio_url, image_url, is_active)')
+      .select('snapshot, content_id, created_at')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false });
 
-    if (!error && data) {
-      const mapped = data.map((r: any) => {
-        // If content_items exists and is active, use the live database translations and fields
-        if (r.content_items && r.content_items.is_active) {
+    if (!bookmarksError && bookmarksData) {
+      // 2. Collect content IDs that are UUIDs (non-notifications)
+      const contentIds = bookmarksData
+        .filter((r: any) => !r.content_id.startsWith('notif-'))
+        .map((r: any) => r.content_id);
+
+      // 3. Fetch corresponding active items from content_items
+      const contentItemsMap = new Map<string, any>();
+      if (contentIds.length > 0) {
+        const { data: itemsData, error: itemsError } = await supabase
+          .from('content_items')
+          .select('id, type, category, recommended_time, date, translations, audio_url, image_url, is_active')
+          .in('id', contentIds);
+
+        if (!itemsError && itemsData) {
+          itemsData.forEach((item: any) => {
+            contentItemsMap.set(item.id, item);
+          });
+        }
+      }
+
+      // 4. Map data with live item details if active, fallback to snapshot
+      const mapped = bookmarksData.map((r: any) => {
+        const dbItem = contentItemsMap.get(r.content_id);
+        if (dbItem && dbItem.is_active) {
           return {
-            id: r.content_items.id,
-            type: r.content_items.type,
-            category: r.content_items.category,
-            recommendedTime: r.content_items.recommended_time ?? 'any',
-            date: r.content_items.date ?? r.snapshot.date,
-            translations: r.content_items.translations,
-            audioUrl: r.content_items.audio_url ?? undefined,
-            imageUrl: r.content_items.image_url ?? undefined,
+            id: dbItem.id,
+            type: dbItem.type,
+            category: dbItem.category,
+            recommendedTime: dbItem.recommended_time ?? 'any',
+            date: dbItem.date ?? r.snapshot.date,
+            translations: dbItem.translations,
+            audioUrl: dbItem.audio_url ?? undefined,
+            imageUrl: dbItem.image_url ?? undefined,
           } as ContentItem;
         }
-        // Fallback to static snapshot for notifications or archived/deleted content
         return r.snapshot as ContentItem;
       });
       setItems(mapped);
