@@ -7,8 +7,8 @@ async function bootstrap() {
   // Enable CORS for mobile application connections
   app.enableCors();
   
-  // Apply api prefix for all controller endpoints
-  app.setGlobalPrefix('api');
+  // Apply api prefix for all controller endpoints, excluding static admin path
+  app.setGlobalPrefix('api', { exclude: ['admin'] });
   
   const port = process.env.PORT || 3000;
   await app.listen(port);

@@ -111,6 +111,7 @@ export interface RegisterPushTokenRequest {
   platform: PushPlatform;
   locale: SupportedLocale;
   notificationEnabled: boolean;
+  timezone: string;
 }
 
 export interface UpdatePushPreferencesRequest {

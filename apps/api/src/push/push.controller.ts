@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Headers, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Headers, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import {
   ApiResponse,
   PushAudienceCount,
@@ -9,6 +9,7 @@ import {
   UpdatePushPreferencesRequest,
 } from '@the-message/shared';
 import { PushService } from './push.service';
+import { AdminGuard } from '../auth/admin.guard';
 
 @Controller()
 export class PushController {
@@ -33,54 +34,42 @@ export class PushController {
   }
 
   @Post('admin/push/audience-count')
+  @UseGuards(AdminGuard)
   async audienceCount(
-    @Headers('authorization') authHeader: string | undefined,
-    @Headers('x-admin-push-secret') secretHeader: string | undefined,
     @Body() filters: PushAudienceFilters,
   ): Promise<ApiResponse<PushAudienceCount>> {
-    this.pushService.assertAdmin(authHeader, secretHeader);
     const data = await this.pushService.countAudience(filters);
     return { success: true, data };
   }
 
   @Post('admin/push/campaigns')
+  @UseGuards(AdminGuard)
   async createCampaign(
-    @Headers('authorization') authHeader: string | undefined,
-    @Headers('x-admin-push-secret') secretHeader: string | undefined,
     @Body() body: PushCampaignRequest,
   ): Promise<ApiResponse<PushCampaign>> {
-    this.pushService.assertAdmin(authHeader, secretHeader);
     const data = await this.pushService.createCampaign(body);
     return { success: true, data };
   }
 
   @Post('admin/push/campaigns/:id/send')
+  @UseGuards(AdminGuard)
   async sendCampaign(
-    @Headers('authorization') authHeader: string | undefined,
-    @Headers('x-admin-push-secret') secretHeader: string | undefined,
     @Param('id') id: string,
   ): Promise<ApiResponse<PushCampaign>> {
-    this.pushService.assertAdmin(authHeader, secretHeader);
     const data = await this.pushService.sendCampaign(id);
     return { success: true, data };
   }
 
   @Post('admin/push/process-due')
-  async processDueCampaigns(
-    @Headers('authorization') authHeader: string | undefined,
-    @Headers('x-admin-push-secret') secretHeader: string | undefined,
-  ): Promise<ApiResponse<PushCampaign[]>> {
-    this.pushService.assertAdmin(authHeader, secretHeader);
+  @UseGuards(AdminGuard)
+  async processDueCampaigns(): Promise<ApiResponse<PushCampaign[]>> {
     const data = await this.pushService.processDueCampaigns();
     return { success: true, data };
   }
 
   @Get('admin/push/campaigns')
-  async listCampaigns(
-    @Headers('authorization') authHeader: string | undefined,
-    @Headers('x-admin-push-secret') secretHeader: string | undefined,
-  ): Promise<ApiResponse<PushCampaign[]>> {
-    this.pushService.assertAdmin(authHeader, secretHeader);
+  @UseGuards(AdminGuard)
+  async listCampaigns(): Promise<ApiResponse<PushCampaign[]>> {
     const data = await this.pushService.listCampaigns();
     return { success: true, data };
   }

@@ -70,100 +70,12 @@ function localDateString(date: Date): string {
 }
 
 /**
- * Cancels all pending scheduled notifications and re-schedules based on current
- * preferences. Fetches a separate bundle for each day so content rotates daily.
- *
- * Only schedules for the next 14 days to stay within OS limits (~64 on iOS).
+ * Cancels all pending scheduled local notifications as we move to a backend-driven
+ * push notification architecture.
  */
 export async function rescheduleNotifications(
-  prefs: UserPreferences,
-  todayBundle?: DailyBundle,
+  _prefs: UserPreferences,
+  _todayBundle?: DailyBundle,
 ): Promise<void> {
-  if (!prefs.notificationEnabled) {
-    await Notifications.cancelAllScheduledNotificationsAsync();
-    return;
-  }
-
-  const granted = await requestNotificationPermission();
-  if (!granted) return;
-
-  const slots = prefs.notificationSchedule[prefs.notificationFrequency];
-  const now = new Date();
-  const locale = prefs.locale ?? 'tr';
-  const today = localDateString(now);
-  const initialBundle = todayBundle ?? await fetchDailyBundle(locale, prefs.categoryPreferences, today);
-
   await Notifications.cancelAllScheduledNotificationsAsync();
-
-  const SLOT_CONTENT_MAP: Record<string, keyof DailyBundle> = {
-    morning: 'verse',
-    midMorning: 'esma',
-    noon: 'hadith',
-    afternoon: 'esma',
-    evening: 'prayer',
-  };
-
-  const SLOT_LABEL_TR: Record<string, string> = {
-    morning: 'Sabah',
-    midMorning: 'Kuşluk',
-    noon: 'Öğle',
-    afternoon: 'İkindi',
-    evening: 'Akşam',
-  };
-
-  const SLOT_LABEL_EN: Record<string, string> = {
-    morning: 'Morning',
-    midMorning: 'Mid-Morning',
-    noon: 'Noon',
-    afternoon: 'Afternoon',
-    evening: 'Evening',
-  };
-
-  // Cache bundles per date string to avoid redundant API calls
-  const bundleCache = new Map<string, DailyBundle>();
-  bundleCache.set(today, initialBundle);
-
-  for (let dayOffset = 0; dayOffset < 14; dayOffset++) {
-    const dayDate = new Date(now);
-    dayDate.setDate(now.getDate() + dayOffset);
-    const dateStr = localDateString(dayDate);
-
-    let bundle = bundleCache.get(dateStr);
-    if (!bundle) {
-      try {
-        bundle = await fetchDailyBundle(locale, prefs.categoryPreferences, dateStr);
-        bundleCache.set(dateStr, bundle);
-      } catch {
-        bundle = initialBundle; // fallback to today's bundle on network error
-      }
-    }
-
-    for (const slot of slots) {
-      if (isInSilentWindow(slot.time, prefs.silentHours)) continue;
-
-      const [hh, mm] = slot.time.split(':').map(Number);
-      const trigger = new Date(dayDate);
-      trigger.setHours(hh, mm, 0, 0);
-
-      if (trigger <= now) continue;
-
-      const cardKey = SLOT_CONTENT_MAP[slot.label] ?? 'verse';
-      const item = bundle[cardKey];
-      const translation = item.translations[locale] ?? item.translations['tr'];
-
-      const slotLabel = locale === 'tr'
-        ? (SLOT_LABEL_TR[slot.label] ?? slot.label)
-        : (SLOT_LABEL_EN[slot.label] ?? slot.label);
-      const title = locale === 'tr' ? `${slotLabel} — Çağrı` : `${slotLabel} — The Message`;
-      const rawContent = translation.content;
-      const source = translation.source;
-      const full = source ? `${rawContent} — ${source}` : rawContent;
-      const body = full.length > 180 ? full.slice(0, 177) + '…' : full;
-
-      await Notifications.scheduleNotificationAsync({
-        content: { title, body, sound: 'default' },
-        trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: trigger },
-      });
-    }
-  }
 }

@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { createClient, SupabaseClient, User } from '@supabase/supabase-js';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import {
   PushAudienceCount,
   PushAudienceFilters,
@@ -8,8 +9,10 @@ import {
   PushCampaignStatus,
   RegisterPushTokenRequest,
   UpdatePushPreferencesRequest,
+  SupportedLocale,
 } from '@the-message/shared';
 import ws from 'ws';
+import { ContentService } from '../content/content.service';
 
 interface PushTokenRow {
   user_id: string;
@@ -49,24 +52,12 @@ const BATCH_SIZE = 100;
 export class PushService {
   private readonly db: SupabaseClient;
 
-  constructor() {
+  constructor(private readonly contentService: ContentService) {
     this.db = createClient(
       process.env.SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!,
       { realtime: { transport: ws as never } },
     );
-  }
-
-  assertAdmin(authHeader?: string, secretHeader?: string): void {
-    const configuredSecret = process.env.ADMIN_PUSH_SECRET;
-    if (!configuredSecret) {
-      throw new UnauthorizedException('ADMIN_PUSH_SECRET is not configured');
-    }
-
-    const bearer = authHeader?.startsWith('Bearer ') ? authHeader.slice('Bearer '.length) : undefined;
-    if (secretHeader !== configuredSecret && bearer !== configuredSecret) {
-      throw new UnauthorizedException('Invalid admin push secret');
-    }
   }
 
   async registerToken(authHeader: string | undefined, body: RegisterPushTokenRequest): Promise<void> {
@@ -82,6 +73,7 @@ export class PushService {
         platform: body.platform,
         locale: body.locale,
         notification_enabled: body.notificationEnabled,
+        timezone: body.timezone ?? 'Europe/Istanbul',
         is_active: true,
         last_seen_at: new Date().toISOString(),
       }, { onConflict: 'expo_push_token' });
@@ -341,5 +333,304 @@ export class PushService {
       createdAt: row.created_at,
       sentAt: row.sent_at ?? undefined,
     };
+  }
+
+  @Cron(CronExpression.EVERY_MINUTE)
+  async handleDailyPushScheduler(): Promise<void> {
+    const now = new Date();
+    // 1. Get all active push tokens
+    const tokens = await this.findActivePushTokens();
+    if (tokens.length === 0) return;
+
+    // 2. Fetch profiles for these tokens to check user preferences
+    const userIds = Array.from(new Set(tokens.map((t) => t.user_id)));
+    const profilesMap = await this.fetchProfilesMap(userIds);
+
+    const dueNotifications: Array<{
+      token: string;
+      title: string;
+      body: string;
+      userId: string;
+      dateStr: string;
+      slot: string;
+      contentId: string;
+    }> = [];
+
+    for (const token of tokens) {
+      const profile = profilesMap.get(token.user_id);
+      if (!profile || !profile.notificationEnabled) continue;
+
+      // Calculate local time & date for the user based on their timezone
+      const localTimeStr = this.getLocalTime(now, token.timezone); // e.g. "07:00"
+      const userDateStr = this.getUserLocalDate(now, token.timezone); // e.g. "2026-05-31"
+
+      const slots = profile.notificationSchedule?.[profile.notificationFrequency] || [];
+      for (const slot of slots) {
+        if (slot.time === localTimeStr) {
+          // Check silent hours
+          if (this.isInSilentWindow(localTimeStr, profile.silentHours)) {
+            continue;
+          }
+
+          // Check if already sent for this slot today
+          const alreadySent = await this.checkIfAlreadySent(token.user_id, userDateStr, slot.label);
+          if (alreadySent) {
+            continue;
+          }
+
+          // Retrieve daily bundle content for this slot
+          try {
+            const categories = Object.keys(profile.categoryPreferences).filter(
+              (key) => profile.categoryPreferences[key as keyof typeof profile.categoryPreferences],
+            ) as any[];
+
+            const bundle = await this.contentService.findDailyBundle(token.locale, categories, userDateStr);
+            const slotContentMap: Record<string, keyof typeof bundle> = {
+              morning: 'verse',
+              midMorning: 'esma',
+              noon: 'hadith',
+              afternoon: 'esma',
+              evening: 'prayer',
+            };
+            const contentKey = slotContentMap[slot.label] || 'verse';
+            const contentItem = bundle[contentKey];
+            if (!contentItem) continue;
+
+            const localePref = (token.locale as SupportedLocale) || 'tr';
+            const tr = contentItem.translations[localePref] ?? contentItem.translations['tr'];
+            const slotLabelTR: Record<string, string> = {
+              morning: 'Sabah',
+              midMorning: 'Kuşluk',
+              noon: 'Öğle',
+              afternoon: 'İkindi',
+              evening: 'Akşam',
+            };
+            const slotLabelEN: Record<string, string> = {
+              morning: 'Morning',
+              midMorning: 'Mid-Morning',
+              noon: 'Noon',
+              afternoon: 'Afternoon',
+              evening: 'Evening',
+            };
+            const label = token.locale === 'tr'
+              ? (slotLabelTR[slot.label] ?? slot.label)
+              : (slotLabelEN[slot.label] ?? slot.label);
+
+            const title = token.locale === 'tr' ? `${label} — Çağrı` : `${label} — The Message`;
+            const rawContent = tr.content;
+            const source = tr.source;
+            const full = source ? `${rawContent} — ${source}` : rawContent;
+            const body = full.length > 180 ? full.slice(0, 177) + '…' : full;
+
+            dueNotifications.push({
+              token: token.expo_push_token,
+              title,
+              body,
+              userId: token.user_id,
+              dateStr: userDateStr,
+              slot: slot.label,
+              contentId: contentItem.id,
+            });
+          } catch (error) {
+            console.error(`Error resolving content for user ${token.user_id}:`, error);
+          }
+        }
+      }
+    }
+
+    if (dueNotifications.length === 0) return;
+
+    // Dispatch notifications in batches
+    for (let i = 0; i < dueNotifications.length; i += BATCH_SIZE) {
+      const batch = dueNotifications.slice(i, i + BATCH_SIZE);
+      const tickets = await this.sendDailyExpoBatch(batch);
+
+      for (let j = 0; j < batch.length; j++) {
+        const item = batch[j];
+        const ticket = tickets[j];
+        const success = ticket && ticket.status === 'ok';
+
+        await this.logPushSent(
+          item!.userId,
+          item!.dateStr,
+          item!.slot,
+          item!.contentId,
+          success ? 'success' : 'failed',
+          ticket?.message,
+        );
+
+        if (ticket?.status === 'error' && ticket.details?.error === 'DeviceNotRegistered') {
+          await this.deactivateUnregisteredTokens([item!.token]);
+        }
+      }
+    }
+  }
+
+  private async findActivePushTokens(): Promise<any[]> {
+    const { data, error } = await this.db
+      .from('push_tokens')
+      .select('*')
+      .eq('is_active', true)
+      .eq('notification_enabled', true);
+
+    if (error) {
+      console.error('Error fetching active push tokens:', error);
+      return [];
+    }
+    return data ?? [];
+  }
+
+  private async fetchProfilesMap(userIds: string[]): Promise<Map<string, any>> {
+    const map = new Map<string, any>();
+    if (userIds.length === 0) return map;
+
+    const { data, error } = await this.db
+      .from('profiles')
+      .select('id, preferences')
+      .in('id', userIds);
+
+    if (error) {
+      console.error('Error fetching user profiles:', error);
+      return map;
+    }
+
+    for (const row of data ?? []) {
+      map.set(row.id, row.preferences);
+    }
+    return map;
+  }
+
+  private getLocalTime(date: Date, timezone: string): string {
+    try {
+      const formatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: timezone,
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      });
+      return formatter.format(date);
+    } catch {
+      const formatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'Europe/Istanbul',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      });
+      return formatter.format(date);
+    }
+  }
+
+  private getUserLocalDate(date: Date, timezone: string): string {
+    try {
+      const formatter = new Intl.DateTimeFormat('en-CA', {
+        timeZone: timezone,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      });
+      return formatter.format(date); // YYYY-MM-DD
+    } catch {
+      const formatter = new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'Europe/Istanbul',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      });
+      return formatter.format(date);
+    }
+  }
+
+  private isInSilentWindow(timeHHMM: string, silent: any): boolean {
+    if (!silent || !silent.enabled) return false;
+
+    const toMinutes = (time: string) => {
+      const [h, m] = time.split(':').map(Number);
+      return (h ?? 0) * 60 + (m ?? 0);
+    };
+
+    const t = toMinutes(timeHHMM);
+    const start = toMinutes(silent.start);
+    const end = toMinutes(silent.end);
+
+    if (start > end) {
+      return t >= start || t < end;
+    }
+    return t >= start && t < end;
+  }
+
+  private async checkIfAlreadySent(userId: string, date: string, slot: string): Promise<boolean> {
+    const { data, error } = await this.db
+      .from('push_logs')
+      .select('id')
+      .eq('user_id', userId)
+      .eq('date', date)
+      .eq('slot', slot)
+      .maybeSingle();
+
+    if (error) {
+      console.error('Error checking push logs:', error);
+      return true; // Avoid duplicates in case of db check errors
+    }
+    return !!data;
+  }
+
+  private async logPushSent(
+    userId: string,
+    date: string,
+    slot: string,
+    contentId: string,
+    status: 'success' | 'failed',
+    errorMessage?: string,
+  ): Promise<void> {
+    const { error } = await this.db
+      .from('push_logs')
+      .insert({
+        user_id: userId,
+        date,
+        slot,
+        content_id: contentId,
+        status,
+        error_message: errorMessage || null,
+      });
+
+    if (error) {
+      console.error('Error logging push sent:', error);
+    }
+  }
+
+  private async sendDailyExpoBatch(batch: any[]): Promise<ExpoTicket[]> {
+    const headers: Record<string, string> = {
+      accept: 'application/json',
+      'accept-encoding': 'gzip, deflate',
+      'content-type': 'application/json',
+    };
+
+    if (process.env.EXPO_ACCESS_TOKEN) {
+      headers.authorization = `Bearer ${process.env.EXPO_ACCESS_TOKEN}`;
+    }
+
+    try {
+      const response = await fetch(EXPO_PUSH_URL, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(
+          batch.map((item) => ({
+            to: item.token,
+            title: item.title,
+            body: item.body,
+            sound: 'default',
+            data: { contentId: item.contentId },
+          })),
+        ),
+      });
+
+      const json = (await response.json()) as ExpoPushResponse;
+      if (!response.ok) {
+        return batch.map(() => ({ status: 'error', message: `HTTP Error ${response.status}` }));
+      }
+      return json.data ?? batch.map(() => ({ status: 'error', message: 'No ticket returned' }));
+    } catch (err: any) {
+      return batch.map(() => ({ status: 'error', message: err.message }));
+    }
   }
 }

@@ -1,9 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ContentService } from './content.service';
 import { ContentController } from './content.controller';
+import { AdminContentController } from './admin-content.controller';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  controllers: [ContentController],
+  imports: [AuthModule],
+  controllers: [ContentController, AdminContentController],
   providers: [ContentService],
   exports: [ContentService],
 })

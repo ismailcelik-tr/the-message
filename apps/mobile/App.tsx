@@ -87,59 +87,11 @@ function Root() {
     };
   }, []);
 
-  // Re-schedule whenever notification-related preferences change
-  useEffect(() => {
-    const prev = prevPrefsRef.current;
-    prevPrefsRef.current = preferences;
-
-    const notifChanged =
-      prev.notificationEnabled !== preferences.notificationEnabled ||
-      prev.notificationFrequency !== preferences.notificationFrequency ||
-      prev.notificationSchedule !== preferences.notificationSchedule ||
-      prev.silentHours !== preferences.silentHours ||
-      prev.locale !== preferences.locale;
-
-    if (!isOnboarded) return;
-    if (!notifChanged) return;
-
-    lastNotificationRefreshRef.current = Date.now();
-    rescheduleNotifications(preferences).catch(() => {
-      lastNotificationRefreshRef.current = 0;
-      // Network unavailable — reschedule silently on next open
-    });
-  }, [
-    preferences.notificationEnabled,
-    preferences.notificationFrequency,
-    preferences.notificationSchedule,
-    preferences.silentHours,
-    preferences.locale,
-    isOnboarded,
-  ]);
-
-  // Schedule on first onboarding completion, and refresh periodically when the app
-  // is opened so the rolling 14-day notification window does not expire.
+  // Clear any existing local notifications once on boot / onboarding completion
   useEffect(() => {
     if (!isOnboarded) return;
-
-    const refreshNotifications = () => {
-      const now = Date.now();
-      if (now - lastNotificationRefreshRef.current < NOTIFICATION_REFRESH_INTERVAL_MS) return;
-
-      lastNotificationRefreshRef.current = now;
-      rescheduleNotifications(preferences).catch(() => {
-        lastNotificationRefreshRef.current = 0;
-        // Network unavailable — keep existing scheduled notifications.
-      });
-    };
-
-    refreshNotifications();
-
-    const subscription = AppState.addEventListener('change', (state) => {
-      if (state === 'active') refreshNotifications();
-    });
-
-    return () => subscription.remove();
-  }, [isOnboarded, preferences]);
+    rescheduleNotifications(preferences).catch(() => {});
+  }, [isOnboarded]);
 
   useEffect(() => {
     if (!session?.access_token || !isOnboarded) return;

@@ -130,11 +130,29 @@ export function SavedScreen() {
     if (!user || isAnonymous) { setLoading(false); return; }
     const { data, error } = await supabase
       .from('bookmarks')
-      .select('snapshot, created_at')
+      .select('snapshot, content_id, created_at, content_items(id, type, category, recommended_time, date, translations, audio_url, image_url, is_active)')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false });
+
     if (!error && data) {
-      setItems(data.map((r: { snapshot: ContentItem }) => r.snapshot));
+      const mapped = data.map((r: any) => {
+        // If content_items exists and is active, use the live database translations and fields
+        if (r.content_items && r.content_items.is_active) {
+          return {
+            id: r.content_items.id,
+            type: r.content_items.type,
+            category: r.content_items.category,
+            recommendedTime: r.content_items.recommended_time ?? 'any',
+            date: r.content_items.date ?? r.snapshot.date,
+            translations: r.content_items.translations,
+            audioUrl: r.content_items.audio_url ?? undefined,
+            imageUrl: r.content_items.image_url ?? undefined,
+          } as ContentItem;
+        }
+        // Fallback to static snapshot for notifications or archived/deleted content
+        return r.snapshot as ContentItem;
+      });
+      setItems(mapped);
     }
     setLoading(false);
   }, [user, isAnonymous]);
