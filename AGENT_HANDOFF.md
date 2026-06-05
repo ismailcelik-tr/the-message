@@ -21,10 +21,12 @@ Completed all 8 prioritized features and bug fixes across the NestJS API, Supaba
 * [DEĞİŞTİRİLDİ] [TimePickerRow.tsx](file:///Users/ismailcelik/Desktop/Apps/TheMessage/apps/mobile/src/components/TimePickerRow.tsx) - FlatList wheel implementation with snapping/spacers.
 * [DEĞİŞTİRİLDİ] [notificationLog.ts](file:///Users/ismailcelik/Desktop/Apps/TheMessage/apps/mobile/src/lib/notificationLog.ts) - Added slotIndex mapping to push logs tracking.
 * [DEĞİŞTİRİLDİ] [LoginScreen.tsx](file:///Users/ismailcelik/Desktop/Apps/TheMessage/apps/mobile/src/screens/LoginScreen.tsx) - Added `onClose` callback and close ("X") button layout.
+* [DEĞİŞTİRİLDİ] [App.tsx](file:///Users/ismailcelik/Desktop/Apps/TheMessage/apps/mobile/App.tsx) - Added push notification response listener to handle tap actions for MSG-93.
 
 ### 🧪 Verification & Build Checks
 * Both Shared and API packages compiled successfully: `npm run shared:build && npm run api:build` built cleanly.
 * React Native (mobile) application type check passed completely: `npx tsc --noEmit` resolved without errors.
+* Notification response listener correctly redirects and scrolls to "Bugünün Bildirimleri" Y coordinate on DailyScreen.tsx.
 
 ---
 

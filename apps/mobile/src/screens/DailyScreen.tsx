@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity,
   StyleSheet, ActivityIndicator, Share, RefreshControl,
@@ -7,7 +7,7 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { useNavigation, useFocusEffect, useRoute } from '@react-navigation/native';
 import { ContentItem } from '@the-message/shared';
 import { usePreferencesStore } from '../store/preferences.store';
 import { useAuthStore } from '../store/auth.store';
@@ -38,6 +38,18 @@ export function DailyScreen() {
   const { user, isAnonymous } = useAuthStore();
   const colors = COLORS[currentTheme];
   const insets = useSafeAreaInsets();
+
+  const scrollViewRef = useRef<ScrollView>(null);
+  const notificationsY = useRef<number>(0);
+  const route = useRoute();
+  const scrollToParam = (route.params as any)?.scrollTo;
+
+  useEffect(() => {
+    if (scrollToParam === 'notifications' && notificationsY.current > 0) {
+      scrollViewRef.current?.scrollTo({ y: notificationsY.current, animated: true });
+      navigation.setParams({ scrollTo: undefined } as any);
+    }
+  }, [scrollToParam]);
 
   const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(new Set());
   const [savingId, setSavingId] = useState<string | null>(null);
@@ -210,7 +222,8 @@ export function DailyScreen() {
 
   return (
     <ScrollView
-      style={{ backgroundColor: colors.background }}
+      ref={scrollViewRef}
+      style={{ flex: 1, backgroundColor: colors.background }}
       contentContainerStyle={[styles.scroll, { paddingTop: insets.top + 16 }]}
       refreshControl={
         <RefreshControl
@@ -293,7 +306,11 @@ export function DailyScreen() {
       />
 
       {(todayNotifications.length > 0 || nextNotificationTime) && (
-        <View>
+        <View
+          onLayout={(e) => {
+            notificationsY.current = e.nativeEvent.layout.y;
+          }}
+        >
           <View style={styles.cardGroupHeader}>
             <View style={[styles.groupIconBadge, { backgroundColor: colors.primary }]}>
               <Ionicons name={'notifications' as IoniconsName} size={15} color="#FFF" />

@@ -15,6 +15,8 @@ import { COLORS } from './src/theme/colors';
 import { usePreferencesSync } from './src/hooks/usePreferencesSync';
 import { getExpoPushToken, rescheduleNotifications } from './src/lib/notifications';
 import { registerPushToken, updatePushPreferences } from './src/api/push.api';
+import * as Notifications from 'expo-notifications';
+import { navigationRef } from './src/navigation/AppNavigator';
 
 const queryClient = new QueryClient();
 const AUTH_BOOTSTRAP_TIMEOUT_MS = 5000;
@@ -84,6 +86,22 @@ function Root() {
     return () => {
       isMounted = false;
       subscription.unsubscribe();
+    };
+  }, []);
+
+  // Listen for push notification response (tapping notification)
+  useEffect(() => {
+    const subscription = Notifications.addNotificationResponseReceivedListener(() => {
+      if ((navigationRef as any).isReady()) {
+        (navigationRef as any).navigate('Daily', {
+          screen: 'DailyMain',
+          params: { scrollTo: 'notifications' },
+        });
+      }
+    });
+
+    return () => {
+      subscription.remove();
     };
   }, []);
 

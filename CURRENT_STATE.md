@@ -279,6 +279,7 @@ flyctl secrets set KEY=value      # set env secrets
 - [x] **MSG-157**: Implemented iOS-style vertical Wheel Picker (snap-to-interval FlatList) for time settings in `TimePickerRow.tsx`.
 - [x] **MSG-158**: Fixed notification slot names to display chronological index labels ("1. Bildirim", "2. Bildirim", etc.) in `SettingsScreen.tsx`, `DailyScreen.tsx`, and `notificationLog.ts`.
 - [x] **MSG-159**: Added exit/dismiss ("X") button to login modal for anonymous users in `LoginScreen.tsx` and `SettingsScreen.tsx`.
+- [x] **MSG-93**: Implemented notification tap routing to switch to the Daily tab and scroll directly to the "Bugünün Bildirimleri" list at the bottom of the page in `App.tsx`, `AppNavigator.tsx`, and `DailyScreen.tsx`.
 
 ---
 

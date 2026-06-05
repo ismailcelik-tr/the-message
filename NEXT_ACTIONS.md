@@ -29,7 +29,7 @@ These items are to be solved first, in a step-by-step manner.
 | **MSG-102** | Büyük yazı ve yüksek kontrast modu ekle | Medium | 📋 Todo | Add accessibility controls to Settings. |
 | **MSG-103** | Screen reader label ve navigation iyileştirmeleri yap | Medium | 📋 Todo | Add ARIA/a11y labels to icons, tab bar, modals, and date picker. |
 | **MSG-92** | Navigation linking config ve route sözleşmesini oluştur | Medium | 📋 Todo | Necessary for deep linking routing mapping. |
-| **MSG-93** | Notification response listener ile tap yönlendirmesi ekle | Medium | 📋 Todo | Route tapped notifications to the specific content card. |
+| **MSG-93** | Notification response listener ile tap yönlendirmesi ekle | Medium | ✅ Done | Route tapped notifications directly to the Today's Notifications list. |
 | **MSG-96** | Günlük karttan özel not ekleme UI'ı tasarla | Low | 📋 Todo | User-supplied note on content cards. |
 | **MSG-97** | Kaydedilenlerde notlu içerikleri göster | Low | 📋 Todo | Expand saved items list view. |
 | **MSG-95** | Journal verisi için local/cloud saklama kararını ver | Low | 📋 Todo | Architectural decision on storage design. |
