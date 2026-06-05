@@ -219,13 +219,15 @@ export class ContentService {
     page = 1,
     limit = 20,
     search?: string,
+    isActive?: boolean,
   ): Promise<PaginatedResponse<ContentItem & { isActive: boolean }>> {
     let query = this.db
       .from('content_items')
-      .select('*', { count: 'exact' })
-      .order('created_at', { ascending: false })
-      .range((page - 1) * limit, page * limit - 1);
+      .select('*', { count: 'exact' });
 
+    if (isActive !== undefined) {
+      query = query.eq('is_active', isActive);
+    }
     if (category) {
       query = query.eq('category', category);
     }
@@ -236,6 +238,10 @@ export class ContentService {
       const q = search.trim();
       query = query.or(`translations->tr->>content.ilike.%${q}%,translations->en->>content.ilike.%${q}%`);
     }
+
+    query = query
+      .order('created_at', { ascending: false })
+      .range((page - 1) * limit, page * limit - 1);
 
     const { data, error, count } = await query;
     if (error) throw new Error(error.message);

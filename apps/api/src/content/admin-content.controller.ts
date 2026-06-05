@@ -15,6 +15,7 @@ export class AdminContentController {
     @Query('page') page = 1,
     @Query('limit') limit = 20,
     @Query('search') search?: string,
+    @Query('isActive') isActive?: string,
   ): Promise<ApiResponse<PaginatedResponse<ContentItem & { isActive: boolean }>>> {
     const data = await this.contentService.findAllAdmin(
       category,
@@ -22,6 +23,7 @@ export class AdminContentController {
       Number(page),
       Number(limit),
       search,
+      isActive === undefined ? undefined : isActive === 'true',
     );
     return { success: true, data };
   }

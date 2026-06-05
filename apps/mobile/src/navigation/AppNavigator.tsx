@@ -17,11 +17,14 @@ import { SavedScreen } from '../screens/SavedScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
 import { FocusFeedScreen } from '../screens/FocusFeedScreen';
 import { AsmaAlHusnaScreen } from '../screens/AsmaAlHusnaScreen';
+import { ContentApprovalScreen } from '../screens/ContentApprovalScreen';
+import { ContentDetailScreen } from '../screens/ContentDetailScreen';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SwipeWrapper } from '../components/SwipeWrapper';
 
 const Tab = createBottomTabNavigator();
 const DailyStack = createNativeStackNavigator();
+const SettingsStack = createNativeStackNavigator();
 
 function DailyStackScreen() {
   return (
@@ -30,6 +33,16 @@ function DailyStackScreen() {
       <DailyStack.Screen name="FocusFeed" component={FocusFeedScreen} />
       <DailyStack.Screen name="AsmaAlHusna" component={AsmaAlHusnaScreen} />
     </DailyStack.Navigator>
+  );
+}
+
+function SettingsStackScreen() {
+  return (
+    <SettingsStack.Navigator screenOptions={{ headerShown: false }}>
+      <SettingsStack.Screen name="SettingsMain" component={SettingsScreen} />
+      <SettingsStack.Screen name="ContentApproval" component={ContentApprovalScreen} />
+      <SettingsStack.Screen name="ContentDetail" component={ContentDetailScreen} />
+    </SettingsStack.Navigator>
   );
 }
 
@@ -136,7 +149,7 @@ function SavedScreenWithSwipe() {
 function SettingsScreenWithSwipe() {
   return (
     <SwipeWrapper currentIndex={3}>
-      <SettingsScreen />
+      <SettingsStackScreen />
     </SwipeWrapper>
   );
 }

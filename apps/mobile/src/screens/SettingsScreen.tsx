@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, ScrollView, Switch, TouchableOpacity, StyleSheet, Modal, TextInput, Linking, ActivityIndicator, Image } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
+import { useNavigation } from '@react-navigation/native';
 import Constants from 'expo-constants';
 import i18n from '../i18n';
 import { usePreferencesStore } from '../store/preferences.store';
@@ -32,6 +33,7 @@ const SLOT_LABEL_KEYS: Record<string, string> = {
 };
 
 export function SettingsScreen() {
+  const navigation = useNavigation<any>();
   const { t } = useTranslation();
   const { currentTheme, toggleTheme, preferences, setPreferences, setLocale, updateSlotTime } = usePreferencesStore();
 
@@ -344,6 +346,26 @@ export function SettingsScreen() {
           <Text style={[styles.desc, { color: colors.mutedText }]}>{appVersion}</Text>
         </TouchableOpacity>
       </View>
+
+      {/* İçerik Özel (Sadece ismailceliktr00@gmail.com için) */}
+      {user?.email === 'ismailceliktr00@gmail.com' && (
+        <>
+          <Text style={[styles.groupHeader, { color: colors.secondary }]}>{t('settings.contentSpecial' as never)}</Text>
+          <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
+            <TouchableOpacity
+              style={[styles.row, styles.lastRow]}
+              onPress={() => navigation.navigate('ContentApproval')}
+              activeOpacity={0.8}
+            >
+              <View style={styles.textContainer}>
+                <Text style={[styles.label, { color: colors.text }]}>{t('settings.contentApproval' as never)}</Text>
+                <Text style={[styles.desc, { color: colors.mutedText }]}>{t('settings.contentApprovalDesc' as never)}</Text>
+              </View>
+              <Text style={{ color: colors.secondary, fontSize: 16 }}>→</Text>
+            </TouchableOpacity>
+          </View>
+        </>
+      )}
 
       {/* Geri Bildirim Modal */}
       <Modal visible={showFeedback} animationType="slide" presentationStyle="pageSheet">
