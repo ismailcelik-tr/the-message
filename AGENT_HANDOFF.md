@@ -4,6 +4,29 @@ This log tracks the chronological handoff history for each session. When conclud
 
 ---
 
+## 📅 Session: 2026-06-06 (GitGuardian Secret Cleanup)
+
+### 📝 Summary of Work
+Completed the interrupted GitGuardian cleanup flow for a leaked Supabase Service Role JWT. The hardcoded key had already been removed from script files and the Git history had been rewritten with `git filter-repo`; this session finished the remaining safety checks and published the rewritten history to GitHub.
+
+### 🗂️ Affected Files
+* [SİLİNDİ] `.git-secrets-replacements.txt` - Temporary replacement file removed from the working tree so the leaked value is not left locally in the repo folder.
+* [GÜNCELLENDİ] Git history - Rewritten `main` history was force-pushed to `origin/main`.
+
+### 🧪 Verification & Status
+* `git push --force-with-lease origin main:main` completed successfully.
+* Local `main` and `origin/main` both point to `3086121`.
+* Working tree was clean after the push.
+* Repository scan found no JWT-format `eyJ...`.`...`.`...` secrets outside `.git`, `node_modules`, build, dist, and lockfile exclusions.
+
+### ⚠️ Follow-Up Required
+* Rotate the Supabase Service Role Key in Supabase Dashboard before treating the incident as closed.
+* Update Fly.io/API/Edge Function secrets with the rotated key wherever `SUPABASE_SERVICE_ROLE_KEY` is used.
+* Close the GitGuardian alert only after confirming the leaked key has been revoked/rotated.
+* Anyone with an old clone should re-clone the repository or carefully reset to the rewritten `origin/main`.
+
+---
+
 ## 📅 Session: 2026-06-05 (Completed 8 Prioritized Bug Fixes and Features)
 
 ### 📝 Summary of Work

@@ -1,6 +1,6 @@
 # Current State (CURRENT_STATE.md)
 
-Last updated: 2026-06-05
+Last updated: 2026-06-06
 Branch: `main`
 GitHub: https://github.com/ismailcelik-tr/the-message
 
@@ -11,6 +11,8 @@ GitHub: https://github.com/ismailcelik-tr/the-message
 **Çağrı (The Message)** — Turkish/English Islamic guidance mobile app. Delivers daily Quran verses, hadiths, esmaül hüsna, prayers, worship reminders, and dhikr via scheduled local push notifications. Warm, non-judgmental tone.
 
 **Current status: iOS App Store review completed. The app is live on the App Store!**
+
+**Security note (2026-06-06)**: GitGuardian reported an exposed Supabase Service Role JWT in Git history. The hardcoded script values were removed and rewritten history was force-pushed to GitHub. The leaked Supabase Service Role Key must still be rotated in Supabase Dashboard and updated in deployment secrets before the incident is fully closed.
 
 ---
 
