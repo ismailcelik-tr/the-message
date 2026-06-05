@@ -1,20 +1,20 @@
-# SESSION_CONTEXT.md
+# Current State (CURRENT_STATE.md)
 
-Last updated: 2026-05-29
+Last updated: 2026-06-05
 Branch: `main`
 GitHub: https://github.com/ismailcelik-tr/the-message
 
 ---
 
-## Project Summary
+## 📱 Project Summary
 
 **Çağrı (The Message)** — Turkish/English Islamic guidance mobile app. Delivers daily Quran verses, hadiths, esmaül hüsna, prayers, worship reminders, and dhikr via scheduled local push notifications. Warm, non-judgmental tone.
 
-**Current status: iOS App Store submitted. Waiting for Apple review.**
+**Current status: iOS App Store review completed. The app is live on the App Store!**
 
 ---
 
-## Architecture
+## 🏗️ Architecture
 
 ```
 the-message/                        ← npm workspaces monorepo
@@ -85,7 +85,7 @@ the-message/                        ← npm workspaces monorepo
 
 ---
 
-## Backend Status
+## 🖥️ Backend Status
 
 ### Deployment
 - **Production**: Fly.io — `https://cagri-api.fly.dev` (region: cdg / Paris)
@@ -130,11 +130,11 @@ TypeORM completely removed. All data access via `@supabase/supabase-js` service_
 ### Supabase Edge Function
 - `notify-feedback`: triggered by `on_feedback_insert` DB trigger (pg_net) on `content_feedback` insert
 - Fetches content text + user email, sends styled HTML email via Resend API
-- **Pending**: `RESEND_API_KEY` must be added to Edge Function secrets in Supabase Dashboard → Edge Functions → notify-feedback → Secrets
+- `RESEND_API_KEY` added to Edge Function secrets in Supabase Dashboard.
 
 ---
 
-## Mobile App Status (Expo SDK 54 / RN 0.81)
+## 📱 Mobile App Status (Expo SDK 54 / RN 0.81)
 
 ### App Flow
 ```
@@ -172,13 +172,12 @@ App.tsx
 Each card: `flag-outline` → FeedbackModal + `bookmark` toggle + `share` button.
 
 ### Push Notifications
-- Real local notifications via `expo-notifications ~0.32.17`
-- `rescheduleNotifications(prefs, todayBundle)` fetches a **separate bundle per day** for 14 days
-- Per-day bundles cached in a `Map<string, DailyBundle>` to avoid redundant API calls
-- Date string (`YYYY-MM-DD`) passed to `fetchDailyBundle` → API uses Unix epoch day as seed
-- Notification title: `{SlotLabel} — Çağrı` (TR) / `{SlotLabel} — The Message` (EN)
-- Silent hours support including midnight-spanning ranges (e.g. 22:00–06:00)
-- Re-scheduled when: `notificationEnabled`, `frequency`, `schedule`, `silentHours`, or `locale` changes
+- Pure server-side push notification architecture via Expo Push Service.
+- Local notification scheduling has been removed from the mobile application (`rescheduleNotifications` cancels all scheduled local notifications on boot).
+- When a user changes notification preferences or enables notifications, the Expo Push Token is fetched and registered on the NestJS backend via `POST /api/push/register` (stored in the `push_tokens` table in Supabase).
+- The NestJS backend running on Fly.io schedules a minute-by-minute cron job (`handleDailyPushScheduler()`) that checks active tokens and profiles to dispatch the appropriate daily bundle slot to each user via the Expo Push API.
+- Silent hours (including midnight-spanning ranges) and slot boundaries are evaluated on the backend.
+- Re-scheduled/registered on the backend when: `notificationEnabled`, `frequency`, `schedule`, `silentHours`, or `locale` changes.
 
 ### i18n
 - Zustand preferences store hydrates async from AsyncStorage
@@ -188,7 +187,7 @@ Each card: `flag-outline` → FeedbackModal + `bookmark` toggle + `share` button
 
 ---
 
-## Environment Setup
+## 🔑 Environment Setup
 
 ### `apps/mobile/.env.local` (gitignored)
 ```
@@ -232,7 +231,7 @@ flyctl secrets set KEY=value      # set env secrets
 
 ---
 
-## Completed Tasks
+## ✅ Completed Tasks
 
 - [x] NestJS API with daily-bundle endpoint + category filtering + date-based rotation
 - [x] TypeORM removed → Supabase JS client
@@ -271,30 +270,19 @@ flyctl secrets set KEY=value      # set env secrets
 - [x] `infra/aws/README.md` deleted (outdated AWS ECS reference)
 - [x] `apps/api/seed.ts` deleted (legacy raw `pg` seed script, superseded by `supabase/seeds/001_content.sql`)
 - [x] Cleaned up accidentally generated root files/directories: `app.json` (root), `ios` (root), `.expo` (root), `infra/aws` (root), and `.codex` (root) to keep workspace clean.
-- [x] Fixed `AppModal.tsx` button collapsing bug for single-button modal actions by forcing horizontal row layout.
 - [x] Refactored `ResetPasswordScreen.tsx` to replace legacy `Alert.alert` calls with the custom `AppModal` component.
+- [x] **MSG-152**: Enabled preference synchronization for anonymous users in `usePreferencesSync.ts`.
+- [x] **MSG-153**: Allowed anonymous users to bookmark items and view bookmarks/push log history.
+- [x] **MSG-154**: Restored mood selector visibility upon tab switch and emoji tap in `DailyScreen.tsx`.
+- [x] **MSG-155**: Added horizontal swipe transition support between main bottom tabs in `SwipeWrapper.tsx` and `AppNavigator.tsx`.
+- [x] **MSG-156**: Localized app name to "Çağrı" for TR locale, rendered correct locale icon in About Modal.
+- [x] **MSG-157**: Implemented iOS-style vertical Wheel Picker (snap-to-interval FlatList) for time settings in `TimePickerRow.tsx`.
+- [x] **MSG-158**: Fixed notification slot names to display chronological index labels ("1. Bildirim", "2. Bildirim", etc.) in `SettingsScreen.tsx`, `DailyScreen.tsx`, and `notificationLog.ts`.
+- [x] **MSG-159**: Added exit/dismiss ("X") button to login modal for anonymous users in `LoginScreen.tsx` and `SettingsScreen.tsx`.
 
 ---
 
-## Pending Tasks
-
-### Immediate
-| # | Task | Notes |
-|---|------|-------|
-| 1 | **iOS App Store review** | Submitted to App Store Connect — waiting for Apple review |
-
-### Backlog (post-iOS approval)
-| Issue | Task |
-|-------|------|
-| MSG-21 | Google Play Developer Account + Android AAB |
-| MSG-17 | Onboarding Wizard (2-step: topic selection + notification setup) |
-| MSG-8 | Google OAuth improvements |
-| MSG-11 | Audio/article content type UI (schema ready, no seed data, no UI — low priority) |
-| MSG-14 | Content library browse screen (API endpoint ready, no mobile UI — low priority) |
-
----
-
-## What Should NOT Be Changed
+## 🚫 What Should NOT Be Changed
 
 - `strict: true` in all `tsconfig.json` — never disable
 - `shared → nothing / api → shared only / mobile → shared only` package boundary
@@ -311,7 +299,7 @@ flyctl secrets set KEY=value      # set env secrets
 
 ---
 
-## Known Bugs / Issues
+## 🐛 Known Bugs / Issues
 
 1. **"Bugünün Bildirimleri" is simulated** — derives expected notifications from current schedule, not from confirmed delivery. If prefs change mid-day, card shows updated values, not what was actually scheduled.
 2. **Apple Sign In in dev build** — gives `Unacceptable audience in id_token` error. Works only in production build. Not a code bug.
@@ -319,7 +307,7 @@ flyctl secrets set KEY=value      # set env secrets
 
 ---
 
-## Technical Debt / Temporary Decisions
+## 🪵 Technical Debt / Temporary Decisions
 
 - **No content versioning** — bookmarks store snapshot JSONB; corrections in Supabase Studio won't update old saved snapshots.
 - **Single Supabase project for dev+prod** — acceptable at current scale; create separate project before scaling.
@@ -327,7 +315,7 @@ flyctl secrets set KEY=value      # set env secrets
 
 ---
 
-## Infrastructure
+## 🌐 Infrastructure Summary
 
 | Service | Provider | Notes |
 |---------|----------|-------|
@@ -337,4 +325,4 @@ flyctl secrets set KEY=value      # set env secrets
 | Email | Resend | Via Supabase Edge Function `notify-feedback` |
 | Mobile build | EAS (Expo) | Project ID: `f732fcd2-cf13-4e9e-bf15-496da79cfb85` |
 | Privacy policy | GitHub Pages | `https://ismailcelik-tr.github.io/the-message/privacy.html` |
-| iOS | App Store Connect | Bundle ID: `com.themessage.cagri`, submission in progress |
+| iOS | App Store Connect | Bundle ID: `com.themessage.cagri`, live on the App Store |

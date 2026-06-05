@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, ScrollView, Switch, TouchableOpacity, StyleSheet, Modal, TextInput, Linking, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, Switch, TouchableOpacity, StyleSheet, Modal, TextInput, Linking, ActivityIndicator, Image } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import Constants from 'expo-constants';
@@ -13,6 +13,9 @@ import { TimePickerRow } from '../components/TimePickerRow';
 import { AppModal, AppModalButton } from '../components/AppModal';
 import { LoginScreen } from './LoginScreen';
 import { deleteAccount } from '../api/auth.api';
+
+const appIcon = require('../../assets/icon.png');
+const appIconEn = require('../../assets/icon-en.png');
 
 const FREQUENCIES: Array<{ key: NotificationFrequency; labelKey: string; detailKey: string }> = [
   { key: 'low', labelKey: 'settings.frequencyLow', detailKey: 'settings.frequencyLowDetail' },
@@ -176,8 +179,8 @@ export function SettingsScreen() {
               const prevSlot = index > 0 ? currentSlots[index - 1] : null;
               const nextSlot = index < currentSlots.length - 1 ? currentSlots[index + 1] : null;
               
-              const addMins = (t: string, m: number) => {
-                const [hh, mm] = t.split(':').map(Number);
+              const addMins = (tStr: string, m: number) => {
+                const [hh, mm] = tStr.split(':').map(Number);
                 const dt = new Date();
                 dt.setHours(hh, mm + m, 0, 0);
                 return `${String(dt.getHours()).padStart(2, '0')}:${String(dt.getMinutes()).padStart(2, '0')}`;
@@ -189,7 +192,7 @@ export function SettingsScreen() {
               return (
                 <TimePickerRow
                   key={`${preferences.notificationFrequency}-${index}`}
-                  label={t(SLOT_LABEL_KEYS[slot.label] as never)}
+                  label={preferences.locale === 'tr' ? `${index + 1}. Bildirim` : `Notification ${index + 1}`}
                   time={slot.time}
                   theme={currentTheme}
                   minTime={minTimeStr}
@@ -198,7 +201,6 @@ export function SettingsScreen() {
                 />
               );
             })}
-            {/* Remove bottom border on last row */}
             <View style={styles.cardBottomFix} />
           </View>
 
@@ -396,7 +398,11 @@ export function SettingsScreen() {
       <Modal visible={showAboutModal} transparent animationType="fade" onRequestClose={() => setShowAboutModal(false)}>
         <TouchableOpacity style={styles.aboutOverlay} activeOpacity={1} onPress={() => setShowAboutModal(false)}>
           <View style={[styles.aboutBox, { backgroundColor: colors.card, borderColor: colors.border }]} onStartShouldSetResponder={() => true}>
-            <View style={[styles.aboutIconPlaceholder, { backgroundColor: colors.primary }]} />
+            <Image
+              source={preferences.locale === 'en' ? appIconEn : appIcon}
+              style={{ width: 64, height: 64, borderRadius: 16, marginBottom: 16 }}
+              resizeMode="contain"
+            />
             <Text style={[styles.aboutTitle, { color: colors.text }]}>{t('settings.appName' as never)}</Text>
             <Text style={[styles.aboutDesc, { color: colors.mutedText }]}>{t('settings.aboutDesc' as never)}</Text>
             
@@ -421,8 +427,8 @@ export function SettingsScreen() {
       </Modal>
 
       {/* Login modal (anonim kullanıcı için) */}
-      <Modal visible={showLogin} animationType="slide" presentationStyle="pageSheet">
-        <LoginScreen onComplete={() => setShowLogin(false)} />
+      <Modal visible={showLogin} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setShowLogin(false)}>
+        <LoginScreen onComplete={() => setShowLogin(false)} onClose={() => setShowLogin(false)} />
       </Modal>
 
       {modal && (

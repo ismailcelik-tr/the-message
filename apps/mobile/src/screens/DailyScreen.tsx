@@ -7,7 +7,7 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { ContentItem } from '@the-message/shared';
 import { usePreferencesStore } from '../store/preferences.store';
 import { useAuthStore } from '../store/auth.store';
@@ -26,6 +26,14 @@ export function DailyScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const currentTheme = usePreferencesStore((s) => s.currentTheme);
+
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        setIsMoodSelectorOpen(false);
+      };
+    }, [])
+  );
   const locale = usePreferencesStore((s) => s.preferences.locale);
   const { user, isAnonymous } = useAuthStore();
   const colors = COLORS[currentTheme];
@@ -52,18 +60,18 @@ export function DailyScreen() {
 
   // Load existing bookmarks for logged-in users
   const loadBookmarks = useCallback(async () => {
-    if (!user || isAnonymous) return;
+    if (!user) return;
     const ids = await fetchBookmarks(user.id);
     setBookmarkedIds(new Set(ids.filter((id) => !id.startsWith('notif-'))));
     setSavedNotifIds(new Set(ids.filter((id) => id.startsWith('notif-'))));
-  }, [user, isAnonymous]);
+  }, [user]);
 
   useEffect(() => { loadBookmarks().catch(() => {}); }, [loadBookmarks]);
 
   const { data: rawTodayNotifications, refetch: refetchNotifs } = useQuery({
     queryKey: ['push-logs', user?.id, todayStr],
     queryFn: () => user ? fetchTodayPushLogs(user.id, todayStr, preferences) : [],
-    enabled: !!user && !isAnonymous,
+    enabled: !!user,
   });
 
   const todayNotifications = rawTodayNotifications ?? [];
@@ -75,10 +83,7 @@ export function DailyScreen() {
   }, [refetch, refetchNotifs, loadBookmarks]);
 
   const handleSaveNotification = useCallback(async (logItem: NotificationLogItem) => {
-    if (!user || isAnonymous) {
-      setModal({ title: t('settings.saveRequiresAccountTitle'), message: t('settings.saveRequiresAccountDesc') });
-      return;
-    }
+    if (!user) return;
     setSavingNotifId(logItem.id);
     try {
       if (savedNotifIds.has(logItem.id)) {
@@ -106,10 +111,7 @@ export function DailyScreen() {
   }, [locale, t]);
 
   const handleBookmark = useCallback(async (item: ContentItem) => {
-    if (!user || isAnonymous) {
-      setModal({ title: t('settings.saveRequiresAccountTitle'), message: t('settings.saveRequiresAccountDesc') });
-      return;
-    }
+    if (!user) return;
     setSavingId(item.id);
     try {
       if (bookmarkedIds.has(item.id)) {
@@ -189,7 +191,10 @@ export function DailyScreen() {
             <TouchableOpacity
               key={m.key}
               style={[styles.moodBtn, { backgroundColor: colors.background, borderColor: colors.border }]}
-              onPress={() => (navigation as any).navigate('FocusFeed', { mood: m.key })}
+              onPress={() => {
+                setIsMoodSelectorOpen(false);
+                (navigation as any).navigate('FocusFeed', { mood: m.key });
+              }}
               activeOpacity={0.7}
             >
               <Text style={styles.moodEmoji}>{m.emoji}</Text>
@@ -362,6 +367,11 @@ function NotificationsCard({ notifications, locale, colors, todayStr, savedIds, 
               <Text style={[styles.notifTime, { color: colors.primary }]}>{logItem.scheduledTime}</Text>
             </View>
             <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 11, fontWeight: '700', color: colors.secondary, marginBottom: 2 }}>
+                {locale === 'tr'
+                  ? `${(logItem.slotIndex !== undefined ? logItem.slotIndex : index) + 1}. Bildirim`
+                  : `Notification ${(logItem.slotIndex !== undefined ? logItem.slotIndex : index) + 1}`}
+              </Text>
               <Text style={[styles.notifText, { color: colors.text }]}>
                 {tr?.content}
               </Text>

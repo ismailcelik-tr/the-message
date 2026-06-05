@@ -30,9 +30,9 @@ export function AsmaAlHusnaScreen() {
   const [modal, setModal] = useState<{ title?: string; message: string } | null>(null);
 
   React.useEffect(() => {
-    if (!user || isAnonymous) return;
+    if (!user) return;
     fetchBookmarks(user.id).then(ids => setBookmarkedIds(new Set(ids))).catch(() => {});
-  }, [user, isAnonymous]);
+  }, [user]);
 
   const {
     data,
@@ -66,10 +66,7 @@ export function AsmaAlHusnaScreen() {
   }, [locale, t]);
 
   const handleBookmark = useCallback(async (item: ContentItem) => {
-    if (!user || isAnonymous) {
-      setModal({ title: t('settings.saveRequiresAccountTitle'), message: t('settings.saveRequiresAccountDesc') });
-      return;
-    }
+    if (!user) return;
     if (item.id === 'static-allah') return; // Cannot bookmark the static one right now
     setSavingId(item.id);
     try {

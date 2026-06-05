@@ -16,6 +16,7 @@ import { SettingsScreen } from '../screens/SettingsScreen';
 import { FocusFeedScreen } from '../screens/FocusFeedScreen';
 import { AsmaAlHusnaScreen } from '../screens/AsmaAlHusnaScreen';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { SwipeWrapper } from '../components/SwipeWrapper';
 
 const Tab = createBottomTabNavigator();
 const DailyStack = createNativeStackNavigator();
@@ -106,6 +107,38 @@ function PillTabBar({ state, navigation }: BottomTabBarProps) {
   );
 }
 
+function DailyScreenWithSwipe() {
+  return (
+    <SwipeWrapper currentIndex={0}>
+      <DailyStackScreen />
+    </SwipeWrapper>
+  );
+}
+
+function FocusScreenWithSwipe() {
+  return (
+    <SwipeWrapper currentIndex={1}>
+      <FocusScreen />
+    </SwipeWrapper>
+  );
+}
+
+function SavedScreenWithSwipe() {
+  return (
+    <SwipeWrapper currentIndex={2}>
+      <SavedScreen />
+    </SwipeWrapper>
+  );
+}
+
+function SettingsScreenWithSwipe() {
+  return (
+    <SwipeWrapper currentIndex={3}>
+      <SettingsScreen />
+    </SwipeWrapper>
+  );
+}
+
 export function AppNavigator() {
   const locale = usePreferencesStore((s) => s.preferences.locale);
 
@@ -121,10 +154,10 @@ export function AppNavigator() {
         tabBar={(props) => <PillTabBar {...props} />}
         screenOptions={{ headerShown: false }}
       >
-        <Tab.Screen name="Daily"    component={DailyStackScreen} />
-        <Tab.Screen name="Focus"    component={FocusScreen} />
-        <Tab.Screen name="Saved"    component={SavedScreen} />
-        <Tab.Screen name="Settings" component={SettingsScreen} />
+        <Tab.Screen name="Daily"    component={DailyScreenWithSwipe} />
+        <Tab.Screen name="Focus"    component={FocusScreenWithSwipe} />
+        <Tab.Screen name="Saved"    component={SavedScreenWithSwipe} />
+        <Tab.Screen name="Settings" component={SettingsScreenWithSwipe} />
       </Tab.Navigator>
     </NavigationContainer>
   );

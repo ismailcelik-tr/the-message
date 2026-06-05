@@ -38,9 +38,9 @@ export function FocusFeedScreen() {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   React.useEffect(() => {
-    if (!user || isAnonymous) return;
+    if (!user) return;
     fetchBookmarks(user.id).then(ids => setBookmarkedIds(new Set(ids))).catch(() => {});
-  }, [user, isAnonymous]);
+  }, [user]);
 
   const activeCategories = (Object.keys(categoryPreferences) as Array<keyof typeof categoryPreferences>)
     .filter(k => categoryPreferences[k])
@@ -84,10 +84,7 @@ export function FocusFeedScreen() {
   }, [locale, t]);
 
   const handleBookmark = useCallback(async (item: ContentItem) => {
-    if (!user || isAnonymous) {
-      setModal({ title: t('settings.saveRequiresAccountTitle'), message: t('settings.saveRequiresAccountDesc') });
-      return;
-    }
+    if (!user) return;
     setSavingId(item.id);
     try {
       if (bookmarkedIds.has(item.id)) {

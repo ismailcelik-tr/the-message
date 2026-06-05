@@ -6,6 +6,7 @@ export interface NotificationLogItem {
   scheduledTime: string; // HH:MM
   sentAt: Date;
   content: ContentItem;
+  slotIndex?: number;
 }
 
 // Maps slot label → which bundle card to show
@@ -41,6 +42,7 @@ export function buildTodayNotifications(
         scheduledTime: slot.time,
         sentAt: scheduledDate,
         content,
+        slotIndex: index,
       };
     })
     .filter((item) => item.sentAt <= now);
@@ -86,12 +88,14 @@ export async function fetchTodayPushLogs(
     const [hh, mm] = time.split(':').map(Number);
     const scheduledDate = new Date(todayStr);
     scheduledDate.setHours(hh, mm, 0, 0);
+    const slotIndex = slots.findIndex(s => s.label === log.slot);
 
     return {
       id: `notif-${log.id}`, // prefix with notif- to identify as notification bookmark
       scheduledTime: time,
       sentAt: scheduledDate,
       content: log.content,
+      slotIndex: slotIndex !== -1 ? slotIndex : undefined,
     };
   });
 }

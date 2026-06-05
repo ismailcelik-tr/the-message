@@ -17,7 +17,7 @@ export function usePreferencesSync() {
 
   // On login (or user change): pull remote prefs, apply if they exist
   useEffect(() => {
-    if (!user || isAnonymous) {
+    if (!user) {
       lastUserIdRef.current = null;
       return;
     }
@@ -48,7 +48,7 @@ export function usePreferencesSync() {
 
   // On preferences change: debounced write to Supabase
   useEffect(() => {
-    if (!user || isAnonymous || isSyncingFromRemote.current) return;
+    if (!user || isSyncingFromRemote.current) return;
 
     if (debounceTimer.current) clearTimeout(debounceTimer.current);
 

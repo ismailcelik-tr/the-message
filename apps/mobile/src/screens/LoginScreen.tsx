@@ -21,6 +21,7 @@ const appleIcon = require('../../assets/icons/apple.png');
 
 interface Props {
   onComplete: () => void;
+  onClose?: () => void;
 }
 
 type Mode = 'choose' | 'email' | 'forgotPassword' | 'confirmEmail';
@@ -38,7 +39,7 @@ function withTimeout<T>(promise: Promise<T>, timeoutMs: number, message: string)
   });
 }
 
-export function LoginScreen({ onComplete }: Props) {
+export function LoginScreen({ onComplete, onClose }: Props) {
   const { t } = useTranslation();
   const currentTheme = usePreferencesStore((s) => s.currentTheme);
   const locale = usePreferencesStore((s) => s.preferences.locale);
@@ -200,6 +201,28 @@ export function LoginScreen({ onComplete }: Props) {
 
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
+      {onClose && (
+        <TouchableOpacity
+          style={{
+            position: 'absolute',
+            top: Platform.OS === 'ios' ? 12 : 20,
+            right: 20,
+            zIndex: 100,
+            width: 36,
+            height: 36,
+            borderRadius: 18,
+            backgroundColor: colors.card,
+            borderColor: colors.border,
+            borderWidth: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+          onPress={onClose}
+          activeOpacity={0.7}
+        >
+          <Text style={{ fontSize: 20, fontWeight: '400', color: colors.text, marginTop: Platform.OS === 'ios' ? -2 : 0 }}>×</Text>
+        </TouchableOpacity>
+      )}
       <AppModal
         visible={showResetSentModal}
         title={t('login.resetPasswordSentTitle' as never)}

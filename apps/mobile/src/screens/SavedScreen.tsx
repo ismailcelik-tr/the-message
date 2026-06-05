@@ -127,7 +127,7 @@ export function SavedScreen() {
   const [modal, setModal] = useState<{ title?: string; message: string; buttons: AppModalButton[] } | null>(null);
 
   const load = useCallback(async () => {
-    if (!user || isAnonymous) { setLoading(false); return; }
+    if (!user) { setLoading(false); return; }
     
     // 1. Fetch bookmarks without joining content_items (avoids relationship/join error)
     const { data: bookmarksData, error: bookmarksError } = await supabase
@@ -177,7 +177,7 @@ export function SavedScreen() {
       setItems(mapped);
     }
     setLoading(false);
-  }, [user, isAnonymous]);
+  }, [user]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -215,7 +215,7 @@ export function SavedScreen() {
     );
   }
 
-  if (!user || isAnonymous) {
+  if (!user) {
     return (
       <View style={[styles.centered, { backgroundColor: colors.background, paddingTop: insets.top }]}>
         <Ionicons name="bookmark-outline" size={48} color={colors.mutedText} style={{ marginBottom: 16 }} />
