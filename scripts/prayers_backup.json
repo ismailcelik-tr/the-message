@@ -1,0 +1,2472 @@
+[
+  {
+    "id": "58da416a-a146-431f-a99f-60a986747ac7",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Buhârî, Deavât, 39",
+        "content": "(Allah'ım!) Zenginlikle imtihan edilmenin kötülüğünden sana sığınırım. Fakirlikle imtihan edilmenin kötülüğünden de sana sığınırım"
+      },
+      "tr": {
+        "source": "Buhârî, Deavât, 39",
+        "content": "(Allah'ım!) Zenginlikle imtihan edilmenin kötülüğünden sana sığınırım. Fakirlikle imtihan edilmenin kötülüğünden de sana sığınırım"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:51:14.42146+00:00",
+    "updated_at": "2026-05-27T17:51:14.42146+00:00",
+    "moods": [
+      "stresli",
+      "kaygili"
+    ]
+  },
+  {
+    "id": "0023974e-162b-4491-8567-9c21cf6d9edd",
+    "type": "prayer",
+    "category": "purpose",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Müslim, Duâ, 72",
+        "content": "Allah'ım! Senden hidayet, takva, iffet ve gönül zenginliği istiyorum"
+      },
+      "tr": {
+        "source": "Müslim, Duâ, 72",
+        "content": "Allah'ım! Senden hidayet, takva, iffet ve gönül zenginliği istiyorum"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:55:31.554539+00:00",
+    "updated_at": "2026-05-27T17:55:31.554539+00:00",
+    "moods": [
+      "kararsiz"
+    ]
+  },
+  {
+    "id": "484c89f6-daad-4604-9c39-d057f2da39e9",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "A'râf, 7/151",
+        "content": "Ey Rabbim! Beni ve kardeşimi bağışla, bizi rahmetine gark eyle! Sen merhametlilerin en merhametlisisin"
+      },
+      "tr": {
+        "source": "A'râf, 7/151",
+        "content": "Ey Rabbim! Beni ve kardeşimi bağışla, bizi rahmetine gark eyle! Sen merhametlilerin en merhametlisisin"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:55:31.554539+00:00",
+    "updated_at": "2026-05-27T17:55:31.554539+00:00",
+    "moods": [
+      "umutlu"
+    ]
+  },
+  {
+    "id": "8b164a08-38e5-499c-bbc3-afe11e7790fc",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Hâkim, Deavât, No: 1868",
+        "content": "Allah'ım! Müslümanlar olarak canımızı al, bizi Müslümanlar olarak dirilt, rezil olmadan ve fitneye uğramadan salih kullarının arasına dâhil eyle"
+      },
+      "tr": {
+        "source": "Hâkim, Deavât, No: 1868",
+        "content": "Allah'ım! Müslümanlar olarak canımızı al, bizi Müslümanlar olarak dirilt, rezil olmadan ve fitneye uğramadan salih kullarının arasına dâhil eyle"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:51:14.42146+00:00",
+    "updated_at": "2026-05-27T17:51:14.42146+00:00",
+    "moods": [
+      "huzunlu"
+    ]
+  },
+  {
+    "id": "59b69db6-3255-4b92-897c-55ace9beee21",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Müslim, Zikir, 65",
+        "content": "Allah'ım! Yaptığım işlerin kötülüğünden de henüz yapmadığım işlerin kötülüğünden de sana sığınırım!"
+      },
+      "tr": {
+        "source": "Müslim, Zikir, 65",
+        "content": "Allah'ım! Yaptığım işlerin kötülüğünden de henüz yapmadığım işlerin kötülüğünden de sana sığınırım!"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:51:14.42146+00:00",
+    "updated_at": "2026-05-27T17:51:14.42146+00:00",
+    "moods": [
+      "stresli",
+      "kaygili"
+    ]
+  },
+  {
+    "id": "424b850d-f747-4051-8577-cfe7c5a227b0",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "İsrâ, 17/80",
+        "content": "Rabbim! Girilecek yere doğrulukla girmemi, çıkılacak yerden de doğrulukla çıkmamı sağla, bana tarafından yardımcı bir güç ver"
+      },
+      "tr": {
+        "source": "İsrâ, 17/80",
+        "content": "Rabbim! Girilecek yere doğrulukla girmemi, çıkılacak yerden de doğrulukla çıkmamı sağla, bana tarafından yardımcı bir güç ver"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:51:14.42146+00:00",
+    "updated_at": "2026-05-27T17:51:14.42146+00:00",
+    "moods": [
+      "yorgun",
+      "umutlu"
+    ]
+  },
+  {
+    "id": "0a9168ef-3393-418e-bba1-c305cc9e190b",
+    "type": "prayer",
+    "category": "purpose",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Hâkim, Deavât, No: 1872",
+        "content": "Allah'ım! Sana teslim olan bir kalp, doğru sözlü bir dil ve dosdoğru bir ahlak istiyorum"
+      },
+      "tr": {
+        "source": "Hâkim, Deavât, No: 1872",
+        "content": "Allah'ım! Sana teslim olan bir kalp, doğru sözlü bir dil ve dosdoğru bir ahlak istiyorum"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:51:14.42146+00:00",
+    "updated_at": "2026-05-27T17:51:14.42146+00:00",
+    "moods": [
+      "kararsiz"
+    ]
+  },
+  {
+    "id": "abfed2d7-57ab-4e43-8748-a6c2644e1f92",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Ebu Davud, Tıb, 19",
+        "content": "Allah'ın gazabından, kullarının şerrinden, şeytanların vesveselerinden ve (onların) bana uğramalarından Allah'ın tam kelimelerine sığınırım"
+      },
+      "tr": {
+        "source": "Ebu Davud, Tıb, 19",
+        "content": "Allah'ın gazabından, kullarının şerrinden, şeytanların vesveselerinden ve (onların) bana uğramalarından Allah'ın tam kelimelerine sığınırım"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:51:14.42146+00:00",
+    "updated_at": "2026-05-27T17:51:14.42146+00:00",
+    "moods": [
+      "stresli",
+      "kaygili"
+    ]
+  },
+  {
+    "id": "dad0851f-0a3f-4eb6-bae2-9687871b7256",
+    "type": "prayer",
+    "category": "purpose",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Müslim, Zikir, Dua, Tevbe ve İstiğfar, 73",
+        "content": "Allah'ım, nefsime takvasını ver, onu temizle, onu temizleyenlerin en hayırlısı sensin. Onun velisi (sahibi) ve mevlası (efendisi) sensin"
+      },
+      "tr": {
+        "source": "Müslim, Zikir, Dua, Tevbe ve İstiğfar, 73",
+        "content": "Allah'ım, nefsime takvasını ver, onu temizle, onu temizleyenlerin en hayırlısı sensin. Onun velisi (sahibi) ve mevlası (efendisi) sensin"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:51:14.42146+00:00",
+    "updated_at": "2026-05-27T17:51:14.42146+00:00",
+    "moods": [
+      "kararsiz",
+      "umutlu"
+    ]
+  },
+  {
+    "id": "151a57df-72c2-4522-bd2a-a1d723d2ed1a",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "morning",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Ebu Davud, Edeb, 110",
+        "content": "Allah'ım! Senin iznin ve yardımınla sabahladık ve akşamladık. Yine senin izin ve yardımınla yaşar ve ölürüz. Sonunda dönüş yalnız sanadır"
+      },
+      "tr": {
+        "source": "Ebu Davud, Edeb, 110",
+        "content": "Allah'ım! Senin iznin ve yardımınla sabahladık ve akşamladık. Yine senin izin ve yardımınla yaşar ve ölürüz. Sonunda dönüş yalnız sanadır"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:51:14.42146+00:00",
+    "updated_at": "2026-05-27T17:51:14.42146+00:00",
+    "moods": [
+      "umutlu"
+    ]
+  },
+  {
+    "id": "2222b2ec-51c2-4ce2-944c-4751fc188b1f",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Tirmizî, Deavât, 73",
+        "content": "Allah'ım! Bana kendi sevgini ve senin yanında sevgisi bana fayda verecek kimsenin sevgisini ver"
+      },
+      "tr": {
+        "source": "Tirmizî, Deavât, 73",
+        "content": "Allah'ım! Bana kendi sevgini ve senin yanında sevgisi bana fayda verecek kimsenin sevgisini ver"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:51:14.42146+00:00",
+    "updated_at": "2026-05-27T17:51:14.42146+00:00",
+    "moods": [
+      "umutlu"
+    ]
+  },
+  {
+    "id": "c97d4d9b-4231-4c22-a461-39b86bbd4808",
+    "type": "prayer",
+    "category": "hope",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Müslim, Selâm, 47",
+        "content": "Ey insanların Rabbi! Rahatsızlığı gider! Şifa veren sensin. Senin vereceğin şifadan başka şifa yoktur. Öyle bir şifa ver ki ardında hiç hastalık izi bırakmasın"
+      },
+      "tr": {
+        "source": "Müslim, Selâm, 47",
+        "content": "Ey insanların Rabbi! Rahatsızlığı gider! Şifa veren sensin. Senin vereceğin şifadan başka şifa yoktur. Öyle bir şifa ver ki ardında hiç hastalık izi bırakmasın"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:51:14.42146+00:00",
+    "updated_at": "2026-05-27T17:51:14.42146+00:00",
+    "moods": [
+      "hasta",
+      "umutlu"
+    ]
+  },
+  {
+    "id": "6de11d37-5f23-4c1d-831d-e36bdf6504a6",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Tirmizî, Deavât, 84",
+        "content": "Allah'ım! Sen affedicisin, Kerim'sin, affı seversin, beni affet"
+      },
+      "tr": {
+        "source": "Tirmizî, Deavât, 84",
+        "content": "Allah'ım! Sen affedicisin, Kerim'sin, affı seversin, beni affet"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:51:14.42146+00:00",
+    "updated_at": "2026-05-27T17:51:14.42146+00:00",
+    "moods": [
+      "umutlu"
+    ]
+  },
+  {
+    "id": "e09a7865-5604-4880-a4bc-85fa9e75ddb9",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Ebû Dâvûd, Vitr, 32",
+        "content": "Allah'ım! Cehenneme götüren fitneden, cehennemin azabından, zenginliğin ve fakirliğin şerrinden sana sığınırım"
+      },
+      "tr": {
+        "source": "Ebû Dâvûd, Vitr, 32",
+        "content": "Allah'ım! Cehenneme götüren fitneden, cehennemin azabından, zenginliğin ve fakirliğin şerrinden sana sığınırım"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:51:14.42146+00:00",
+    "updated_at": "2026-05-27T17:51:14.42146+00:00",
+    "moods": [
+      "stresli",
+      "kaygili"
+    ]
+  },
+  {
+    "id": "dbdbf9d3-f0f6-4b51-bc9c-89fccde30e4c",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "İbn Hibban, Ed'ıye, No: 934",
+        "content": "Allah'ım! Ayakta iken beni İslam ile koru, otururken beni İslam ile koru, uyurken beni İslam ile koru, hakkımda hiçbir düşman ve hasetçinin isteğini yerine getirme"
+      },
+      "tr": {
+        "source": "İbn Hibban, Ed'ıye, No: 934",
+        "content": "Allah'ım! Ayakta iken beni İslam ile koru, otururken beni İslam ile koru, uyurken beni İslam ile koru, hakkımda hiçbir düşman ve hasetçinin isteğini yerine getirme"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:51:14.42146+00:00",
+    "updated_at": "2026-05-27T17:51:14.42146+00:00",
+    "moods": [
+      "stresli"
+    ]
+  },
+  {
+    "id": "1f90cf31-0f43-4baf-8039-3af08979b6e4",
+    "type": "prayer",
+    "category": "hope",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Kehf, 18/10",
+        "content": "Rabbimiz! Bize katından rahmet gönder ve bize içinde bulunduğumuz durumdan bir çıkış yolu göster!"
+      },
+      "tr": {
+        "source": "Kehf, 18/10",
+        "content": "Rabbimiz! Bize katından rahmet gönder ve bize içinde bulunduğumuz durumdan bir çıkış yolu göster!"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:51:14.42146+00:00",
+    "updated_at": "2026-05-27T17:51:14.42146+00:00",
+    "moods": [
+      "umutlu"
+    ]
+  },
+  {
+    "id": "d0c84fa5-7363-4fc4-8c8b-8c035f19a5fc",
+    "type": "prayer",
+    "category": "worship",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Ebû Dâvûd, Vitr, 25",
+        "content": "Allah'ım! Ey Rabbimiz ve ey her şeyin Rabbi! Beni ve ailemi dünya ve ahirette her an sana ihlasla bağlı kıl. Ey yücelik ve ikram sahibi!"
+      },
+      "tr": {
+        "source": "Ebû Dâvûd, Vitr, 25",
+        "content": "Allah'ım! Ey Rabbimiz ve ey her şeyin Rabbi! Beni ve ailemi dünya ve ahirette her an sana ihlasla bağlı kıl. Ey yücelik ve ikram sahibi!"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:51:14.42146+00:00",
+    "updated_at": "2026-05-27T17:51:14.42146+00:00",
+    "moods": [
+      "kararsiz"
+    ]
+  },
+  {
+    "id": "a2eab100-945d-4abc-b4e3-ce3844e5a87c",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Âl-i İmrân, 3/147",
+        "content": "Rabbimiz! Günahlarımızdan ve işimizdeki aşırılıklardan ötürü bizi bağışla, sebatımızı arttır, kâfir topluluğa karşı bize yardım et!"
+      },
+      "tr": {
+        "source": "Âl-i İmrân, 3/147",
+        "content": "Rabbimiz! Günahlarımızdan ve işimizdeki aşırılıklardan ötürü bizi bağışla, sebatımızı arttır, kâfir topluluğa karşı bize yardım et!"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:51:14.42146+00:00",
+    "updated_at": "2026-05-27T17:51:14.42146+00:00",
+    "moods": [
+      "stresli",
+      "umutlu"
+    ]
+  },
+  {
+    "id": "089533d8-9283-47c1-ba2e-c3a8a1303408",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Müslim, Duâ, 71",
+        "content": "Allah'ım! Gidip ebedî yaşayacağım ahiret hayatımı benim için hayırlı eyle. Hayatımda her türlü hayrı ziyadesiyle ihsan eyle. Ölümümü de her türlü şerlerden muhafaza eyle"
+      },
+      "tr": {
+        "source": "Müslim, Duâ, 71",
+        "content": "Allah'ım! Gidip ebedî yaşayacağım ahiret hayatımı benim için hayırlı eyle. Hayatımda her türlü hayrı ziyadesiyle ihsan eyle. Ölümümü de her türlü şerlerden muhafaza eyle"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:51:14.42146+00:00",
+    "updated_at": "2026-05-27T17:51:14.42146+00:00",
+    "moods": [
+      "umutlu"
+    ]
+  },
+  {
+    "id": "f1334217-bdbf-4d1b-97a4-44db9b839a81",
+    "type": "prayer",
+    "category": "worship",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Tirmizî, Deavât, 114",
+        "content": "Rabbim! Tövbemi kabul et, günahımı temizle, duamı kabul buyur, delilimi sabit kıl, dilimi doğru yap, kalbime hidayet ver, göğsümün kin ve hasedini çıkar"
+      },
+      "tr": {
+        "source": "Tirmizî, Deavât, 114",
+        "content": "Rabbim! Tövbemi kabul et, günahımı temizle, duamı kabul buyur, delilimi sabit kıl, dilimi doğru yap, kalbime hidayet ver, göğsümün kin ve hasedini çıkar"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:51:14.42146+00:00",
+    "updated_at": "2026-05-27T17:51:14.42146+00:00",
+    "moods": [
+      "kararsiz",
+      "umutlu"
+    ]
+  },
+  {
+    "id": "976b0fdd-ae0b-4a3a-abdc-4c5d1de6d498",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Hâkim, Deavât, No: 1868",
+        "content": "Allah'ım! Kıyamet gününde cennet, korku gününde güven istiyorum. Allah'ım! Verdiğin ve vermediğin şeylerin şerrinden sana sığınıyorum"
+      },
+      "tr": {
+        "source": "Hâkim, Deavât, No: 1868",
+        "content": "Allah'ım! Kıyamet gününde cennet, korku gününde güven istiyorum. Allah'ım! Verdiğin ve vermediğin şeylerin şerrinden sana sığınıyorum"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:51:14.42146+00:00",
+    "updated_at": "2026-05-27T17:51:14.42146+00:00",
+    "moods": [
+      "stresli",
+      "sukurlu",
+      "kaygili",
+      "umutlu"
+    ]
+  },
+  {
+    "id": "37eece9e-2536-4ad9-b9fb-689dac0bac64",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Nesâî, İstiâze, 4",
+        "content": "Allah'ım! Kulağımın kötülüğünden, gözümün kötülüğünden, dilimin kötülüğünden, kalbimin kötülüğünden, tenimin kötülüğünden sana sığınırım"
+      },
+      "tr": {
+        "source": "Nesâî, İstiâze, 4",
+        "content": "Allah'ım! Kulağımın kötülüğünden, gözümün kötülüğünden, dilimin kötülüğünden, kalbimin kötülüğünden, tenimin kötülüğünden sana sığınırım"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:51:14.42146+00:00",
+    "updated_at": "2026-05-27T17:51:14.42146+00:00",
+    "moods": [
+      "stresli",
+      "kaygili",
+      "kararsiz"
+    ]
+  },
+  {
+    "id": "01646a91-1136-40a3-b0bb-89fdee3cef00",
+    "type": "prayer",
+    "category": "purpose",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Müslim, Müsâfirîn, 201",
+        "content": "(Allah'ım!) Beni güzel ahlaka eriştir. Senden başka güzel ahlaka eriştirecek yoktur. Kötü ahlakı benden uzaklaştır. Senden başka kötü ahlakı benden uzaklaştıracak yoktur!"
+      },
+      "tr": {
+        "source": "Müslim, Müsâfirîn, 201",
+        "content": "(Allah'ım!) Beni güzel ahlaka eriştir. Senden başka güzel ahlaka eriştirecek yoktur. Kötü ahlakı benden uzaklaştır. Senden başka kötü ahlakı benden uzaklaştıracak yoktur!"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:51:14.42146+00:00",
+    "updated_at": "2026-05-27T17:51:14.42146+00:00",
+    "moods": [
+      "kararsiz",
+      "umutlu"
+    ]
+  },
+  {
+    "id": "2760c566-284d-4813-b556-d4a4ef4d005c",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Tirmizî, Deavât, 124",
+        "content": "Allah'ım! Mal, aile, çocuk olarak insanlara verdiklerinin hayırlısını dilerim, sapıtan ve saptıranları değil"
+      },
+      "tr": {
+        "source": "Tirmizî, Deavât, 124",
+        "content": "Allah'ım! Mal, aile, çocuk olarak insanlara verdiklerinin hayırlısını dilerim, sapıtan ve saptıranları değil"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:51:14.42146+00:00",
+    "updated_at": "2026-05-27T17:51:14.42146+00:00",
+    "moods": [
+      "umutlu"
+    ]
+  },
+  {
+    "id": "649476d8-b833-4b6b-b053-74c432b48405",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Bakara, 2/250",
+        "content": "Rabbimiz! Bizi sabırla donat, bize sebat ver ve inkârcı topluluğa karşı bize yardım et"
+      },
+      "tr": {
+        "source": "Bakara, 2/250",
+        "content": "Rabbimiz! Bizi sabırla donat, bize sebat ver ve inkârcı topluluğa karşı bize yardım et"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:51:14.42146+00:00",
+    "updated_at": "2026-05-27T17:51:14.42146+00:00",
+    "moods": [
+      "stresli",
+      "umutlu"
+    ]
+  },
+  {
+    "id": "e9da9328-e1c3-4f1e-b039-77ac0d23f58b",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Müslim, Duâ, 71",
+        "content": "Allah'ım! Her işimin koruyucusu olan dinim ile beni ıslah eyle, kurtuluşa erdir. İçinde yaşadığım, geçimimi sağladığım dünyamı benim için ıslah eyle, hayırlı kıl"
+      },
+      "tr": {
+        "source": "Müslim, Duâ, 71",
+        "content": "Allah'ım! Her işimin koruyucusu olan dinim ile beni ıslah eyle, kurtuluşa erdir. İçinde yaşadığım, geçimimi sağladığım dünyamı benim için ıslah eyle, hayırlı kıl"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:51:14.42146+00:00",
+    "updated_at": "2026-05-27T17:51:14.42146+00:00",
+    "moods": [
+      "umutlu"
+    ]
+  },
+  {
+    "id": "511c7ae5-fc91-4b4f-9af5-ecece34ebcfb",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Hâkim, Deavât, No: 1902",
+        "content": "Allah'ım! Dinim, dünyam, ailem ve malım hakkında af ve afiyet istiyorum"
+      },
+      "tr": {
+        "source": "Hâkim, Deavât, No: 1902",
+        "content": "Allah'ım! Dinim, dünyam, ailem ve malım hakkında af ve afiyet istiyorum"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:51:14.42146+00:00",
+    "updated_at": "2026-05-27T17:51:14.42146+00:00",
+    "moods": [
+      "umutlu"
+    ]
+  },
+  {
+    "id": "fe7fda8f-68b7-4e5b-911c-194ee80df10c",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Buhârî, Deavât, 37",
+        "content": "Allah'ım, cimrilikten sana sığınırım, korkaklıktan sana sığınırım, ömrün en rezil zamanına kalmaktan sana sığınırım"
+      },
+      "tr": {
+        "source": "Buhârî, Deavât, 37",
+        "content": "Allah'ım, cimrilikten sana sığınırım, korkaklıktan sana sığınırım, ömrün en rezil zamanına kalmaktan sana sığınırım"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:51:14.42146+00:00",
+    "updated_at": "2026-05-27T17:51:14.42146+00:00",
+    "moods": [
+      "stresli",
+      "kaygili"
+    ]
+  },
+  {
+    "id": "d1a428f7-b5c0-4ede-a2e6-4114e3ed2cbc",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "İbn Mâce, Edeb, 57",
+        "content": "Allah'ım! Beni, iyilik yaptıkları zaman sevinç duyan, kötülük yaptıkları zaman da bağışlanma dileyen kullarından eyle"
+      },
+      "tr": {
+        "source": "İbn Mâce, Edeb, 57",
+        "content": "Allah'ım! Beni, iyilik yaptıkları zaman sevinç duyan, kötülük yaptıkları zaman da bağışlanma dileyen kullarından eyle"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:51:14.42146+00:00",
+    "updated_at": "2026-05-27T17:51:14.42146+00:00",
+    "moods": [
+      "kararsiz",
+      "umutlu"
+    ]
+  },
+  {
+    "id": "79c6ed3d-236f-4ff5-9c10-0cb2a8d7ab7c",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "İbn Hibban, Ed'ıye, No: 960",
+        "content": "Allah'ım! Kötü ahlaktan, nefsani arzulardan, kötü işlerden ve ayıp şeylerden beni uzaklaştır"
+      },
+      "tr": {
+        "source": "İbn Hibban, Ed'ıye, No: 960",
+        "content": "Allah'ım! Kötü ahlaktan, nefsani arzulardan, kötü işlerden ve ayıp şeylerden beni uzaklaştır"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:51:14.42146+00:00",
+    "updated_at": "2026-05-27T17:51:14.42146+00:00",
+    "moods": [
+      "kararsiz"
+    ]
+  },
+  {
+    "id": "a54a4bb8-436a-4432-b964-2e4a45e84237",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Ebû Dâvûd, Vitr, 32",
+        "content": "Allah'ım! Fakirlikten, yoksulluktan ve zilletten sana sığınırım. Haksızlık etmekten ve haksızlığa uğramaktan da sana sığınırım"
+      },
+      "tr": {
+        "source": "Ebû Dâvûd, Vitr, 32",
+        "content": "Allah'ım! Fakirlikten, yoksulluktan ve zilletten sana sığınırım. Haksızlık etmekten ve haksızlığa uğramaktan da sana sığınırım"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:51:14.42146+00:00",
+    "updated_at": "2026-05-27T17:51:14.42146+00:00",
+    "moods": [
+      "stresli",
+      "kaygili"
+    ]
+  },
+  {
+    "id": "f96665b3-b2aa-45d5-b324-1fb2e73dcc6b",
+    "type": "prayer",
+    "category": "worship",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "A'râf, 7/126",
+        "content": "Ey Rabbimiz! Üzerimize sabır yağdır ve Müslüman olarak bizim canımızı al"
+      },
+      "tr": {
+        "source": "A'râf, 7/126",
+        "content": "Ey Rabbimiz! Üzerimize sabır yağdır ve Müslüman olarak bizim canımızı al"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:51:14.42146+00:00",
+    "updated_at": "2026-05-27T17:51:14.42146+00:00",
+    "moods": [
+      "stresli"
+    ]
+  },
+  {
+    "id": "aa2c7058-e334-4351-8293-9431bd240a37",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Haşr, 59/10",
+        "content": "Ey Rabbimiz! Bizi ve imanda bizden önce olan din kardeşlerimizi mağfiret eyle ve kalbimizde mü'minler için kin ve haset bırakma. Ey Rabbimiz! Sen çok şefkat ve çok merhamet sahibisin"
+      },
+      "tr": {
+        "source": "Haşr, 59/10",
+        "content": "Ey Rabbimiz! Bizi ve imanda bizden önce olan din kardeşlerimizi mağfiret eyle ve kalbimizde mü'minler için kin ve haset bırakma. Ey Rabbimiz! Sen çok şefkat ve çok merhamet sahibisin"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:51:14.42146+00:00",
+    "updated_at": "2026-05-27T17:51:14.42146+00:00",
+    "moods": [
+      "umutlu"
+    ]
+  },
+  {
+    "id": "1ecbc1c9-c685-41a2-bb01-642afd8aab6b",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Mümtehine, 60/5",
+        "content": "Rabbimiz! Bizi, inkâr edenler için bir sınama konusu yapma. Bizi bağışla ey Rabbimiz! Çünkü kudret ve hikmet sahibi olan ancak sensin"
+      },
+      "tr": {
+        "source": "Mümtehine, 60/5",
+        "content": "Rabbimiz! Bizi, inkâr edenler için bir sınama konusu yapma. Bizi bağışla ey Rabbimiz! Çünkü kudret ve hikmet sahibi olan ancak sensin"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:55:31.554539+00:00",
+    "updated_at": "2026-05-27T17:55:31.554539+00:00",
+    "moods": [
+      "umutlu"
+    ]
+  },
+  {
+    "id": "1cae1d75-3613-4c79-a19a-6598d1bf032c",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Âl-i İmrân, 3/194",
+        "content": "Rabbimiz! Peygamberlerin aracılığıyla bize vaad ettiklerini ver bize; kıyamet gününde bizi rezil etme. Sen asla sözünden dönmezsin"
+      },
+      "tr": {
+        "source": "Âl-i İmrân, 3/194",
+        "content": "Rabbimiz! Peygamberlerin aracılığıyla bize vaad ettiklerini ver bize; kıyamet gününde bizi rezil etme. Sen asla sözünden dönmezsin"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:55:31.554539+00:00",
+    "updated_at": "2026-05-27T17:55:31.554539+00:00",
+    "moods": [
+      "huzunlu",
+      "umutlu"
+    ]
+  },
+  {
+    "id": "67e78b36-2356-47ea-8649-5eab69157f54",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Âl-i İmrân, 3/8",
+        "content": "Rabbimiz! Bizi doğru yola eriştirdikten sonra kalplerimizi saptırma, bize tarafından bir rahmet bağışla. Hiç kuşku yok, lütfu bol olan yalnız sensin"
+      },
+      "tr": {
+        "source": "Âl-i İmrân, 3/8",
+        "content": "Rabbimiz! Bizi doğru yola eriştirdikten sonra kalplerimizi saptırma, bize tarafından bir rahmet bağışla. Hiç kuşku yok, lütfu bol olan yalnız sensin"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:55:31.554539+00:00",
+    "updated_at": "2026-05-27T17:55:31.554539+00:00",
+    "moods": [
+      "huzunlu",
+      "kararsiz",
+      "umutlu"
+    ]
+  },
+  {
+    "id": "8aa9b217-abad-4b76-92cc-58cbdbf43928",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Müslim, Salât, 216",
+        "content": "Allah'ım! Günahlarımın küçüğünü büyüğünü, öncesini sonunu, açığını ve gizlisini, hepsini bağışla"
+      },
+      "tr": {
+        "source": "Müslim, Salât, 216",
+        "content": "Allah'ım! Günahlarımın küçüğünü büyüğünü, öncesini sonunu, açığını ve gizlisini, hepsini bağışla"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:55:31.554539+00:00",
+    "updated_at": "2026-05-27T17:55:31.554539+00:00",
+    "moods": [
+      "huzunlu",
+      "umutlu"
+    ]
+  },
+  {
+    "id": "63d73436-80cc-4c62-ab1a-6dd42e0d8907",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "İbrahim, 14/41",
+        "content": "Rabbimiz! Hesap kurulacağı gün beni, anamı, babamı ve mü'minleri bağışla!"
+      },
+      "tr": {
+        "source": "İbrahim, 14/41",
+        "content": "Rabbimiz! Hesap kurulacağı gün beni, anamı, babamı ve mü'minleri bağışla!"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:55:31.554539+00:00",
+    "updated_at": "2026-05-27T17:55:31.554539+00:00",
+    "moods": [
+      "umutlu"
+    ]
+  },
+  {
+    "id": "02b703ae-d714-47cf-b343-a77299e7a85e",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Hâkim, Deavât, No: 1868",
+        "content": "Allah'ım! Lütfun, rahmetin, bereketin ve rızkından bana aç, bolca ihsan eyle"
+      },
+      "tr": {
+        "source": "Hâkim, Deavât, No: 1868",
+        "content": "Allah'ım! Lütfun, rahmetin, bereketin ve rızkından bana aç, bolca ihsan eyle"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:55:31.554539+00:00",
+    "updated_at": "2026-05-27T17:55:31.554539+00:00",
+    "moods": [
+      "sukurlu",
+      "umutlu"
+    ]
+  },
+  {
+    "id": "47d4efe2-794d-4239-9979-25a63ed43e1e",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Müslim, Hac, 426",
+        "content": "Allah'ım! Yolculuğun yorgunluk ve sıkıntılarından, yoldan kötü bir şekilde dönmekten, iyi hâllerden kötü hâllere düşmekten, mazlumun bedduasından, mala ve aileye gelecek kötülüklerden sana sığınırım"
+      },
+      "tr": {
+        "source": "Müslim, Hac, 426",
+        "content": "Allah'ım! Yolculuğun yorgunluk ve sıkıntılarından, yoldan kötü bir şekilde dönmekten, iyi hâllerden kötü hâllere düşmekten, mazlumun bedduasından, mala ve aileye gelecek kötülüklerden sana sığınırım"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:55:31.554539+00:00",
+    "updated_at": "2026-05-27T17:55:31.554539+00:00",
+    "moods": [
+      "stresli",
+      "kaygili",
+      "kararsiz",
+      "umutlu"
+    ]
+  },
+  {
+    "id": "85c19bd2-9052-41b5-9b24-c870615686ad",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Buhârî, Deavât, 39",
+        "content": "Allah'ım! Günahlarımı kar ve dolu suyu ile yıka ve beyaz elbiseyi kirden temizler gibi kalbimi hatalardan arındır"
+      },
+      "tr": {
+        "source": "Buhârî, Deavât, 39",
+        "content": "Allah'ım! Günahlarımı kar ve dolu suyu ile yıka ve beyaz elbiseyi kirden temizler gibi kalbimi hatalardan arındır"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:55:31.554539+00:00",
+    "updated_at": "2026-05-27T17:55:31.554539+00:00",
+    "moods": [
+      "huzunlu"
+    ]
+  },
+  {
+    "id": "d718aa4f-5bb7-44ea-961d-8e7fb0d26e1e",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Hâkim, Deavât, No: 1872",
+        "content": "Allah'ım! Bildiğin günahlarımı bağışlamanı istiyorum. Bildiğin her türlü hayırdan istiyorum. Bildiğin bütün şeylerden sana sığınıyorum. Şüphesiz sen gaybı/gizli olan şeyleri en iyi bilensin"
+      },
+      "tr": {
+        "source": "Hâkim, Deavât, No: 1872",
+        "content": "Allah'ım! Bildiğin günahlarımı bağışlamanı istiyorum. Bildiğin her türlü hayırdan istiyorum. Bildiğin bütün şeylerden sana sığınıyorum. Şüphesiz sen gaybı/gizli olan şeyleri en iyi bilensin"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:55:31.554539+00:00",
+    "updated_at": "2026-05-27T17:55:31.554539+00:00",
+    "moods": [
+      "huzunlu",
+      "stresli",
+      "kaygili",
+      "umutlu"
+    ]
+  },
+  {
+    "id": "25bd4722-cb90-4f05-bb5c-d786b38cd1b5",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Ebû Dâvûd, Vitr, 32",
+        "content": "Allah'ım! Açlıktan sana sığınırım. Çünkü açlık ne kötü bir arkadaştır. Hainlikten de sana sığınırım. Çünkü hainlik ne kötü bir sırdaştır"
+      },
+      "tr": {
+        "source": "Ebû Dâvûd, Vitr, 32",
+        "content": "Allah'ım! Açlıktan sana sığınırım. Çünkü açlık ne kötü bir arkadaştır. Hainlikten de sana sığınırım. Çünkü hainlik ne kötü bir sırdaştır"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:55:31.554539+00:00",
+    "updated_at": "2026-05-27T17:55:31.554539+00:00",
+    "moods": [
+      "stresli",
+      "kaygili",
+      "umutlu"
+    ]
+  },
+  {
+    "id": "2e5d7a26-c6b3-475c-9c01-1c7fc8fb8872",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Müslim, Zikir ve Duâ, 35",
+        "content": "Allah'ım! Beni bağışla, bana hidayet nasip eyle, bana rızık ver, beni afiyette daim eyle ve bana merhamet et"
+      },
+      "tr": {
+        "source": "Müslim, Zikir ve Duâ, 35",
+        "content": "Allah'ım! Beni bağışla, bana hidayet nasip eyle, bana rızık ver, beni afiyette daim eyle ve bana merhamet et"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:55:31.554539+00:00",
+    "updated_at": "2026-05-27T17:55:31.554539+00:00",
+    "moods": [
+      "sukurlu",
+      "kararsiz",
+      "umutlu"
+    ]
+  },
+  {
+    "id": "d29362f1-decd-4a26-940c-c9b51a79617f",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Hâkim, Deavât, No: 1868",
+        "content": "Allah'ım! Bize imanı sevdir, kalplerimizi imanla süsle. Bize küfrü, itaatsizliği ve isyanı sevdirme, kerih göster, bizi doğru yolu bulanlardan eyle"
+      },
+      "tr": {
+        "source": "Hâkim, Deavât, No: 1868",
+        "content": "Allah'ım! Bize imanı sevdir, kalplerimizi imanla süsle. Bize küfrü, itaatsizliği ve isyanı sevdirme, kerih göster, bizi doğru yolu bulanlardan eyle"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:55:31.554539+00:00",
+    "updated_at": "2026-05-27T17:55:31.554539+00:00",
+    "moods": [
+      "kararsiz"
+    ]
+  },
+  {
+    "id": "9634c794-32bb-4305-879c-b74c45a156f7",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Âl-i İmrân, 3/53",
+        "content": "Rabbimiz! İndirdiğine inandık ve Peygambere tâbi olduk; artık bizi şahitlerle beraber yaz"
+      },
+      "tr": {
+        "source": "Âl-i İmrân, 3/53",
+        "content": "Rabbimiz! İndirdiğine inandık ve Peygambere tâbi olduk; artık bizi şahitlerle beraber yaz"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:55:31.554539+00:00",
+    "updated_at": "2026-05-27T17:55:31.554539+00:00",
+    "moods": [
+      "umutlu"
+    ]
+  },
+  {
+    "id": "6f964ee3-acd5-4128-9c4c-57d07ed1286a",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Bakara, 2/128",
+        "content": "Ey Rabbimiz! Bizi sana teslim olanlardan eyle, soyumuzdan da sana teslim olacak bir ümmet çıkar. Bize ibadet usullerimizi göster, tevbemizi kabul et. Şüphesiz tövbeleri kabul eden, merhameti bol olan sensin"
+      },
+      "tr": {
+        "source": "Bakara, 2/128",
+        "content": "Ey Rabbimiz! Bizi sana teslim olanlardan eyle, soyumuzdan da sana teslim olacak bir ümmet çıkar. Bize ibadet usullerimizi göster, tevbemizi kabul et. Şüphesiz tövbeleri kabul eden, merhameti bol olan sensin"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:55:31.554539+00:00",
+    "updated_at": "2026-05-27T17:55:31.554539+00:00",
+    "moods": [
+      "umutlu"
+    ]
+  },
+  {
+    "id": "d98c14ee-2dcc-4b82-a5e1-7573ee624df9",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Müslim, Zikir, 70",
+        "content": "Allah'ım! Ciddi ve şaka yollu yaptıklarımı, yanlışlıkla ve bilerek işlediğim günahlarımı affeyle! Bütün bu kusurların bende bulunduğunu itiraf ederim"
+      },
+      "tr": {
+        "source": "Müslim, Zikir, 70",
+        "content": "Allah'ım! Ciddi ve şaka yollu yaptıklarımı, yanlışlıkla ve bilerek işlediğim günahlarımı affeyle! Bütün bu kusurların bende bulunduğunu itiraf ederim"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:55:31.554539+00:00",
+    "updated_at": "2026-05-27T17:55:31.554539+00:00",
+    "moods": [
+      "huzunlu",
+      "umutlu"
+    ]
+  },
+  {
+    "id": "263c8325-fd2b-49f2-86ff-b75db3594b14",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Âl-i İmrân, 3/36",
+        "content": "Ey mülkün gerçek sahibi olan Allah'ım! Mülkü dilediğine verirsin, dilediğinden çekip alırsın. Dilediğini yüceltirsin, dilediğini de alçaltırsın. Her türlü iyilik senin elindedir. Hiç kuşku yok sen her şeye kâdirsin"
+      },
+      "tr": {
+        "source": "Âl-i İmrân, 3/36",
+        "content": "Ey mülkün gerçek sahibi olan Allah'ım! Mülkü dilediğine verirsin, dilediğinden çekip alırsın. Dilediğini yüceltirsin, dilediğini de alçaltırsın. Her türlü iyilik senin elindedir. Hiç kuşku yok sen her şeye kâdirsin"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:55:31.554539+00:00",
+    "updated_at": "2026-05-27T17:55:31.554539+00:00",
+    "moods": [
+      "umutlu"
+    ]
+  },
+  {
+    "id": "653d55ef-9239-4841-989b-83227e8e0bfa",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Hâkim, Deavât, No: 1878",
+        "content": "Allah'ım! Bana verdiğin rızık konusunda beni kanaat sahibi yap ve o rızkımı bereketli kıl. Zayi olan her nimetin daha hayırlısını bana ihsan eyle"
+      },
+      "tr": {
+        "source": "Hâkim, Deavât, No: 1878",
+        "content": "Allah'ım! Bana verdiğin rızık konusunda beni kanaat sahibi yap ve o rızkımı bereketli kıl. Zayi olan her nimetin daha hayırlısını bana ihsan eyle"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:55:31.554539+00:00",
+    "updated_at": "2026-05-27T17:55:31.554539+00:00",
+    "moods": [
+      "sukurlu",
+      "umutlu"
+    ]
+  },
+  {
+    "id": "a4029f8d-f71c-40ab-a70e-9880016e5019",
+    "type": "prayer",
+    "category": "hope",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Hâkim, Deavât, No: 1902, I",
+        "content": "Allah'ım! Açıklarımı ört, korkularımı gider ve bana güven ver. Allah'ım! Ayıplarımı ört ve korkularımı gider"
+      },
+      "tr": {
+        "source": "Hâkim, Deavât, No: 1902, I",
+        "content": "Allah'ım! Açıklarımı ört, korkularımı gider ve bana güven ver. Allah'ım! Ayıplarımı ört ve korkularımı gider"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:55:31.554539+00:00",
+    "updated_at": "2026-05-27T17:55:31.554539+00:00",
+    "moods": [
+      "kaygili",
+      "umutlu"
+    ]
+  },
+  {
+    "id": "ad885324-713e-4bd7-8d1d-9307f1e4ac64",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Şu'arâ, 26/87-89",
+        "content": "(Rabbim!) İnsanların diriltileceği gün ve Allah'a temiz bir kalple gelenler dışında malın da çocukların da fayda vermeyeceği gün beni mahcup etme!"
+      },
+      "tr": {
+        "source": "Şu'arâ, 26/87-89",
+        "content": "(Rabbim!) İnsanların diriltileceği gün ve Allah'a temiz bir kalple gelenler dışında malın da çocukların da fayda vermeyeceği gün beni mahcup etme!"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:55:31.554539+00:00",
+    "updated_at": "2026-05-27T17:55:31.554539+00:00",
+    "moods": [
+      "huzunlu"
+    ]
+  },
+  {
+    "id": "b40db367-ebea-4e7c-befc-3a4b6d88f1bf",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Buhari, Deavât, 60",
+        "content": "Allah'ım! Bütün işlerimdeki ölçüsüzlüğümü, cahilliğimi ve hatamı bağışla. Sen bunları benden daha iyi biliyorsun"
+      },
+      "tr": {
+        "source": "Buhari, Deavât, 60",
+        "content": "Allah'ım! Bütün işlerimdeki ölçüsüzlüğümü, cahilliğimi ve hatamı bağışla. Sen bunları benden daha iyi biliyorsun"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:55:31.554539+00:00",
+    "updated_at": "2026-05-27T17:55:31.554539+00:00",
+    "moods": [
+      "umutlu"
+    ]
+  },
+  {
+    "id": "eb44258f-5e22-4ff2-874e-e9c51e4c41fe",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Tirmizî, Deavât, 89",
+        "content": "Ey kalpleri evirip çeviren (Allah'ım!) Benim kalbimi dinin üzere sabit kıl"
+      },
+      "tr": {
+        "source": "Tirmizî, Deavât, 89",
+        "content": "Ey kalpleri evirip çeviren (Allah'ım!) Benim kalbimi dinin üzere sabit kıl"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:55:31.554539+00:00",
+    "updated_at": "2026-05-27T17:55:31.554539+00:00",
+    "moods": [
+      "kararsiz"
+    ]
+  },
+  {
+    "id": "b2978834-aa8c-466b-bdae-e5b1b26fd8dd",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Âl-i İmrân, 3/191",
+        "content": "Rabbimiz! Sen bunu boş yere yaratmadın, seni tenzih ve takdis ederiz. Bizi cehennem azabından koru!"
+      },
+      "tr": {
+        "source": "Âl-i İmrân, 3/191",
+        "content": "Rabbimiz! Sen bunu boş yere yaratmadın, seni tenzih ve takdis ederiz. Bizi cehennem azabından koru!"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:55:31.554539+00:00",
+    "updated_at": "2026-05-27T17:55:31.554539+00:00",
+    "moods": [
+      "stresli",
+      "kaygili"
+    ]
+  },
+  {
+    "id": "b0bd34b1-12d0-43dc-8fff-a9b0ae4a0f95",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Tirmizî, Deavât, 70",
+        "content": "Allah'ım! Bana doğru olanı ilham et ve beni nefsimin şerrinden koru"
+      },
+      "tr": {
+        "source": "Tirmizî, Deavât, 70",
+        "content": "Allah'ım! Bana doğru olanı ilham et ve beni nefsimin şerrinden koru"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:55:31.554539+00:00",
+    "updated_at": "2026-05-27T17:55:31.554539+00:00",
+    "moods": [
+      "stresli",
+      "kararsiz"
+    ]
+  },
+  {
+    "id": "144ff349-6246-40a3-9eee-7f50c7feed15",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Âl-i İmrân, 3/38",
+        "content": "Rabbim! Bana tarafından temiz bir nesil ihsan eyle! Kuşkusuz sen duayı işitmektesin"
+      },
+      "tr": {
+        "source": "Âl-i İmrân, 3/38",
+        "content": "Rabbim! Bana tarafından temiz bir nesil ihsan eyle! Kuşkusuz sen duayı işitmektesin"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:55:31.554539+00:00",
+    "updated_at": "2026-05-27T17:55:31.554539+00:00",
+    "moods": [
+      "umutlu"
+    ]
+  },
+  {
+    "id": "8d767ff6-bd68-4970-aaa9-256152418439",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Mümtehine, 60/4",
+        "content": "Rabbimiz! Ancak sana dayandık, sana yöneldik. Dönüş de ancak sanadır"
+      },
+      "tr": {
+        "source": "Mümtehine, 60/4",
+        "content": "Rabbimiz! Ancak sana dayandık, sana yöneldik. Dönüş de ancak sanadır"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:55:31.554539+00:00",
+    "updated_at": "2026-05-27T17:55:31.554539+00:00",
+    "moods": [
+      "umutlu"
+    ]
+  },
+  {
+    "id": "1f1aec1f-616d-443f-863e-999d849eb3c9",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Âl-i İmrân, 3/16",
+        "content": "Ey Rabbimiz! Biz gerçekten iman ettik, günahlarımızı bağışla, bizi ateş azabından koru"
+      },
+      "tr": {
+        "source": "Âl-i İmrân, 3/16",
+        "content": "Ey Rabbimiz! Biz gerçekten iman ettik, günahlarımızı bağışla, bizi ateş azabından koru"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:55:31.554539+00:00",
+    "updated_at": "2026-05-27T17:55:31.554539+00:00",
+    "moods": [
+      "umutlu"
+    ]
+  },
+  {
+    "id": "d1f6ee42-665e-427d-a361-f595f742d60c",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Buhârî, Merdâ, 19",
+        "content": "Allah'ım! Yaşamak benim için hayırlı olduğu sürece beni yaşat. Ölmek benim için hayırlı olduğunda da benim canımı al!"
+      },
+      "tr": {
+        "source": "Buhârî, Merdâ, 19",
+        "content": "Allah'ım! Yaşamak benim için hayırlı olduğu sürece beni yaşat. Ölmek benim için hayırlı olduğunda da benim canımı al!"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:55:31.554539+00:00",
+    "updated_at": "2026-05-27T17:55:31.554539+00:00",
+    "moods": [
+      "umutlu"
+    ]
+  },
+  {
+    "id": "d6c92923-ce9b-4245-8798-7decae5f8e42",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Mâlik, Duâ, No: 508",
+        "content": "Allah'ım! Senden hayırlı olan işleri yapmayı, aklın ve dinin çirkin gördüğü şeyleri terk etmeyi ve fakirlerin sevgisini istiyorum"
+      },
+      "tr": {
+        "source": "Mâlik, Duâ, No: 508",
+        "content": "Allah'ım! Senden hayırlı olan işleri yapmayı, aklın ve dinin çirkin gördüğü şeyleri terk etmeyi ve fakirlerin sevgisini istiyorum"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:55:31.554539+00:00",
+    "updated_at": "2026-05-27T17:55:31.554539+00:00",
+    "moods": [
+      "umutlu"
+    ]
+  },
+  {
+    "id": "79aca42e-75ff-47f9-8ed3-670d914d014d",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "İbn Ebu Şeybe, Duâ, 1, No: 29134",
+        "content": "Allah'ım! Senden düzgün bir yaşantı, temiz bir ölüm ve rezil rüsva olmadan sana dönebilmeyi istiyorum"
+      },
+      "tr": {
+        "source": "İbn Ebu Şeybe, Duâ, 1, No: 29134",
+        "content": "Allah'ım! Senden düzgün bir yaşantı, temiz bir ölüm ve rezil rüsva olmadan sana dönebilmeyi istiyorum"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:57:23.003473+00:00",
+    "updated_at": "2026-05-27T17:57:23.003473+00:00",
+    "moods": [
+      "umutlu"
+    ]
+  },
+  {
+    "id": "bb8e8f00-ddc5-4b84-90a4-80f98bd01b97",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "İsrâ, 17/24",
+        "content": "Rabbim! Onlar (anne ve babam) nasıl küçüklükte beni şefkatle eğitip yetiştirdilerse şimdi sen de onlara merhamet göster"
+      },
+      "tr": {
+        "source": "İsrâ, 17/24",
+        "content": "Rabbim! Onlar (anne ve babam) nasıl küçüklükte beni şefkatle eğitip yetiştirdilerse şimdi sen de onlara merhamet göster"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:57:23.003473+00:00",
+    "updated_at": "2026-05-27T17:57:23.003473+00:00",
+    "moods": [
+      "umutlu"
+    ]
+  },
+  {
+    "id": "b8acbfe2-56f1-4400-8f42-f43888f0fbb7",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Müslim, Salât, 222",
+        "content": "Allah'ım! Gazabından rızana, cezandan affına sığınırım. Senden sana sığınırım. Sana tüm övgüleri saysam yine de bitiremem. Sen kendini nasıl övdüysen öylesin"
+      },
+      "tr": {
+        "source": "Müslim, Salât, 222",
+        "content": "Allah'ım! Gazabından rızana, cezandan affına sığınırım. Senden sana sığınırım. Sana tüm övgüleri saysam yine de bitiremem. Sen kendini nasıl övdüysen öylesin"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:57:23.003473+00:00",
+    "updated_at": "2026-05-27T17:57:23.003473+00:00",
+    "moods": [
+      "stresli",
+      "kaygili",
+      "umutlu"
+    ]
+  },
+  {
+    "id": "f7ecf94a-95c5-48b6-9ec2-5b7b6af0431e",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Ebû Dâvûd, Vitr, 32",
+        "content": "Allah'ım! (Haktan) ayrılmaktan, iki yüzlülükten ve kötü ahlaktan sana sığınırım"
+      },
+      "tr": {
+        "source": "Ebû Dâvûd, Vitr, 32",
+        "content": "Allah'ım! (Haktan) ayrılmaktan, iki yüzlülükten ve kötü ahlaktan sana sığınırım"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:57:23.003473+00:00",
+    "updated_at": "2026-05-27T17:57:23.003473+00:00",
+    "moods": [
+      "stresli",
+      "kaygili",
+      "kararsiz"
+    ]
+  },
+  {
+    "id": "3436c38b-8c6b-4ac6-8476-55cecea75293",
+    "type": "prayer",
+    "category": "hope",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Tahrîm, 66/8",
+        "content": "Rabbimiz! Nurumuzu arttır, eksiltme ve bizi bağışla. Şüphesiz senin her şeye gücün yeter"
+      },
+      "tr": {
+        "source": "Tahrîm, 66/8",
+        "content": "Rabbimiz! Nurumuzu arttır, eksiltme ve bizi bağışla. Şüphesiz senin her şeye gücün yeter"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:57:23.003473+00:00",
+    "updated_at": "2026-05-27T17:57:23.003473+00:00",
+    "moods": [
+      "yorgun",
+      "umutlu"
+    ]
+  },
+  {
+    "id": "e87d6f70-7cad-4dca-913c-a8fc78c46f7a",
+    "type": "prayer",
+    "category": "hope",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Nesâî, İstiâze, 25",
+        "content": "Allah'ım! Kederden, üzüntüden, tembellikten, cimrilikten, korkaklıktan, borç yükünden ve halkın galeyana gelerek taşkınlığından sana sığınırım"
+      },
+      "tr": {
+        "source": "Nesâî, İstiâze, 25",
+        "content": "Allah'ım! Kederden, üzüntüden, tembellikten, cimrilikten, korkaklıktan, borç yükünden ve halkın galeyana gelerek taşkınlığından sana sığınırım"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:57:23.003473+00:00",
+    "updated_at": "2026-05-27T17:57:23.003473+00:00",
+    "moods": [
+      "huzunlu",
+      "stresli",
+      "kaygili",
+      "umutlu"
+    ]
+  },
+  {
+    "id": "7f64d26e-ae85-4b70-a0c7-513cfdee20ed",
+    "type": "prayer",
+    "category": "dhikr",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Ebû Dâvûd, Tefrîu Ebvâbi'l-Vitr, 26",
+        "content": "Allah'ım! Seni zikretmek, sana şükretmek ve sana güzelce ibadet etmek için bana yardım et"
+      },
+      "tr": {
+        "source": "Ebû Dâvûd, Tefrîu Ebvâbi'l-Vitr, 26",
+        "content": "Allah'ım! Seni zikretmek, sana şükretmek ve sana güzelce ibadet etmek için bana yardım et"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:57:23.003473+00:00",
+    "updated_at": "2026-05-27T17:57:23.003473+00:00",
+    "moods": [
+      "umutlu"
+    ]
+  },
+  {
+    "id": "a65eaedf-b046-41ec-a5d4-ab726be68ee2",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "A'râf, 7/23",
+        "content": "Ey Rabbimiz! Biz kendimize zulmettik. Eğer bizi bağışlamaz, bize acımazsan mutlaka ziyan edenlerden oluruz!"
+      },
+      "tr": {
+        "source": "A'râf, 7/23",
+        "content": "Ey Rabbimiz! Biz kendimize zulmettik. Eğer bizi bağışlamaz, bize acımazsan mutlaka ziyan edenlerden oluruz!"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:57:23.003473+00:00",
+    "updated_at": "2026-05-27T17:57:23.003473+00:00",
+    "moods": [
+      "umutlu"
+    ]
+  },
+  {
+    "id": "ef252367-6738-48dc-b2b6-cd9e4cca4199",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Müslim, Rikâk, 96",
+        "content": "Allah'ım! Nimetlerinin yok olmasından, sağlığımın bozulmasından, ansızın gelecek cezandan ve öfkene sebep olan her şeyden sana sığınırım"
+      },
+      "tr": {
+        "source": "Müslim, Rikâk, 96",
+        "content": "Allah'ım! Nimetlerinin yok olmasından, sağlığımın bozulmasından, ansızın gelecek cezandan ve öfkene sebep olan her şeyden sana sığınırım"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:57:23.003473+00:00",
+    "updated_at": "2026-05-27T17:57:23.003473+00:00",
+    "moods": [
+      "stresli",
+      "sukurlu",
+      "kaygili"
+    ]
+  },
+  {
+    "id": "a2077efe-f24c-46bd-92c7-6d8806c267f1",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Nesâî, İstiâze, 64",
+        "content": "Allah'ım! Faydasız ilimden, huşu duymayan kalpten, doymayan nefisten ve kabul edilmeyen duadan sana sığınırım"
+      },
+      "tr": {
+        "source": "Nesâî, İstiâze, 64",
+        "content": "Allah'ım! Faydasız ilimden, huşu duymayan kalpten, doymayan nefisten ve kabul edilmeyen duadan sana sığınırım"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:57:23.003473+00:00",
+    "updated_at": "2026-05-27T17:57:23.003473+00:00",
+    "moods": [
+      "stresli",
+      "kaygili",
+      "umutlu"
+    ]
+  },
+  {
+    "id": "7afc37c2-4630-49e0-ad2c-1dbb7f0773a1",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Tirmizî, Deavât, 18",
+        "content": "Allah'ım! Kullarını mahşerde topladığın veya mahşerde kaldırdığın gün beni azabından koru"
+      },
+      "tr": {
+        "source": "Tirmizî, Deavât, 18",
+        "content": "Allah'ım! Kullarını mahşerde topladığın veya mahşerde kaldırdığın gün beni azabından koru"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:57:23.003473+00:00",
+    "updated_at": "2026-05-27T17:57:23.003473+00:00",
+    "moods": [
+      "umutlu"
+    ]
+  },
+  {
+    "id": "faf09f58-95e0-41a8-a65a-398293f56a9c",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Tirmizî, Deavât, 56",
+        "content": "Bizi yedirip içiren ve bizi Müslümanlardan eyleyen Allah'a hamdolsun"
+      },
+      "tr": {
+        "source": "Tirmizî, Deavât, 56",
+        "content": "Bizi yedirip içiren ve bizi Müslümanlardan eyleyen Allah'a hamdolsun"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:57:23.003473+00:00",
+    "updated_at": "2026-05-27T17:57:23.003473+00:00",
+    "moods": [
+      "sukurlu"
+    ]
+  },
+  {
+    "id": "959892c9-71ac-4aa7-9172-f4c1130a8d2d",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Şu'arâ, 26/84",
+        "content": "(Rabbim!) Arkadan gelecekler içinde iyilikle anılmayı bana nasip eyle!"
+      },
+      "tr": {
+        "source": "Şu'arâ, 26/84",
+        "content": "(Rabbim!) Arkadan gelecekler içinde iyilikle anılmayı bana nasip eyle!"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:57:23.003473+00:00",
+    "updated_at": "2026-05-27T17:57:23.003473+00:00",
+    "moods": [
+      "umutlu"
+    ]
+  },
+  {
+    "id": "5df92880-b98e-45c7-b8a8-51079630c141",
+    "type": "prayer",
+    "category": "purpose",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "İbn Hanbel, I, 403",
+        "content": "Allah'ım! Benim yaratılışımı güzel kıldığın gibi ahlakımı da güzelleştir"
+      },
+      "tr": {
+        "source": "İbn Hanbel, I, 403",
+        "content": "Allah'ım! Benim yaratılışımı güzel kıldığın gibi ahlakımı da güzelleştir"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:57:23.003473+00:00",
+    "updated_at": "2026-05-27T17:57:23.003473+00:00",
+    "moods": [
+      "kararsiz"
+    ]
+  },
+  {
+    "id": "45d0fca5-1298-4f2e-9c2b-944da682b6a3",
+    "type": "prayer",
+    "category": "dhikr",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "İbn Hanbel, II, 299",
+        "content": "Allah'ım seni zikretmek, sana şükretmek, sana güzelce ibadet etmekte bize yardım et"
+      },
+      "tr": {
+        "source": "İbn Hanbel, II, 299",
+        "content": "Allah'ım seni zikretmek, sana şükretmek, sana güzelce ibadet etmekte bize yardım et"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:57:23.003473+00:00",
+    "updated_at": "2026-05-27T17:57:23.003473+00:00",
+    "moods": [
+      "umutlu"
+    ]
+  },
+  {
+    "id": "d614f337-0b96-4eea-9378-91e02a1e1092",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Ahkâf, 46/15",
+        "content": "Rabbim! Bana ve anne-babama lütfettiğin nimete şükretmeye, razı olacağın işleri yapmaya beni muvaffak kıl. Benden gelecek nesli hayırlı eyle, pişmanlıkla dönüp senin kapına başvurmaktayım ve ben süphesiz sana boyun eğenlerdenim"
+      },
+      "tr": {
+        "source": "Ahkâf, 46/15",
+        "content": "Rabbim! Bana ve anne-babama lütfettiğin nimete şükretmeye, razı olacağın işleri yapmaya beni muvaffak kıl. Benden gelecek nesli hayırlı eyle, pişmanlıkla dönüp senin kapına başvurmaktayım ve ben süphesiz sana boyun eğenlerdenim"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:57:23.003473+00:00",
+    "updated_at": "2026-05-27T17:57:23.003473+00:00",
+    "moods": [
+      "sukurlu",
+      "umutlu"
+    ]
+  },
+  {
+    "id": "f5b5e2f4-9c83-41ad-bfc9-d566e7fa725b",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Müslim, Müsâfirîn, 181",
+        "content": "Allah'ım! Kalbimde nur, gözümde nur, kulağımda nur, sağımda nur, solumda nur, üstümde nur, altımda nur, önümde nur var eyle, benim nurumu artır"
+      },
+      "tr": {
+        "source": "Müslim, Müsâfirîn, 181",
+        "content": "Allah'ım! Kalbimde nur, gözümde nur, kulağımda nur, sağımda nur, solumda nur, üstümde nur, altımda nur, önümde nur var eyle, benim nurumu artır"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:57:23.003473+00:00",
+    "updated_at": "2026-05-27T17:57:23.003473+00:00",
+    "moods": [
+      "umutlu"
+    ]
+  },
+  {
+    "id": "ce7ee516-6223-45d0-a013-fe4680752740",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Fâtiha, 1/4-5",
+        "content": "Ödül ve ceza gününün tek hâkimi. (Rabbimiz!) Ancak sana kulluk eder ve yalnız senden yardım dileriz"
+      },
+      "tr": {
+        "source": "Fâtiha, 1/4-5",
+        "content": "Ödül ve ceza gününün tek hâkimi. (Rabbimiz!) Ancak sana kulluk eder ve yalnız senden yardım dileriz"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:57:23.003473+00:00",
+    "updated_at": "2026-05-27T17:57:23.003473+00:00",
+    "moods": [
+      "stresli",
+      "umutlu"
+    ]
+  },
+  {
+    "id": "144790ce-ea82-4a43-bfcf-e01729cbddc0",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "İbrahim, 14/38",
+        "content": "Rabbimiz! Şüphesiz ki sen gizlediğimizi de açıkladığımızı da bilirsin. Yerde ve gökte hiçbir şey Allah'a gizli kalmaz"
+      },
+      "tr": {
+        "source": "İbrahim, 14/38",
+        "content": "Rabbimiz! Şüphesiz ki sen gizlediğimizi de açıkladığımızı da bilirsin. Yerde ve gökte hiçbir şey Allah'a gizli kalmaz"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:57:23.003473+00:00",
+    "updated_at": "2026-05-27T17:57:23.003473+00:00",
+    "moods": [
+      "umutlu"
+    ]
+  },
+  {
+    "id": "7b012f02-b707-4598-8660-c2f9659b42b5",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": "2026-05-31",
+    "translations": {
+      "en": {
+        "source": "Şu'arâ, 26/85",
+        "content": "(Rabbim) Beni, naim cennetine girenlerden eyle!"
+      },
+      "tr": {
+        "source": "Şu'arâ, 26/85",
+        "content": "(Rabbim) Beni, naim cennetine girenlerden eyle!."
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:57:23.003473+00:00",
+    "updated_at": "2026-05-27T17:57:23.003473+00:00",
+    "moods": [
+      "umutlu"
+    ]
+  },
+  {
+    "id": "b225d004-6703-4997-9876-56613e8e4184",
+    "type": "prayer",
+    "category": "worship",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Sunan Abi Dawud, Book of Witras, 25",
+        "content": "O Allah! Owner of sovereignty, make me and my family sincere to You in this world and the next. O Owner of Majesty and Honor!"
+      },
+      "tr": {
+        "source": "Ebû Dâvûd, Vitr, 25",
+        "content": "Allah’ım! Ey Rabbimiz ve ey her şeyin Rabbi! Beni ve ailemi dünya ve ahirette her an sana ihlasla bağlı kıl. Ey yücelik ve ikram sahibi!..."
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-31T10:56:38.244526+00:00",
+    "updated_at": "2026-05-31T10:56:38.244526+00:00",
+    "moods": [
+      "kararsiz"
+    ]
+  },
+  {
+    "id": "b976eda9-2bfd-4296-af4d-b2de42491141",
+    "type": "prayer",
+    "category": "purpose",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Musnad Ahmad, I, 403",
+        "content": "O Allah! As You have made my physical creation beautiful, make my character beautiful."
+      },
+      "tr": {
+        "source": "İbn Hanbel, I, 403",
+        "content": "Allah’ım! Benim yaratılışımı güzel kıldığın gibi ahlakımı da güzelleştir..."
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-31T10:56:38.244526+00:00",
+    "updated_at": "2026-05-31T10:56:38.244526+00:00",
+    "moods": [
+      "kararsiz",
+      "umutlu"
+    ]
+  },
+  {
+    "id": "00208c85-e26a-4595-aa70-5e35e4815b15",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Jami` at-Tirmidhi, Book of Supplications, 84",
+        "content": "O Allah! You are forgiving, noble, and You love forgiveness, so forgive me."
+      },
+      "tr": {
+        "source": "Tirmizî, Deavât, 84",
+        "content": "Allah’ım! Sen affedicisin, Kerim’sin, affı seversin, beni affet"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-31T10:56:38.244526+00:00",
+    "updated_at": "2026-05-31T10:56:38.244526+00:00",
+    "moods": [
+      "huzunlu",
+      "umutlu"
+    ]
+  },
+  {
+    "id": "067d7f59-4619-475c-808a-08a435eb8d43",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "İbn Ebu Şeybe, Duâ, 42",
+        "content": "Allah'ım! Lütfundan bize rızık ver, bizi rızkından mahrum etme, bize verdiğin rızıkları bizim için bereketli yap, katında bulunan nimetlere rağbetimizi arttır ve bizi gönül zengini eyle"
+      },
+      "tr": {
+        "source": "İbn Ebu Şeybe, Duâ, 42",
+        "content": "Allah'ım! Lütfundan bize rızık ver, bizi rızkından mahrum etme, bize verdiğin rızıkları bizim için bereketli yap, katında bulunan nimetlere rağbetimizi arttır ve bizi gönül zengini eyle"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:57:23.003473+00:00",
+    "updated_at": "2026-05-27T17:57:23.003473+00:00",
+    "moods": [
+      "sukurlu",
+      "umutlu"
+    ]
+  },
+  {
+    "id": "2ecb2f2c-2dd5-4a6b-9dc9-a163b5adb475",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Hâkim, Deavât, No: 1973",
+        "content": "Allah'ım! Helal olan nimetlerinle yetinmemi, haramlardan müstağni olmamı ihsan eyle, fazlı kereminle beni senden başkasına muhtaç eyleme"
+      },
+      "tr": {
+        "source": "Hâkim, Deavât, No: 1973",
+        "content": "Allah'ım! Helal olan nimetlerinle yetinmemi, haramlardan müstağni olmamı ihsan eyle, fazlı kereminle beni senden başkasına muhtaç eyleme"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:57:23.003473+00:00",
+    "updated_at": "2026-05-27T17:57:23.003473+00:00",
+    "moods": [
+      "sukurlu",
+      "yalniz",
+      "umutlu"
+    ]
+  },
+  {
+    "id": "0c9d8803-4ab4-4f70-afef-8a87da305724",
+    "type": "prayer",
+    "category": "purpose",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Tirmizî, Deavât, 130",
+        "content": "Allah'ım! Bana öğrettiğin ilim ile beni faydalandır, bana fayda verecek ilmi bana öğret ve benim ilmimi arttır. Her hâl üzere Allah'a hamdolsun. Cehennem ehlinin hâlinden Allah'a sığınırım"
+      },
+      "tr": {
+        "source": "Tirmizî, Deavât, 130",
+        "content": "Allah'ım! Bana öğrettiğin ilim ile beni faydalandır, bana fayda verecek ilmi bana öğret ve benim ilmimi arttır. Her hâl üzere Allah'a hamdolsun. Cehennem ehlinin hâlinden Allah'a sığınırım"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:57:23.003473+00:00",
+    "updated_at": "2026-05-27T17:57:23.003473+00:00",
+    "moods": [
+      "stresli",
+      "sukurlu",
+      "kaygili",
+      "kararsiz"
+    ]
+  },
+  {
+    "id": "2ea3df2f-f775-410d-8670-039b7f2dc9a3",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Mü'min, 40/7",
+        "content": "Ey Rabbimiz! Sen rahmetin ve ilminle her şeyi kuşattın. Tövbe edenleri ve yolundan gidenleri bağışla, onları cehennem azabından koru!"
+      },
+      "tr": {
+        "source": "Mü'min, 40/7",
+        "content": "Ey Rabbimiz! Sen rahmetin ve ilminle her şeyi kuşattın. Tövbe edenleri ve yolundan gidenleri bağışla, onları cehennem azabından koru!"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:51:14.42146+00:00",
+    "updated_at": "2026-05-27T17:51:14.42146+00:00",
+    "moods": [
+      "stresli",
+      "kaygili",
+      "umutlu"
+    ]
+  },
+  {
+    "id": "9601a56e-b4b4-4ee3-aaad-5f8bf56dba46",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Neml, 27/19",
+        "content": "Ey Rabbim! Gerek bana gerekse anne-babama verdiğin nimete şükretmeye ve hoşnut olacağın iyi işler yapmaya beni muvaffak kıl. Rahmetinle beni iyi kullarının arasına kat!"
+      },
+      "tr": {
+        "source": "Neml, 27/19",
+        "content": "Ey Rabbim! Gerek bana gerekse anne-babama verdiğin nimete şükretmeye ve hoşnut olacağın iyi işler yapmaya beni muvaffak kıl. Rahmetinle beni iyi kullarının arasına kat!"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:51:14.42146+00:00",
+    "updated_at": "2026-05-27T17:51:14.42146+00:00",
+    "moods": [
+      "sukurlu",
+      "umutlu"
+    ]
+  },
+  {
+    "id": "33594c48-aa04-4141-9868-26428cac99b4",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Tirmizî, Deavât, 94",
+        "content": "Allah'ım! Sen yardım istenilensin, dualar ancak sana ulaşır, duaları sen kabul edersin, güç ve kuvvet ancak Allah ile birlikte vardır"
+      },
+      "tr": {
+        "source": "Tirmizî, Deavât, 94",
+        "content": "Allah'ım! Sen yardım istenilensin, dualar ancak sana ulaşır, duaları sen kabul edersin, güç ve kuvvet ancak Allah ile birlikte vardır"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:51:14.42146+00:00",
+    "updated_at": "2026-05-27T17:51:14.42146+00:00",
+    "moods": [
+      "yorgun",
+      "umutlu"
+    ]
+  },
+  {
+    "id": "f8da8ddd-4cdb-44df-a463-809124257a84",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Tirmizî, Deavât, 74",
+        "content": "Allah'ım! Sevgini, seni seven kimsenin sevgisini ve sevgine ulaştıracak ameli istiyorum. Allah'ım! Sevgini, bana canımdan, ailemden ve soğuk sudan daha sevimli eyle"
+      },
+      "tr": {
+        "source": "Tirmizî, Deavât, 74",
+        "content": "Allah'ım! Sevgini, seni seven kimsenin sevgisini ve sevgine ulaştıracak ameli istiyorum. Allah'ım! Sevgini, bana canımdan, ailemden ve soğuk sudan daha sevimli eyle"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:51:14.42146+00:00",
+    "updated_at": "2026-05-27T17:51:14.42146+00:00",
+    "moods": [
+      "umutlu"
+    ]
+  },
+  {
+    "id": "b05f8c19-fdcd-4c46-a2da-f9a6af8c7b4f",
+    "type": "prayer",
+    "category": "purpose",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Hâkim, Deavât, No: 1879, I",
+        "content": "Allah'ım! Bana öğrettiğin şeyleri hakkımda faydalı eyle, bana fayda verecek şeyleri öğret; beni, bana fayda verecek ilim ile nasiplendir"
+      },
+      "tr": {
+        "source": "Hâkim, Deavât, No: 1879, I",
+        "content": "Allah'ım! Bana öğrettiğin şeyleri hakkımda faydalı eyle, bana fayda verecek şeyleri öğret; beni, bana fayda verecek ilim ile nasiplendir"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:55:31.554539+00:00",
+    "updated_at": "2026-05-27T17:55:31.554539+00:00",
+    "moods": [
+      "kararsiz"
+    ]
+  },
+  {
+    "id": "a239bd57-3387-4198-9666-b7716b884d3f",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Mâide, 5/114",
+        "content": "Allah'ım! Ey Rabbimiz! Bize gökten öyle bir sofra indir ki, ilk gelenimizden son gelenimize kadar bizler için bir bayram ziyafeti ve senden bir işaret olsun. Bizi rızıklandır, sen rızık verenlerin en hayırlısısın"
+      },
+      "tr": {
+        "source": "Mâide, 5/114",
+        "content": "Allah'ım! Ey Rabbimiz! Bize gökten öyle bir sofra indir ki, ilk gelenimizden son gelenimize kadar bizler için bir bayram ziyafeti ve senden bir işaret olsun. Bizi rızıklandır, sen rızık verenlerin en hayırlısısın"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:55:31.554539+00:00",
+    "updated_at": "2026-05-27T17:55:31.554539+00:00",
+    "moods": [
+      "sukurlu",
+      "umutlu"
+    ]
+  },
+  {
+    "id": "d8c38f8d-476d-47db-b235-589dd0ec4329",
+    "type": "prayer",
+    "category": "purpose",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Nesâî, İftitâh, 16",
+        "content": "Allah'ım! Beni amellerin ve ahlakın en güzeline kavuştur. Onların en güzeline ancak sen ulaştırırsın. Beni kötü işlerden ve kötü ahlaktan muhafaza et. Bunlardan ancak sen koruyabilirsin"
+      },
+      "tr": {
+        "source": "Nesâî, İftitâh, 16",
+        "content": "Allah'ım! Beni amellerin ve ahlakın en güzeline kavuştur. Onların en güzeline ancak sen ulaştırırsın. Beni kötü işlerden ve kötü ahlaktan muhafaza et. Bunlardan ancak sen koruyabilirsin"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:55:31.554539+00:00",
+    "updated_at": "2026-05-27T17:55:31.554539+00:00",
+    "moods": [
+      "stresli",
+      "kaygili",
+      "kararsiz"
+    ]
+  },
+  {
+    "id": "0a71a970-0bb1-4d94-870f-5d80de83be9c",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Buhari, Ezan, 149",
+        "content": "Allah'ım! Şüphesiz ben nefsime çok zulmettim, günahları bağışlayacak olan yalnız sensin. Öyleyse katından bir af ile beni bağışla. Bana merhamet et, çünkü bağışlaması ve rahmeti çok olan sadece sensin"
+      },
+      "tr": {
+        "source": "Buhari, Ezan, 149",
+        "content": "Allah'ım! Şüphesiz ben nefsime çok zulmettim, günahları bağışlayacak olan yalnız sensin. Öyleyse katından bir af ile beni bağışla. Bana merhamet et, çünkü bağışlaması ve rahmeti çok olan sadece sensin"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:55:31.554539+00:00",
+    "updated_at": "2026-05-27T17:55:31.554539+00:00",
+    "moods": [
+      "huzunlu",
+      "umutlu"
+    ]
+  },
+  {
+    "id": "2cb8a6cc-1c82-4d3a-9dd6-2e12757aff62",
+    "type": "prayer",
+    "category": "prayer",
+    "recommended_time": "any",
+    "date": null,
+    "translations": {
+      "en": {
+        "source": "Hâkim, Temin, No: 977",
+        "content": "Allah'ım! Tövbelerimizi kabul eyle, şüphesiz ki sen tövbeleri çok kabul edensin, çok merhametlisin. Bizi nimetlerine şükredenler, nimetlerinle seni övenler, verdiğin nimetleri kabul edenlerden eyle ve bize nimetlerin devamını ihsan eyle"
+      },
+      "tr": {
+        "source": "Hâkim, Temin, No: 977",
+        "content": "Allah'ım! Tövbelerimizi kabul eyle, şüphesiz ki sen tövbeleri çok kabul edensin, çok merhametlisin. Bizi nimetlerine şükredenler, nimetlerinle seni övenler, verdiğin nimetleri kabul edenlerden eyle ve bize nimetlerin devamını ihsan eyle"
+      }
+    },
+    "audio_url": null,
+    "image_url": null,
+    "is_active": true,
+    "created_at": "2026-05-27T17:55:31.554539+00:00",
+    "updated_at": "2026-05-27T17:55:31.554539+00:00",
+    "moods": [
+      "sukurlu",
+      "umutlu"
+    ]
+  }
+]
