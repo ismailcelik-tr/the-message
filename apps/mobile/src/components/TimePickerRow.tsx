@@ -156,6 +156,17 @@ export function TimePickerRow({ label, time, theme, minTime, maxTime, onConfirm 
           <View style={[styles.sheet, { backgroundColor: colors.card, borderColor: colors.border }]}>
             <Text style={[styles.sheetTitle, { color: colors.text }]}>{label}</Text>
 
+            {/* Headers Row */}
+            <View style={styles.headersRow}>
+              <View style={styles.pickerCol}>
+                <Text style={[styles.colHeader, { color: colors.mutedText }]}>{t('settings.hour', 'Saat')}</Text>
+              </View>
+              <Text style={[styles.colon, { color: 'transparent' }]}>:</Text>
+              <View style={styles.pickerCol}>
+                <Text style={[styles.colHeader, { color: colors.mutedText }]}>{t('settings.minute', 'Dakika')}</Text>
+              </View>
+            </View>
+
             <View style={styles.pickerContainer}>
               {/* Highlight bar behind selected center item */}
               <View style={[styles.highlightBar, { backgroundColor: colors.primary + '18', borderColor: colors.primary + '33' }]} />
@@ -163,7 +174,6 @@ export function TimePickerRow({ label, time, theme, minTime, maxTime, onConfirm 
               <View style={styles.pickerRow}>
                 {/* Hour Column */}
                 <View style={styles.pickerCol}>
-                  <Text style={[styles.colHeader, { color: colors.mutedText }]}>{t('settings.hour', 'Saat')}</Text>
                   <FlatList
                     ref={hourRef}
                     data={HOUR_DATA}
@@ -211,7 +221,6 @@ export function TimePickerRow({ label, time, theme, minTime, maxTime, onConfirm 
 
                 {/* Minute Column */}
                 <View style={styles.pickerCol}>
-                  <Text style={[styles.colHeader, { color: colors.mutedText }]}>{t('settings.minute', 'Dakika')}</Text>
                   <FlatList
                     ref={minuteRef}
                     data={MINUTE_DATA}
@@ -341,11 +350,18 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   pickerCol: { flex: 1, alignItems: 'center' },
-  colHeader: { fontSize: 11, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8 },
+  colHeader: { fontSize: 11, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.8 },
   scrollCol: { height: ITEM_HEIGHT * 5, width: '100%' },
   pickerItem: { height: ITEM_HEIGHT, justifyContent: 'center', alignItems: 'center', width: '100%' },
   pickerItemText: { fontSize: 22, fontVariant: ['tabular-nums'] },
-  colon: { fontSize: 26, fontWeight: '700', marginTop: 16, marginHorizontal: 8 },
+  colon: { fontSize: 26, fontWeight: '700', marginHorizontal: 8 },
+  headersRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    marginBottom: 8,
+  },
   buttonRow: { flexDirection: 'row', gap: 12, marginTop: 24, width: '100%' },
   btn: { flex: 1, paddingVertical: 14, borderRadius: 14, alignItems: 'center', borderWidth: 1 },
   btnConfirm: { borderWidth: 0 },
