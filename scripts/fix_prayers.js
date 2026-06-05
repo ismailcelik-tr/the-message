@@ -2,8 +2,14 @@ const fs = require('fs');
 const path = require('path');
 const https = require('https');
 
-const serviceRoleKey = '***REDACTED_SUPABASE_KEY***';
-const dbHostname = '***REDACTED_SUPABASE_HOST***';
+const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const supabaseUrl = process.env.SUPABASE_URL;
+
+if (!serviceRoleKey || !supabaseUrl) {
+  console.error('Missing required env vars: SUPABASE_SERVICE_ROLE_KEY, SUPABASE_URL');
+  process.exit(1);
+}
+const dbHostname = new URL(supabaseUrl).hostname;
 
 const SEED_FILES = [
   '/Users/ismailcelik/Desktop/Apps/TheMessage/supabase/seeds/001_content.sql',
