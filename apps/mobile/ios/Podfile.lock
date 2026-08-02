@@ -2339,7 +2339,7 @@ PODS:
     - SocketRocket
   - RNCAsyncStorage (2.2.0):
     - React-Core
-  - RNScreens (3.37.0):
+  - RNScreens (4.16.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -2729,7 +2729,7 @@ SPEC CHECKSUMS:
   ReactCodegen: 0c47bcad3576258ef1a91e2ec1fd43afae72e85f
   ReactCommon: 5f0e5c09a64a2717215dd84380e1a747810406f2
   RNCAsyncStorage: b44e8a4e798c3e1f56bffccd0f591f674fb9198f
-  RNScreens: b6e38c3ec166c52ca81acd78dbc97ee951234bc5
+  RNScreens: 35525ebfe219c8709da0d26aebbc9a5e02e1077b
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: 728df40394d49f3f471688747cf558158b3a3bd1
 
