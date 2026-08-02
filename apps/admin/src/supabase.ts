@@ -1,6 +1,14 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://***REDACTED_SUPABASE_HOST***';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_X48w25YT9WycmQs3E9Gx8g_Usrz933O';
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+// Vite inlines these at build time. Without them the panel would silently point
+// at an unreachable host, so fail loudly instead of shipping a broken bundle.
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error(
+    'Admin paneli yapılandırılamadı: VITE_SUPABASE_URL ve VITE_SUPABASE_ANON_KEY build sırasında tanımlı olmalı.',
+  );
+}
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);

@@ -4,6 +4,13 @@ primary_region = "cdg"
 [build]
   dockerfile = "infra/docker/Dockerfile.api"
 
+  # Vite inlines these into the admin bundle during the Docker build.
+  # Both are public client-side values; the service_role key never goes here.
+  [build.args]
+    VITE_API_URL = "/api"
+    VITE_SUPABASE_URL = "https://gpuhhpxnxrvvjappindr.supabase.co"
+    VITE_SUPABASE_ANON_KEY = "sb_publishable_X48w25YT9WycmQs3E9Gx8g_Usrz933O"
+
 [http_service]
   internal_port = 3000
   force_https = true

@@ -23,6 +23,16 @@ CMD ["npm", "run", "api:dev"]
 # Transpiles TypeScript files into pure JS dist directories
 FROM base AS build
 COPY . .
+
+# Vite inlines VITE_* values into the admin bundle at build time. .env files are
+# excluded by .dockerignore, so they must arrive as build args (see fly.toml).
+ARG VITE_API_URL
+ARG VITE_SUPABASE_URL
+ARG VITE_SUPABASE_ANON_KEY
+ENV VITE_API_URL=$VITE_API_URL
+ENV VITE_SUPABASE_URL=$VITE_SUPABASE_URL
+ENV VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY
+
 RUN npm run shared:build
 RUN npm run admin:build
 RUN npm run api:build
