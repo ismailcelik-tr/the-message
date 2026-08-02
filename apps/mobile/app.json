@@ -15,7 +15,7 @@
         "backgroundColor": "#2A4B3D"
       },
       "minSdkVersion": 24,
-      "versionCode": 21
+      "versionCode": 22
     },
     "ios": {
       "supportsTablet": true,
@@ -37,7 +37,8 @@
         }
       ],
       "expo-web-browser",
-      "expo-apple-authentication"
+      "expo-apple-authentication",
+      "expo-localization"
     ],
     "extra": {
       "eas": {

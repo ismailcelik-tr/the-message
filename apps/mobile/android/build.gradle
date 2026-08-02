@@ -8,7 +8,11 @@ buildscript {
         targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '36')
         kotlinVersion = findProperty('android.kotlinVersion') ?: '2.1.20'
 
-        ndkVersion = "26.1.10909125"
+        // r27 is the first NDK that links native libraries with 16 KB aligned LOAD
+        // segments by default, which Android 15+ devices (and Play) require.
+        // On r26 the libs built from source here — expo-modules-core, rnscreens —
+        // came out 4 KB aligned and ran in page-size compatibility mode.
+        ndkVersion = "27.1.12297006"
     }
     repositories {
         google()
