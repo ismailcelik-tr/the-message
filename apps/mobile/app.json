@@ -3,7 +3,7 @@
     "name": "Cagri",
     "slug": "cagri",
     "main": "index.js",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "scheme": "cagri",
     "icon": "./assets/icon.png",
     "orientation": "portrait",
@@ -24,7 +24,7 @@
       "infoPlist": {
         "CFBundleDisplayName": "Çağrı"
       },
-      "buildNumber": "27"
+      "buildNumber": "30"
     },
     "plugins": [
       "expo-secure-store",
