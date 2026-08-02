@@ -18,11 +18,16 @@ interface UserItem {
   preferences: any;
 }
 
+type SortField = 'createdAt' | 'email' | 'platform' | 'locale' | 'notificationEnabled' | 'frequency';
+type SortDirection = 'asc' | 'desc';
+
 export function UsersManagement({ token, apiUrl }: UsersManagementProps) {
   const [users, setUsers] = useState<UserItem[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
+  const [sortBy, setSortBy] = useState<SortField>('createdAt');
+  const [sortDir, setSortDir] = useState<SortDirection>('desc');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
 
@@ -54,7 +59,7 @@ export function UsersManagement({ token, apiUrl }: UsersManagementProps) {
     setMessage('');
     try {
       const data = await apiRequest<{ items: UserItem[]; total: number }>(
-        `/admin/users?page=${page}&limit=${limit}`,
+        `/admin/users?page=${page}&limit=${limit}&sortBy=${sortBy}&sortDir=${sortDir}`,
       );
       setUsers(data.items);
       setTotal(data.total);
@@ -67,7 +72,35 @@ export function UsersManagement({ token, apiUrl }: UsersManagementProps) {
 
   useEffect(() => {
     loadUsers().catch(() => undefined);
-  }, [page, limit]);
+  }, [page, limit, sortBy, sortDir]);
+
+  // Sorting runs server-side across every user, so results must restart at page 1.
+  const toggleSort = (field: SortField) => {
+    if (field === sortBy) {
+      setSortDir((current) => (current === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortBy(field);
+      setSortDir('asc');
+    }
+    setPage(1);
+  };
+
+  // Plain helper rather than a nested component, which would remount on every render.
+  const renderSortHeader = (field: SortField, label: string, hint: string) => {
+    const active = sortBy === field;
+    return (
+      <button
+        type="button"
+        className={`sort-header${active ? ' active' : ''}`}
+        onClick={() => toggleSort(field)}
+        disabled={loading}
+        title={hint}
+      >
+        {label}
+        <span className="sort-indicator">{active ? (sortDir === 'asc' ? '▲' : '▼') : '↕'}</span>
+      </button>
+    );
+  };
 
   const loadBookmarks = async (user: UserItem) => {
     setSelectedUser(user);
@@ -98,7 +131,7 @@ export function UsersManagement({ token, apiUrl }: UsersManagementProps) {
       <div className="admin-toolbar">
         <h2 style={{ fontSize: '16px', color: '#2a4b3d', fontWeight: 'bold' }}>Kullanıcı Listesi</h2>
         <span style={{ fontSize: '13px', color: '#6c8378' }}>
-          Toplam Kayıtlı: {users.length < limit && page === 1 ? users.length : total} kullanıcı
+          Toplam Kayıtlı: {total} kullanıcı
         </span>
       </div>
 
@@ -107,12 +140,12 @@ export function UsersManagement({ token, apiUrl }: UsersManagementProps) {
       <section className="history" style={{ marginTop: 0 }}>
         <div className="table">
           <div className="table-head" style={{ gridTemplateColumns: '1.2fr 0.8fr 1.2fr 0.8fr 0.8fr 1fr 1fr' }}>
-            <span>E-posta / ID</span>
-            <span>Platform / Dil</span>
-            <span>Saat Dilimi / Bildirim</span>
+            <span>{renderSortHeader('email', 'E-posta / ID', 'E-postaya göre sırala')}</span>
+            <span>{renderSortHeader('platform', 'Platform / Dil', 'Platforma göre sırala')}</span>
+            <span>{renderSortHeader('notificationEnabled', 'Saat Dilimi / Bildirim', 'Bildirim durumuna göre sırala')}</span>
             <span>Kategori Tercihleri</span>
-            <span>Sıklık</span>
-            <span>Kayıt Tarihi</span>
+            <span>{renderSortHeader('frequency', 'Sıklık', 'Bildirim sıklığına göre sırala')}</span>
+            <span>{renderSortHeader('createdAt', 'Kayıt Tarihi', 'Kayıt tarihine göre sırala')}</span>
             <span>Aksiyonlar</span>
           </div>
 

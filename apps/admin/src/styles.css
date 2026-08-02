@@ -603,3 +603,34 @@ h2 {
   background: #ffe2e2;
 }
 
+
+/* Sortable table headers */
+.sort-header {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  width: auto;
+  height: auto;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-transform: inherit;
+  letter-spacing: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.sort-header:hover:not(:disabled) { color: #2a4b3d; }
+.sort-header:disabled { cursor: default; }
+.sort-header.active { color: #2a4b3d; }
+
+.sort-indicator {
+  font-size: 9px;
+  color: #a8bcb3;
+}
+
+.sort-header.active .sort-indicator { color: #2a4b3d; }
